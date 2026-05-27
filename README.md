@@ -1,36 +1,179 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Полезно про Иркутск — Premium Travel Platform
 
-## Getting Started
+Цифровая культурная платформа про Иркутск и Байкал. Next.js 15 + Payload CMS 3.
 
-First, run the development server:
+---
+
+## Стек
+
+| Слой | Технология |
+|------|------------|
+| Framework | Next.js 16 App Router, TypeScript strict |
+| Стили | Tailwind CSS v4, shadcn/ui |
+| CMS | Payload CMS 3 + PostgreSQL |
+| Карта | Mapbox GL JS |
+| Анимации | Lenis, GSAP + ScrollTrigger, Framer Motion |
+| Оплата | Stripe Checkout |
+| Формы | React Hook Form + Zod |
+
+---
+
+## Быстрый старт
+
+### 1. Требования
+- Node.js 20+
+- PostgreSQL 14+ (или Neon/Supabase)
+
+### 2. Установка
+
+```bash
+npm install
+```
+
+### 3. Настройка переменных среды
+
+Скопируйте `.env.example` в `.env.local` и заполните:
+
+```bash
+cp .env.example .env.local
+```
+
+| Переменная | Где взять |
+|------------|-----------|
+| `DATABASE_URL` | Строка подключения к PostgreSQL |
+| `PAYLOAD_SECRET` | Любая строка 32+ символов |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | [mapbox.com](https://mapbox.com) → Access tokens |
+| `STRIPE_SECRET_KEY` | [dashboard.stripe.com](https://dashboard.stripe.com) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe Dashboard |
+| `NEXT_PUBLIC_SERVER_URL` | URL деплоя (например, `https://yourdomain.ru`) |
+
+### 4. Создать базу данных
+
+```bash
+# PostgreSQL
+createdb polezno_irkutsk
+```
+
+### 5. Запуск
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000) — сайт.  
+Откройте [http://localhost:3000/admin](http://localhost:3000/admin) — CMS-панель.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+При первом запуске Payload создаёт все таблицы автоматически и предложит создать первого администратора.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Структура проекта
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  (site)/         # Публичный сайт
+    page.tsx      # Главная
+    map/          # Интерактивная карта
+    explore/      # Digital magazine
+    events/       # Календарь событий
+    shop/         # Concept store
+    about/        # О проекте
+    program/      # Конструктор тура
+    contact/      # Контакты
+  (payload)/      # Payload admin
+  api/
+    routes/       # API маршрутов для карты
+    leads/        # Сохранение заявок
+    checkout/     # Stripe Checkout
+    revalidate/   # ISR revalidation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+components/
+  layout/         # Header, Footer, LenisProvider
+  sections/       # Секции главной страницы
+  map/            # Компоненты карты
+  shop/           # Компоненты магазина
+  forms/          # Формы (Program, Contact)
+  ui/             # Base UI (Button, Badge, Input и др.)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+payload/
+  collections/    # Схемы данных Payload
+  globals/        # Глобальные настройки
 
-## Deploy on Vercel
+lib/
+  utils.ts        # cn() helper
+  payload.ts      # Payload client
+  jsonld.ts       # JSON-LD схемы для SEO
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## CMS — редактирование контента
+
+Все сущности редактируются через `/admin` без деплоя кода:
+
+| Раздел | Что редактировать |
+|--------|-------------------|
+| **Маршруты** | Название, категория, GeoJSON, аудиогид, PDF, цена |
+| **Места** | Координаты, фото, описание, «место от локалов» |
+| **Статьи** | Заголовок, текст (rich text), категория, сезон |
+| **События** | Дата, место, ссылка на билеты, категория |
+| **Товары** | Фотогалерея, история предмета, Stripe Price ID |
+| **Отзывы** | Текст, автор, рейтинг |
+| **Партнёры** | Логотип, ссылка |
+| **Настройки сайта** | Hero-видео, манифест, статистика, соцсети |
+
+### Добавить платный маршрут
+1. Создайте продукт в Stripe Dashboard → Products
+2. Скопируйте **Price ID** (начинается с `price_`)
+3. В CMS → Маршруты → установите тип «Платный», вставьте Price ID
+
+### Добавить видео на Hero
+1. Загрузите `.webm` и `.mp4` в Media
+2. В CMS → Настройки сайта → Hero-видео
+
+---
+
+## Карта маршрутов
+
+Для работы карты нужен Mapbox токен в `.env.local`:
+
+```
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1...
+```
+
+GeoJSON маршрутов создаётся в [Mapbox Studio](https://studio.mapbox.com) или любом GeoJSON-редакторе. Формат — `LineString`:
+
+```json
+{
+  "type": "LineString",
+  "coordinates": [
+    [104.2964, 52.2978],
+    [104.3020, 52.3010]
+  ]
+}
+```
+
+---
+
+## Деплой (Vercel + Neon)
+
+1. Создайте БД на [neon.tech](https://neon.tech) (бесплатный план)
+2. Скопируйте `DATABASE_URL` из Neon dashboard
+3. Подключите репозиторий к Vercel
+4. Добавьте все переменные из `.env.example` в Vercel Environment Variables
+5. Деплой → автоматически
+
+---
+
+## Контент для запуска
+
+Минимальный набор медиафайлов (размещать в `/public/images/`):
+
+| Файл | Размер | Описание |
+|------|--------|----------|
+| `hero-poster.jpg` | 1920×1080 | Постер для hero-видео |
+| `founder-portrait.jpg` | 800×1067 | Портрет основателя |
+| `/videos/hero.webm` | — | Фоновое видео 10-20с |
+| `/videos/hero.mp4` | — | Резервное видео |
+
+Изображения для направлений, статей и товаров загружаются через CMS Media.

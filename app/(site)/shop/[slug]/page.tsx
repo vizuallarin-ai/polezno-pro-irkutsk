@@ -1,0 +1,191 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { AddToCartButton } from "@/components/shop/add-to-cart-button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { productSchema, breadcrumbSchema } from "@/lib/jsonld";
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+async function getProduct(slug: string) {
+  try {
+    const { getPayloadClient } = await import("@/lib/payload");
+    const payload = await getPayloadClient();
+    const result = await payload.find({
+      collection: "products",
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 2,
+    });
+    return result.docs[0] || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  if (!product) return { title: "Товар не найден" };
+
+  const seo = product.seo as
+    | { title?: string; description?: string }
+    | undefined;
+  return {
+    title: seo?.title || String(product.title),
+    description:
+      seo?.description || String(product.shortDescription || ""),
+  };
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  clothing: "Одежда",
+  posters: "Постеры",
+  postcards: "Открытки",
+  art: "Арт-объекты",
+  books: "Книги",
+  souvenirs: "Сувениры",
+};
+
+export default async function ProductPage({ params }: PageProps) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+
+  if (!product) notFound();
+
+  const gallery = product.gallery as
+    | Array<{ image: { url?: string; alt?: string } }>
+    | undefined;
+
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+  const productJsonLd = productSchema({
+    title: String(product.title),
+    description: String(product.shortDescription || ""),
+    url: `${BASE_URL}/shop/${product.slug}`,
+    price: Number(product.price),
+    imageUrl: gallery?.[0]?.image?.url,
+    sku: String(product.id),
+    inStock: Boolean(product.inStock),
+  });
+  const breadcrumbProduct = breadcrumbSchema([
+    { label: "Главная", href: "/" },
+    { label: "Магазин", href: "/shop" },
+    { label: String(product.title), href: `/shop/${product.slug}` },
+  ]);
+
+  return (
+    <article className="pt-24">
+      <JsonLd data={[productJsonLd, breadcrumbProduct]} />
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12">
+        <Link
+          href="/shop"
+          className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-200 mb-12"
+        >
+          <ArrowLeft size={12} />
+          В магазин
+        </Link>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="flex flex-col gap-3">
+            {gallery && gallery.length > 0 ? (
+              <>
+                <div className="relative aspect-square overflow-hidden bg-card">
+                  <Image
+                    src={gallery[0].image.url || ""}
+                    alt={gallery[0].image.alt || String(product.title)}
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+                {gallery.length > 1 && (
+                  <div className="grid grid-cols-4 gap-3">
+                    {gallery.slice(1).map((item, i) => (
+                      <div
+                        key={i}
+                        className="relative aspect-square overflow-hidden bg-card"
+                      >
+                        <Image
+                          src={item.image.url || ""}
+                          alt={item.image.alt || String(product.title)}
+                          fill
+                          className="object-cover"
+                          sizes="120px"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="aspect-square bg-card flex items-center justify-center text-muted-foreground/30">
+                <span className="text-6xl font-serif">—</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col justify-start lg:sticky lg:top-24 lg:self-start">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
+              {CATEGORY_LABELS[String(product.category)] ||
+                String(product.category)}
+            </p>
+
+            <h1 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground mb-4 leading-snug">
+              {String(product.title)}
+            </h1>
+
+            {product.shortDescription && (
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                {String(product.shortDescription)}
+              </p>
+            )}
+
+            <p className="text-3xl font-light tracking-tight mb-8">
+              {Number(product.price).toLocaleString("ru-RU")} ₽
+            </p>
+
+            {product.inStock ? (
+              <AddToCartButton
+                productId={String(product.id)}
+                stripePriceId={
+                  product.stripePriceId ? String(product.stripePriceId) : undefined
+                }
+                title={String(product.title)}
+                price={Number(product.price)}
+              />
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground border border-border px-5 py-3 w-fit">
+                <ShoppingBag size={14} />
+                Нет в наличии
+              </div>
+            )}
+
+            {product.story && (
+              <div className="mt-10 pt-10 border-t border-border">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+                  История предмета
+                </p>
+                <div className="text-sm text-foreground leading-relaxed prose prose-sm prose-neutral max-w-none">
+                  <p>
+                    {typeof product.story === "string"
+                      ? product.story
+                      : "Коллекционный предмет с историей"}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
