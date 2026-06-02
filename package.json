@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node scripts/seed-cms.mjs",
-    "placeholders": "node scripts/generate-placeholders.mjs"
+    "placeholders": "node scripts/generate-placeholders.mjs",
+    "create-admin": "npx tsx scripts/create-admin.mjs",
+    "ensure-db": "node scripts/ensure-db.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
