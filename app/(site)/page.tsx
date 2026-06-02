@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import { HeroCinematic } from "@/components/sections/hero-cinematic";
+import { ScenarioPicker } from "@/components/sections/scenario-picker";
 import { DirectionsEditorial } from "@/components/sections/directions-editorial";
 import { MapTeaser } from "@/components/sections/map-teaser";
 import { ExplorePreview } from "@/components/sections/explore-preview";
-import { EventsPreview } from "@/components/sections/events-preview";
+import { BoostyTeaser } from "@/components/sections/boosty-teaser";
 import { ShopPreview } from "@/components/sections/shop-preview";
-import { AboutManifesto } from "@/components/sections/about-manifesto";
 import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
 import { FinalCta } from "@/components/sections/final-cta";
 
 export const metadata: Metadata = {
-  title: "Полезно про Иркутск — туристический гид и культурная платформа",
+  title: "Полезно про Иркутск — авторский навигатор по городу",
   description:
-    "Иркутск и Байкал: авторские маршруты, экскурсии, событийный туризм и культурные проекты. Организация путешествий под ключ.",
+    "Маршруты, экскурсии и материалы об Иркутске и Байкале от местного автора. Без туристических штампов.",
   openGraph: {
     title: "Полезно про Иркутск",
     description:
-      "Цифровая культурная платформа про Иркутск и Байкал. Маршруты, экскурсии, события и мерч.",
+      "Авторский навигатор по Иркутску: маршруты, экскурсии, медиа и клуб на Boosty.",
   },
 };
 
@@ -25,19 +25,13 @@ async function getHomeData() {
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const [articlesRes, eventsRes, productsRes, reviewsRes, settings] =
+    const [articlesRes, productsRes, reviewsRes, settings] =
       await Promise.all([
         payload.find({
           collection: "articles",
           where: { isFeatured: { equals: true } },
           limit: 4,
           sort: "-publishedAt",
-        }),
-        payload.find({
-          collection: "events",
-          where: { startDate: { greater_than_equal: new Date().toISOString() } },
-          limit: 6,
-          sort: "startDate",
         }),
         payload.find({
           collection: "products",
@@ -70,7 +64,6 @@ async function getHomeData() {
 
     return {
       articles: articlesRes.docs,
-      events: eventsRes.docs,
       products: productsRes.docs,
       stats,
       reviews,
@@ -78,7 +71,6 @@ async function getHomeData() {
   } catch {
     return {
       articles: undefined,
-      events: undefined,
       products: undefined,
       stats: undefined,
       reviews: undefined,
@@ -87,17 +79,17 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { articles, events, products, stats, reviews } = await getHomeData();
+  const { articles, products, stats, reviews } = await getHomeData();
 
   return (
     <>
       <HeroCinematic />
+      <ScenarioPicker />
       <DirectionsEditorial />
       <MapTeaser />
       <ExplorePreview articles={articles as never} />
-      <EventsPreview events={events as never} />
+      <BoostyTeaser />
       <ShopPreview products={products as never} />
-      <AboutManifesto />
       <SocialProof stats={stats} reviews={reviews} />
       <FinalCta />
     </>

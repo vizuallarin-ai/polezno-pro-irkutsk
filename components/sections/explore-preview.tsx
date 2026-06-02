@@ -151,7 +151,7 @@ export function ExplorePreview({ articles }: { articles?: Article[] }) {
         <div className="explore-header flex flex-col md:flex-row md:items-end justify-between mb-12 lg:mb-16 gap-6">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-              Digital travel magazine
+              Медиа
             </p>
             <h2
               id="explore-heading"
@@ -164,7 +164,7 @@ export function ExplorePreview({ articles }: { articles?: Article[] }) {
             href="/explore"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group shrink-0"
           >
-            Все материалы
+            Все заметки
             <ArrowRight
               size={14}
               className="transition-transform duration-200 group-hover:translate-x-1"

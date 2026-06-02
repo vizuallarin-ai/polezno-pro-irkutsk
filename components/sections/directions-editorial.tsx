@@ -11,74 +11,50 @@ import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const directions = [
+const mainProducts = [
   {
-    id: "tours",
+    id: "routes",
     number: "01",
-    title: "Туристические программы",
-    subtitle: "Под ключ",
+    title: "Авторские маршруты",
+    subtitle: "Свободный темп",
     description:
-      "Индивидуальные туры, корпоративные программы, авторские маршруты и сопровождение делегаций. Каждый маршрут — это история, рассказанная через место.",
-    href: "/program",
-    cta: "Создать программу",
-    image: "/images/direction-tours.svg",
-    tags: ["Индивидуально", "Корпоративно", "Авторски"],
+      "Точки, подсказки и логика прогулки — без толпы и без «обязательной» программы.",
+    href: "/map",
+    cta: "Открыть карту",
+    image: "/images/direction-education.svg",
+    tags: ["Пешком", "Аудио", "PDF"],
   },
   {
     id: "excursions",
     number: "02",
     title: "Экскурсии",
-    subtitle: "По городу и окрестностям",
+    subtitle: "С гидом",
     description:
-      "Городские, исторические, гастрономические и архитектурные прогулки. Групповые и private-форматы. Иркутск, который знают только местные.",
-    href: "/explore/excursions",
-    cta: "Выбрать экскурсию",
+      "Город, гастро и история — групповые и частные форматы. Запись через форму.",
+    href: "/program",
+    cta: "Записаться",
     image: "/images/direction-excursions.svg",
-    tags: ["Городские", "Гастро", "Private"],
+    tags: ["Город", "Гастро", "Private"],
   },
   {
-    id: "consulting",
+    id: "corporate",
     number: "03",
-    title: "Консалтинг",
-    subtitle: "В туризме и брендинге",
+    title: "Для компаний",
+    subtitle: "Команды и делегации",
     description:
-      "Разработка турпродуктов, сопровождение проектов, брендинг территорий и событийный туризм для бизнеса и государственных структур.",
-    href: "/contact",
-    cta: "Обсудить проект",
-    image: "/images/direction-consulting.svg",
-    tags: ["Турпродукт", "Территория", "События"],
-  },
-  {
-    id: "education",
-    number: "04",
-    title: "Образование",
-    subtitle: "Гиды, статьи, маршруты",
-    description:
-      "Путеводители, PDF-маршруты, лекции и материалы о локальной культуре. Контент для тех, кто хочет узнать Иркутск глубже.",
-    href: "/explore",
-    cta: "Читать и скачать",
-    image: "/images/direction-education.svg",
-    tags: ["Гиды", "PDF", "Лекции"],
-  },
-  {
-    id: "shop",
-    number: "05",
-    title: "Мерч и сувениры",
-    subtitle: "Локальная идентичность",
-    description:
-      "Одежда, постеры, открытки и предметы с байкальской и иркутской эстетикой. Вещи, которые хочется везти домой и дарить.",
-    href: "/shop",
-    cta: "В магазин",
-    image: "/images/direction-shop.svg",
-    tags: ["Одежда", "Постеры", "Сувениры"],
+      "Тимбилдинги, приёмы гостей и программы под задачу — от идеи до сопровождения.",
+    href: "/program",
+    cta: "Обсудить программу",
+    image: "/images/direction-tours.svg",
+    tags: ["Корпоратив", "Делегации", "Под ключ"],
   },
 ];
 
-function DirectionCard({
-  direction,
+function ProductCard({
+  product,
   index,
 }: {
-  direction: (typeof directions)[0];
+  product: (typeof mainProducts)[0];
   index: number;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -116,29 +92,29 @@ function DirectionCard({
     >
       <div className="img-reveal relative aspect-[4/3] overflow-hidden bg-muted">
         <Image
-          src={direction.image}
-          alt={direction.title}
+          src={product.image}
+          alt={product.title}
           fill
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
         <div className="absolute top-4 left-4 z-10 font-serif text-5xl font-light text-white/20 select-none">
-          {direction.number}
+          {product.number}
         </div>
       </div>
 
       <div className="flex flex-col justify-center">
         <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
-          {direction.subtitle}
+          {product.subtitle}
         </p>
         <h3 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground mb-4">
-          {direction.title}
+          {product.title}
         </h3>
         <p className="text-muted-foreground leading-relaxed mb-6 max-w-sm">
-          {direction.description}
+          {product.description}
         </p>
         <div className="flex flex-wrap gap-2 mb-8">
-          {direction.tags.map((tag) => (
+          {product.tags.map((tag) => (
             <span
               key={tag}
               className="text-xs uppercase tracking-widest text-muted-foreground border border-border px-3 py-1"
@@ -148,10 +124,10 @@ function DirectionCard({
           ))}
         </div>
         <Link
-          href={direction.href}
+          href={product.href}
           className="inline-flex items-center gap-2 text-sm font-medium text-foreground group w-fit"
         >
-          {direction.cta}
+          {product.cta}
           <ArrowRight
             size={14}
             className="transition-transform duration-200 group-hover:translate-x-1"
@@ -172,13 +148,13 @@ export function DirectionsEditorial() {
       ).matches;
       if (prefersReduced) return;
 
-      gsap.from(".directions-header", {
+      gsap.from(".products-header", {
         opacity: 0,
         y: 40,
         duration: 0.8,
         ease: "power3.out",
         scrollTrigger: {
-          trigger: ".directions-header",
+          trigger: ".products-header",
           start: "top 85%",
         },
       });
@@ -190,29 +166,28 @@ export function DirectionsEditorial() {
     <section
       ref={sectionRef}
       className="py-24 lg:py-36"
-      aria-labelledby="directions-heading"
+      aria-labelledby="products-heading"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="directions-header mb-20 lg:mb-28">
+        <div className="products-header mb-20 lg:mb-28">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-            Что мы делаем
+            Главное
           </p>
           <h2
-            id="directions-heading"
+            id="products-heading"
             className="text-4xl lg:text-5xl font-light tracking-tight text-foreground max-w-lg"
           >
-            Пять направлений <br />
-            <span className="font-serif italic">одного проекта</span>
+            Три способа <br />
+            <span className="font-serif italic">увидеть город</span>
           </h2>
         </div>
 
         <div className="flex flex-col gap-24 lg:gap-36">
-          {directions.map((direction, i) => (
-            <DirectionCard key={direction.id} direction={direction} index={i} />
+          {mainProducts.map((product, i) => (
+            <ProductCard key={product.id} product={product} index={i} />
           ))}
         </div>
       </div>
     </section>
   );
 }
-

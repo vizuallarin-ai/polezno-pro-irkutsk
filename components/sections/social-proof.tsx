@@ -92,11 +92,15 @@ export function SocialProof({
       ref={sectionRef}
       className="py-24 lg:py-36"
       aria-labelledby="social-proof-heading"
+      id="trust"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-12">
-          Нам доверяют
-        </p>
+        <h2
+          id="social-proof-heading"
+          className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-12"
+        >
+          Гости и команды
+        </h2>
 
         <div className="stats-row grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20 lg:mb-28">
           {displayStats.map((stat) => (

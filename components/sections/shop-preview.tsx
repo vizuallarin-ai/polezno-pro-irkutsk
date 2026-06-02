@@ -103,27 +103,32 @@ export function ShopPreview({ products }: { products?: Product[] }) {
         <div className="shop-header flex flex-col md:flex-row md:items-end justify-between mb-12 lg:mb-16 gap-6">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-              Concept store
+              Магазин
             </p>
             <h2
               id="shop-heading"
               className="text-4xl lg:text-5xl font-light tracking-tight text-foreground"
             >
-              Байкальская <br />
-              <span className="font-serif italic">эстетика</span>
+              Вещи с <br />
+              <span className="font-serif italic">характером</span>
             </h2>
           </div>
           <Link
             href="/shop"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group shrink-0"
           >
-            Весь магазин
+            В каталог
             <ArrowRight
               size={14}
               className="transition-transform duration-200 group-hover:translate-x-1"
             />
           </Link>
         </div>
+
+        <p className="text-sm text-muted-foreground mb-10 max-w-md">
+          Коллекция открывается — пока смотрите подборку. Оплата и доставка
+          появятся позже.
+        </p>
 
         <div className="products-grid grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {items.map((product) => (

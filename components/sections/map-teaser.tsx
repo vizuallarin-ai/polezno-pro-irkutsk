@@ -66,8 +66,8 @@ export function MapTeaser() {
               <span className="font-serif italic text-ice">карте</span>
             </h2>
             <p className="text-primary-foreground/60 leading-relaxed mb-8 max-w-sm">
-              Интерактивная карта с авторскими маршрутами по городу. Бесплатные
-              прогулки, аудиогиды и платные экспертные туры с точками интереса.
+              Авторские прогулки по районам: точки, подсказки и темп — ваш.
+              Без навязанной «обязательной» программы.
             </p>
 
             <div className="flex flex-wrap gap-2 mb-10">
@@ -85,7 +85,7 @@ export function MapTeaser() {
               href="/map"
               className="inline-flex items-center gap-3 text-sm font-medium text-primary-foreground group w-fit border border-primary-foreground/30 px-6 py-3 hover:bg-primary-foreground/10 transition-colors duration-200"
             >
-              Открыть карту маршрутов
+              Открыть маршруты
               <ArrowRight
                 size={14}
                 className="transition-transform duration-200 group-hover:translate-x-1"

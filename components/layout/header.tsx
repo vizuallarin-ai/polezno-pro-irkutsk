@@ -8,6 +8,10 @@ import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types/navigation";
 import { DEFAULT_NAV_LINKS, DEFAULT_CTA } from "@/lib/navigation-constants";
 
+function isExternalHref(href: string) {
+  return href.startsWith("http://") || href.startsWith("https://");
+}
+
 const easeInOut: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
 const menuVariants: Variants = {
@@ -97,16 +101,35 @@ export function Header({
               className="hidden md:flex items-center gap-8"
               aria-label="Основная навигация"
             >
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group"
-                >
-                  {link.label}
-                  <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
-                </Link>
-              ))}
+              {links.map((link) => {
+                const className =
+                  "relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group";
+                const label = (
+                  <>
+                    {link.label}
+                    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
+                  </>
+                );
+                return isExternalHref(link.href) ? (
+                  <a
+                    key={`${link.href}-${link.label}`}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <Link
+                    key={`${link.href}-${link.label}`}
+                    href={link.href}
+                    className={className}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="flex items-center gap-4">
@@ -154,19 +177,31 @@ export function Header({
             >
               {links.map((link, i) => (
                 <motion.div
-                  key={link.href}
+                  key={`${link.href}-${link.label}`}
                   custom={i}
                   variants={linkVariants}
                   initial="closed"
                   animate="open"
                 >
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                  {isExternalHref(link.href) ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setIsOpen(false)}
+                      className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
             </nav>

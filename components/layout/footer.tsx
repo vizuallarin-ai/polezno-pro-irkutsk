@@ -1,21 +1,23 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
+import { BOOSTY_URL } from "@/lib/site-links";
 
 const footerLinks = {
   explore: [
     { href: "/map", label: "Маршруты" },
-    { href: "/explore", label: "Все материалы" },
+    { href: "/explore", label: "Исследовать Иркутск" },
     { href: "/events", label: "События" },
     { href: "/explore/food", label: "Где поесть" },
     { href: "/explore/baikal", label: "Байкал рядом" },
     { href: "/explore/hidden", label: "Hidden Places" },
   ],
   services: [
-    { href: "/program", label: "Создать программу" },
-    { href: "/explore/excursions", label: "Экскурсии" },
+    { href: "/program", label: "Экскурсии" },
+    { href: "/program", label: "Для компаний" },
+    { href: BOOSTY_URL, label: "Клуб на Boosty", external: true },
+    { href: "/shop", label: "Магазин" },
     { href: "/about", label: "О проекте" },
-    { href: "/about#guides", label: "Наши гиды" },
     { href: "/contact", label: "Контакты" },
   ],
 };
@@ -32,12 +34,12 @@ export function Footer() {
                   Полезно про Иркутск
                 </span>
                 <span className="text-sm text-primary-foreground/50 font-light">
-                  Цифровая платформа о городе и Байкале
+                  Авторский навигатор по Иркутску
                 </span>
               </Link>
               <p className="text-sm text-primary-foreground/60 leading-relaxed max-w-xs">
-                Организация путешествий, авторские маршруты, культурные проекты
-                в Иркутске и на Байкале с 2019 года.
+                Маршруты, экскурсии и материалы о городе — без туристических
+                штампов. С 2019 года.
               </p>
               <div className="flex items-center gap-4 mt-6">
                 <a
@@ -87,13 +89,24 @@ export function Footer() {
             </p>
             <ul className="flex flex-col gap-3">
               {footerLinks.services.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                <li key={`${link.href}-${link.label}`}>
+                  {"external" in link && link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

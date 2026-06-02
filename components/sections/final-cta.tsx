@@ -64,43 +64,37 @@ export function FinalCta() {
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         <div className="cta-content max-w-3xl">
           <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-6">
-            Начните путешествие
+            Следующий шаг
           </p>
           <h2
             id="cta-heading"
             className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight text-white leading-[1.1] mb-8"
           >
-            Покажем Иркутск,
+            Готовы
             <br />
-            <span className="font-serif italic">который обычно не видят</span>
+            <span className="font-serif italic">гулять?</span>
           </h2>
           <p className="text-white/60 leading-relaxed mb-12 max-w-md text-base">
-            Авторские маршруты, организация туров и культурные проекты для тех,
-            кто хочет увидеть город по-настоящему.
+            Выберите маршрут на карте или напишите — соберём программу под ваши
+            даты.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/program"
+              href="/map"
               className="inline-flex h-12 items-center justify-center gap-2 px-8 text-sm font-medium bg-white text-baikal hover:bg-white/90 transition-colors duration-200 active:scale-[0.98] group"
             >
-              Собрать маршрут
+              К маршрутам
               <ArrowRight
                 size={14}
                 className="transition-transform duration-200 group-hover:translate-x-1"
               />
             </Link>
             <Link
-              href="/program"
+              href="/contact"
               className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium border border-white/30 text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.98]"
             >
-              Организовать тур
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
-            >
-              Связаться
+              Написать нам
             </Link>
           </div>
         </div>

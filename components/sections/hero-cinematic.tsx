@@ -90,38 +90,38 @@ export function HeroCinematic() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
         <div className="max-w-3xl">
           <p className="mb-4 text-xs uppercase tracking-[0.3em] text-primary-foreground/60">
-            Иркутск и Байкал
+            Авторский навигатор
           </p>
           <h1
             ref={headlineRef}
             className="font-serif text-5xl font-light leading-[1.1] tracking-tight text-primary-foreground md:text-6xl lg:text-7xl xl:text-8xl"
           >
-            Иркутск, который
+            Иркутск без
             <br />
-            <em className="italic">не исчезает</em>
+            <em className="italic">штампов</em>
           </h1>
           <p
             ref={subtitleRef}
             className="mt-6 max-w-md text-base font-light text-primary-foreground/70 leading-relaxed"
           >
-            Организация путешествий, авторских маршрутов и культурных проектов
-            в Иркутске и на Байкале.
+            Маршруты, экскурсии и подборка мест — от человека, который живёт
+            в этом городе.
           </p>
           <div
             ref={ctaRef}
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
             <Link
-              href="/program"
+              href="/map"
               className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-colors duration-200 active:scale-[0.98]"
             >
-              Создать программу путешествия
+              Смотреть маршруты
             </Link>
             <Link
-              href="/map"
+              href="/program"
               className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-200 active:scale-[0.98]"
             >
-              Смотреть маршруты
+              Спланировать визит
             </Link>
           </div>
         </div>
