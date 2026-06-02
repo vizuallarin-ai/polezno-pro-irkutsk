@@ -114,7 +114,10 @@ async function main() {
   if (generated) {
     console.log("password=" + password);
   }
-  console.log("login_url=http://localhost:3000/admin");
+  const base =
+    process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "") ||
+    "http://localhost:3000";
+  console.log("login_url=" + base + "/admin");
 }
 
 main().catch((err) => {
