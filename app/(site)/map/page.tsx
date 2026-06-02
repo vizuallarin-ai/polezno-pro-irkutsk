@@ -1,36 +1,15 @@
 import type { Metadata } from "next";
-import { MapExperience } from "@/components/map/map-experience";
-import type { MapRoute } from "@/types/map";
+import { RoutesPageClient } from "@/components/routes/routes-page-client";
+import { getRoutesForMap } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Маршруты по Иркутску — интерактивная карта",
   description:
-    "Интерактивная карта авторских маршрутов по Иркутску: архитектура, история, гастрономия, деревянное зодчество, hidden places. Бесплатные и платные маршруты с аудиогидом.",
+    "Готовые прогулки по Иркутску: точки, истории, время и возможность пройти маршрут с гидом. Бесплатные и платные авторские маршруты.",
 };
 
-async function getInitialRoutes(): Promise<MapRoute[]> {
-  try {
-    const { getPayloadClient } = await import("@/lib/payload");
-    const payload = await getPayloadClient();
-    const result = await payload.find({
-      collection: "routes",
-      limit: 100,
-      depth: 2,
-    });
-    return result.docs as unknown as MapRoute[];
-  } catch {
-    return [];
-  }
-}
-
 export default async function MapPage() {
-  const initialRoutes = await getInitialRoutes();
+  const { routes, mapRoutes } = await getRoutesForMap();
 
-  return (
-    <div className="h-[100svh] flex flex-col">
-      <div className="flex-1 overflow-hidden mt-16">
-        <MapExperience initialRoutes={initialRoutes} />
-      </div>
-    </div>
-  );
+  return <RoutesPageClient routes={routes} mapRoutes={mapRoutes} />;
 }

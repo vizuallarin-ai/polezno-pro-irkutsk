@@ -1,7 +1,15 @@
 import type { MetadataRoute } from "next";
+import { DEMO_ROUTES } from "@/lib/data/routes";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+
+const demoRouteUrls = DEMO_ROUTES.map((r) => ({
+  url: `${BASE_URL}/map/${r.slug}`,
+  lastModified: new Date(),
+  changeFrequency: "monthly" as const,
+  priority: 0.85,
+}));
 
 async function getCmsUrls() {
   try {
@@ -36,14 +44,16 @@ async function getCmsUrls() {
       priority: 0.6,
     }));
 
-    const routeUrls = routes.docs.map((r) => ({
-      url: `${BASE_URL}/map#${r.slug}`,
-      lastModified: new Date(String(r.updatedAt)),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    }));
+    const cmsRouteUrls = routes.docs
+      .filter((r) => !DEMO_ROUTES.some((d) => d.slug === r.slug))
+      .map((r) => ({
+        url: `${BASE_URL}/map/${r.slug}`,
+        lastModified: new Date(String(r.updatedAt)),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      }));
 
-    return [...articleUrls, ...eventUrls, ...productUrls, ...routeUrls];
+    return [...articleUrls, ...eventUrls, ...productUrls, ...cmsRouteUrls];
   } catch {
     return [];
   }
@@ -63,5 +73,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const cmsUrls = await getCmsUrls();
 
-  return [...staticPages, ...cmsUrls];
+  return [...staticPages, ...demoRouteUrls, ...cmsUrls];
 }
