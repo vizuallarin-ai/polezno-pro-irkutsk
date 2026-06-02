@@ -269,7 +269,7 @@ export default async function ExploreSlugPage({ params }: PageProps) {
   const cover = article.coverImage as { url?: string; alt?: string } | undefined;
 
   const BASE_URL =
-    process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+    (await import("@/lib/site-url")).getSiteUrl();
   const cover2 = article.coverImage as { url?: string; alt?: string } | undefined;
   const articleJsonLd = articleSchema({
     title: String(article.title),

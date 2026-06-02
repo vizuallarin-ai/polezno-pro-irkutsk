@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSiteUrl } from "@/lib/site-url";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+const SITE_URL = getSiteUrl();
 
 export async function GET(request: NextRequest) {
   const slug = request.nextUrl.searchParams.get("slug");

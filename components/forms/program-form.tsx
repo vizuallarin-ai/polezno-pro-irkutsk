@@ -57,7 +57,11 @@ const STEPS = [
   { label: "Контакты", id: "contacts" },
 ];
 
-export function ProgramForm() {
+interface ProgramFormProps {
+  initialRouteSlug?: string;
+}
+
+export function ProgramForm({ initialRouteSlug }: ProgramFormProps) {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,7 +85,9 @@ export function ProgramForm() {
       name: "",
       email: "",
       phone: "",
-      message: "",
+      message: initialRouteSlug
+        ? `Интересует маршрут: ${initialRouteSlug}`
+        : "",
     },
   });
 
@@ -112,7 +118,11 @@ export function ProgramForm() {
       await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          source: "program_form",
+          ...(initialRouteSlug && { routeSlug: initialRouteSlug }),
+        }),
       });
       setSubmitted(true);
     } catch {

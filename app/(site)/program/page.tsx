@@ -7,7 +7,13 @@ export const metadata: Metadata = {
     "Расскажите нам о своих планах — мы подберём оптимальную программу путешествия по Иркутску и Байкалу.",
 };
 
-export default function ProgramPage() {
+interface ProgramPageProps {
+  searchParams: Promise<{ route?: string }>;
+}
+
+export default async function ProgramPage({ searchParams }: ProgramPageProps) {
+  const { route: routeSlug } = await searchParams;
+
   return (
     <main className="pt-24 min-h-screen">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
@@ -42,7 +48,7 @@ export default function ProgramPage() {
           </div>
 
           <div>
-            <ProgramForm />
+            <ProgramForm initialRouteSlug={routeSlug} />
           </div>
         </div>
       </div>

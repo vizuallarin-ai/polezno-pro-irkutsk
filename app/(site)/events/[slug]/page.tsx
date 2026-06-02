@@ -71,8 +71,8 @@ export default async function EventPage({ params }: PageProps) {
 
   const cover = event.coverImage as { url?: string; alt?: string } | undefined;
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+  const { getSiteUrl } = await import("@/lib/site-url");
+  const BASE_URL = getSiteUrl();
   const coverEvent = event.coverImage as { url?: string } | undefined;
   const eventJsonLd = eventSchema({
     title: String(event.title),

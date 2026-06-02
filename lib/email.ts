@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getSiteUrl } from "@/lib/site-url";
 
 let resend: Resend | null = null;
 
@@ -10,8 +11,7 @@ function getResend(): Resend | null {
 }
 
 const FROM = process.env.EMAIL_FROM || "noreply@polezno.irkutsk.ru";
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+const SITE_URL = getSiteUrl();
 
 export async function sendReviewRequest({
   to,

@@ -3,7 +3,7 @@ import { BOOSTY_URL } from "@/lib/site-links";
 
 export const DEFAULT_NAV_LINKS: NavItem[] = [
   { href: "/map", label: "Маршруты" },
-  { href: "/program", label: "Экскурсии" },
+  { href: "/excursions", label: "Экскурсии" },
   { href: "/program", label: "Для компаний" },
   { href: "/explore", label: "Исследовать" },
   { href: "/events", label: "События" },

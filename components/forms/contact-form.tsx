@@ -33,7 +33,11 @@ export function ContactForm() {
       await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, serviceType: "general" }),
+        body: JSON.stringify({
+          ...data,
+          serviceType: "general",
+          source: "contacts",
+        }),
       });
       setSubmitted(true);
     } catch {

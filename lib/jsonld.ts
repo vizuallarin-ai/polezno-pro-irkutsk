@@ -1,5 +1,6 @@
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+import { getSiteUrl } from "@/lib/site-url";
+
+const BASE_URL = getSiteUrl();
 
 export function organizationSchema() {
   return {

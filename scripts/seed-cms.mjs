@@ -379,7 +379,7 @@ const articles = [
   },
 ];
 
-for (const article of articles) {
+for (const article of articles.slice(0, 3)) {
   await upsert("articles", "slug", article.slug, {
     ...article,
     _status: "published",
@@ -407,28 +407,6 @@ const events = [
     venue: "130-й квартал",
     description:
       "Трёхдневный фестиваль с мастер-классами по резьбе, экскурсиями и ярмаркой.",
-    isFeatured: true,
-  },
-  {
-    title: "Гастрономическая неделя Иркутска",
-    slug: "gastro-week-2026",
-    category: "gastronomy",
-    startDate: "2026-07-01T12:00:00.000Z",
-    endDate: "2026-07-07T22:00:00.000Z",
-    venue: "Рестораны города",
-    description:
-      "Специальные меню от лучших шеф-поваров Иркутска по специальным ценам.",
-    isFeatured: false,
-  },
-  {
-    title: "Ледовый фестиваль «Байкал Айс»",
-    slug: "baikal-ice-2027",
-    category: "ice",
-    startDate: "2027-01-20T10:00:00.000Z",
-    endDate: "2027-01-22T20:00:00.000Z",
-    venue: "Листвянка, берег Байкала",
-    description:
-      "Ледовые скульптуры, спортивные соревнования на льду, аэро-прыжки и экскурсии.",
     isFeatured: true,
   },
 ];
@@ -501,14 +479,33 @@ function geoToRoutePoints(geoLine) {
   }));
 }
 
+/** Slugs synced with lib/data/routes.ts demo data */
 const routes = [
+  {
+    title: "Иркутск: первое утро",
+    slug: "irkutsk-first-morning",
+    category: "history",
+    type: "free",
+    description: "Мягкое знакомство с центром за 2–3 часа.",
+    duration: 150,
+    distance: 4.2,
+    geoLine: {
+      type: "LineString",
+      coordinates: [
+        [104.282, 52.287],
+        [104.288, 52.291],
+        [104.294, 52.295],
+        [104.298, 52.299],
+      ],
+    },
+  },
   {
     title: "Деревянный Иркутск",
     slug: "wooden-irkutsk",
     category: "wooden",
     type: "free",
     description:
-      "Прогулка по лучшим образцам деревянного зодчества центра Иркутска. 12 домов, 300 лет истории.",
+      "Прогулка по лучшим образцам деревянного зодчества центра Иркутска.",
     duration: 120,
     distance: 3.5,
     geoLine: {
@@ -518,86 +515,58 @@ const routes = [
         [104.285, 52.292],
         [104.29, 52.296],
         [104.294, 52.299],
-        [104.297, 52.301],
       ],
     },
   },
   {
-    title: "Маршрут декабристов",
-    slug: "decembrists-route",
-    category: "decembrists",
-    type: "free",
-    description:
-      "По следам сосланных декабристов: дома, музеи и памятные места.",
-    duration: 90,
-    distance: 2.8,
-    geoLine: {
-      type: "LineString",
-      coordinates: [
-        [104.285, 52.295],
-        [104.29, 52.298],
-        [104.292, 52.3],
-        [104.296, 52.302],
-      ],
-    },
-  },
-  {
-    title: "Ночной Иркутск",
-    slug: "night-irkutsk",
-    category: "night",
-    type: "paid",
-    price: 1500,
-    description:
-      "Город, который открывается только ночью. Освещённые фасады, набережная, атмосфера тишины и огней.",
-    duration: 90,
-    distance: 3.0,
-    geoLine: {
-      type: "LineString",
-      coordinates: [
-        [104.29, 52.287],
-        [104.295, 52.291],
-        [104.3, 52.295],
-        [104.304, 52.298],
-        [104.301, 52.301],
-      ],
-    },
-  },
-  {
-    title: "Советский Иркутск",
-    slug: "soviet-irkutsk",
-    category: "soviet",
-    type: "free",
-    description:
-      "Конструктивизм, советские мозаики и городские артефакты эпохи СССР.",
-    duration: 100,
-    distance: 4.0,
-    geoLine: {
-      type: "LineString",
-      coordinates: [
-        [104.275, 52.292],
-        [104.28, 52.295],
-        [104.285, 52.298],
-        [104.29, 52.301],
-      ],
-    },
-  },
-  {
-    title: "Hidden Places: потайные дворы центра",
-    slug: "hidden-courtyards",
+    title: "Не для открыток",
+    slug: "not-for-postcards",
     category: "hidden",
     type: "paid",
-    price: 1200,
-    description:
-      "Маршрут по скрытым дворам, граффити и неожиданным видам центра Иркутска. Для тех, кто хочет больше.",
-    duration: 75,
-    distance: 2.5,
+    price: 990,
+    description: "Скрытые дворы и неочевидные виды центра.",
+    duration: 90,
+    distance: 2.8,
     geoLine: {
       type: "LineString",
       coordinates: [
         [104.283, 52.293],
         [104.287, 52.296],
         [104.291, 52.299],
-        [104.294, 52.302],
+      ],
+    },
+  },
+  {
+    title: "Гастро-центр",
+    slug: "gastro-center",
+    category: "gastronomy",
+    type: "free",
+    description: "Иркутск через вкус: кофе, позы и локальные адреса.",
+    duration: 180,
+    distance: 3.2,
+    geoLine: {
+      type: "LineString",
+      coordinates: [
+        [104.286, 52.288],
+        [104.29, 52.292],
+        [104.295, 52.296],
+      ],
+    },
+  },
+  {
+    title: "От Иркутска к Байкалу",
+    slug: "irkutsk-to-baikal",
+    category: "history",
+    type: "free",
+    description: "Логистика и точки по дороге к озеру.",
+    duration: 480,
+    distance: 65,
+    geoLine: {
+      type: "LineString",
+      coordinates: [
+        [104.29, 52.29],
+        [104.85, 52.2],
+        [105.05, 52.15],
       ],
     },
   },
@@ -611,6 +580,81 @@ for (const route of routes) {
     difficulty: route.difficulty || "medium",
     routePoints: geoToRoutePoints(route.geoLine),
   });
+}
+
+// ─── Excursions ─────────────────────────────────────────────────────────────
+const excursionsSeed = [
+  {
+    title: "Деревянный Иркутск с гидом",
+    slug: "wooden-irkutsk-guided",
+    format: "walking",
+    shortDescription:
+      "2 часа по резным домам с историями, которые не прочитать на табличках.",
+    fullDescription:
+      "Пешая экскурсия по центру: наличники, купеческие особняки и скрытые дворы.",
+    price: 3500,
+    duration: 120,
+    groupSize: "до 10 человек",
+    relatedRouteSlug: "wooden-irkutsk",
+  },
+  {
+    title: "Гастро-прогулка по центру",
+    slug: "gastro-center-tour",
+    format: "gastro",
+    shortDescription:
+      "Кофе, позы и локальные закуски — с комментариями шефа и гида.",
+    fullDescription: "Три–четыре точки в центре, без туристических ловушек.",
+    price: 4200,
+    duration: 180,
+    groupSize: "до 8 человек",
+    relatedRouteSlug: "gastro-center",
+  },
+];
+
+for (const excursion of excursionsSeed) {
+  let relatedRoutes;
+  if (excursion.relatedRouteSlug) {
+    const routeDoc = await payload.find({
+      collection: "routes",
+      where: { slug: { equals: excursion.relatedRouteSlug } },
+      limit: 1,
+    });
+    relatedRoutes = routeDoc.docs[0]?.id ? [routeDoc.docs[0].id] : [];
+  }
+  const { relatedRouteSlug: _omit, ...data } = excursion;
+  await upsert("excursions", "slug", excursion.slug, {
+    ...data,
+    status: "published",
+    ...(relatedRoutes?.length ? { relatedRoutes } : {}),
+  });
+}
+
+// ─── Site settings ───────────────────────────────────────────────────────────
+const existingSettings = await payload.findGlobal({ slug: "site-settings" });
+if (!existingSettings?.contact?.email) {
+  await payload.updateGlobal({
+    slug: "site-settings",
+    data: {
+      contact: {
+        phone: "+7 (3952) 000-00-00",
+        email: "info@irkportal.ru",
+        telegram: "https://t.me/polezno_irkutsk",
+        boosty: "https://boosty.to/polezno_irkutsk",
+      },
+      mainCta: {
+        label: "Спланировать",
+        href: "/program",
+        description: "Экскурсии и программы под ваш визит",
+      },
+      footerText:
+        "Полезно про Иркутск — авторские маршруты, экскурсии и культурные проекты.",
+      metaDescription:
+        "Иркутск и Байкал: маршруты, экскурсии, события и программы под ключ.",
+    },
+  });
+  console.log("✓ [site-settings] контакты-заглушки");
+} else {
+  console.log("→ site-settings уже заполнены");
 }
 
 // ─── Admin user (skip if exists) ─────────────────────────────────────────────

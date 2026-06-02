@@ -7,6 +7,7 @@ const SOURCE_VALUES = new Set([
   "event",
   "shop",
   "map",
+  "excursions",
   "direct",
   "other",
 ]);
@@ -17,9 +18,10 @@ function normalizeSource(referer: string | null, bodySource?: unknown): string {
   }
   if (!referer) return "direct";
   if (referer.includes("/program")) return "program_form";
-  if (referer.includes("/contacts")) return "contacts";
+  if (referer.includes("/contact")) return "contacts";
   if (referer.includes("/events")) return "event";
   if (referer.includes("/shop")) return "shop";
+  if (referer.includes("/excursions")) return "excursions";
   if (referer.includes("/map")) return "map";
   return "other";
 }

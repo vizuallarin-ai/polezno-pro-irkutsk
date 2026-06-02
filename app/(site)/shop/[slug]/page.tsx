@@ -68,8 +68,8 @@ export default async function ProductPage({ params }: PageProps) {
     | Array<{ image: { url?: string; alt?: string } }>
     | undefined;
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
+  const { getSiteUrl } = await import("@/lib/site-url");
+  const BASE_URL = getSiteUrl();
   const productJsonLd = productSchema({
     title: String(product.title),
     description: String(product.shortDescription || ""),

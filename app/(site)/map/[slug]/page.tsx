@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RouteDetailClient } from "@/components/routes/route-detail-client";
+import { getExcursionForRoute } from "@/lib/excursions";
 import { getRoutePageData } from "@/lib/routes";
 import { DEMO_ROUTES } from "@/lib/data/routes";
 
@@ -25,9 +26,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function RouteDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const { route, similar } = await getRoutePageData(slug);
+  const [{ route, similar }, relatedExcursion] = await Promise.all([
+    getRoutePageData(slug),
+    getExcursionForRoute(slug),
+  ]);
 
   if (!route) notFound();
 
-  return <RouteDetailClient route={route} similar={similar} />;
+  return (
+    <RouteDetailClient
+      route={route}
+      similar={similar}
+      relatedExcursionSlug={relatedExcursion?.slug ?? null}
+    />
+  );
 }

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
+
+const siteUrl = getSiteUrl();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +26,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Полезно про Иркутск — туристический гид и культурная платформа",
     template: "%s | Полезно про Иркутск",
@@ -40,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ru_RU",
-    url: "https://polezno.irkutsk.ru",
+    url: siteUrl,
     siteName: "Полезно про Иркутск",
     images: [
       {
@@ -69,7 +73,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "TravelAgency",
     name: "Полезно про Иркутск",
-    url: "https://polezno.irkutsk.ru",
+    url: siteUrl,
     description:
       "Организация путешествий, авторских маршрутов и культурных проектов в Иркутске и на Байкале.",
     address: {

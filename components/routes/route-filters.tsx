@@ -17,7 +17,7 @@ export function RouteFilters({
   return (
     <div
       className={cn(
-        "flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none",
+        "flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none snap-x snap-mandatory",
         "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
         className
       )}
@@ -32,7 +32,7 @@ export function RouteFilters({
           aria-selected={activeFilter === filter.id}
           onClick={() => onFilterChange(filter.id)}
           className={cn(
-            "shrink-0 text-xs px-3 py-2 border transition-colors duration-150 whitespace-nowrap",
+            "shrink-0 snap-start text-xs px-3 py-2 border transition-colors duration-150 whitespace-nowrap",
             activeFilter === filter.id
               ? "bg-foreground text-primary-foreground border-foreground"
               : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"

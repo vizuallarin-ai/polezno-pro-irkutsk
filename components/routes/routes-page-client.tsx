@@ -113,7 +113,7 @@ export function RoutesPageClient({ routes, mapRoutes }: RoutesPageClientProps) {
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3 hidden lg:block">
                 Карта маршрутов
               </p>
-              <div className="h-[320px] sm:h-[400px] lg:h-[min(70vh,560px)] border border-border overflow-hidden">
+              <div className="h-[min(45vh,300px)] sm:h-[400px] lg:h-[min(70vh,560px)] border border-border overflow-hidden">
                 <RouteMap
                   mode="overview"
                   mapRoutes={filteredMapRoutes}

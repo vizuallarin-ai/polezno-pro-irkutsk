@@ -140,6 +140,7 @@ export const Leads: CollectionConfig = {
         { label: "Событие", value: "event" },
         { label: "Магазин", value: "shop" },
         { label: "Карта / маршрут", value: "map" },
+        { label: "Экскурсии", value: "excursions" },
         { label: "Прямой заход", value: "direct" },
         { label: "Другое", value: "other" },
       ],

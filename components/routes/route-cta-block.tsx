@@ -56,7 +56,7 @@ export function RouteSalesBlock({ route }: { route: Route }) {
           попадает в короткие описания точек.
         </p>
         <Link
-          href="/program"
+          href={`/program?route=${encodeURIComponent(route.slug)}`}
           className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
         >
           Пройти с гидом
@@ -90,7 +90,7 @@ export function RouteSalesBlock({ route }: { route: Route }) {
           <ArrowRight size={14} />
         </a>
         <Link
-          href="/program"
+          href={`/program?route=${encodeURIComponent(route.slug)}`}
           className="inline-flex h-11 items-center justify-center gap-2 border border-border px-6 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
         >
           Пройти с гидом

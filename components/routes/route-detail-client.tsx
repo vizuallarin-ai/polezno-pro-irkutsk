@@ -50,9 +50,21 @@ function formatDuration(minutes: number): string {
 interface RouteDetailClientProps {
   route: Route;
   similar: Route[];
+  relatedExcursionSlug?: string | null;
 }
 
-export function RouteDetailClient({ route, similar }: RouteDetailClientProps) {
+function programHref(routeSlug: string) {
+  return `/program?route=${encodeURIComponent(routeSlug)}`;
+}
+
+export function RouteDetailClient({
+  route,
+  similar,
+  relatedExcursionSlug,
+}: RouteDetailClientProps) {
+  const guideHref = relatedExcursionSlug
+    ? `/excursions/${relatedExcursionSlug}`
+    : programHref(route.slug);
   const [activePointId, setActivePointId] = useState<string | null>(null);
 
   const handlePointSelect = useCallback((point: RoutePoint | null) => {
@@ -119,7 +131,7 @@ export function RouteDetailClient({ route, similar }: RouteDetailClientProps) {
 
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href="/program"
+              href={guideHref}
               className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
             >
               Пройти с гидом
@@ -133,6 +145,14 @@ export function RouteDetailClient({ route, similar }: RouteDetailClientProps) {
               Открыть на карте
             </button>
           </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            <Link href={guideHref} className="text-baikal font-medium hover:underline">
+              Можно пройти с гидом
+            </Link>
+            {relatedExcursionSlug
+              ? " — есть авторская экскурсия по этому маршруту"
+              : " — соберём программу под ваш день"}
+          </p>
         </div>
       </section>
 
@@ -143,7 +163,7 @@ export function RouteDetailClient({ route, similar }: RouteDetailClientProps) {
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8 lg:py-12">
           <h2 className="text-xl font-medium mb-6">Карта маршрута</h2>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-            <div className="h-[360px] lg:h-[480px] border border-border overflow-hidden order-2 lg:order-1">
+            <div className="h-[min(50vh,320px)] sm:h-[360px] lg:h-[480px] border border-border overflow-hidden order-2 lg:order-1">
               <RouteMap
                 mode="detail"
                 route={route}
