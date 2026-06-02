@@ -10,7 +10,8 @@
     "seed": "node scripts/seed-cms.mjs",
     "placeholders": "node scripts/generate-placeholders.mjs",
     "create-admin": "npx tsx scripts/create-admin.mjs",
-    "ensure-db": "node scripts/ensure-db.mjs"
+    "ensure-db": "node scripts/ensure-db.mjs",
+    "setup-vercel-env": "node scripts/setup-vercel-env.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
