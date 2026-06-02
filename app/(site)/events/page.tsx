@@ -26,13 +26,13 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 async function getEvents() {
   try {
+    if (!process.env.DATABASE_URL) return [];
     const { getPayloadClient } = await import("@/lib/payload");
+    const { upcomingEventsWhere } = await import("@/lib/cms-filters");
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "events",
-      where: {
-        startDate: { greater_than_equal: new Date().toISOString() },
-      },
+      where: upcomingEventsWhere(),
       limit: 50,
       sort: "startDate",
     });

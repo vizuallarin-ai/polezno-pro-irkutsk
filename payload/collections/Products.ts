@@ -1,11 +1,21 @@
 import type { CollectionConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import {
+  adminCrud,
+  adminPanelAccess,
+  publishedOrStaff,
+} from "../access";
+import { revalidateAfterChange } from "../hooks/revalidate";
 
 export const Products: CollectionConfig = {
   slug: "products",
+  labels: {
+    singular: "Товар",
+    plural: "Товары",
+  },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "price", "inStock", "updatedAt"],
+    defaultColumns: ["title", "category", "price", "inStock", "status", "updatedAt"],
     group: "Магазин",
     preview: (doc) => {
       if (doc?.slug) {
@@ -15,7 +25,14 @@ export const Products: CollectionConfig = {
     },
   },
   access: {
-    read: () => true,
+    admin: adminPanelAccess,
+    read: publishedOrStaff("status"),
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange],
   },
   fields: [
     {
@@ -33,6 +50,20 @@ export const Products: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "status",
+      type: "select",
+      label: "Статус",
+      defaultValue: "draft",
+      required: true,
+      options: [
+        { label: "Черновик", value: "draft" },
+        { label: "Опубликован", value: "published" },
+        { label: "Скрыт", value: "hidden" },
+        { label: "В архиве", value: "archived" },
+      ],
+      admin: { position: "sidebar" },
+    },
+    {
       name: "category",
       type: "select",
       label: "Категория",
@@ -44,6 +75,8 @@ export const Products: CollectionConfig = {
         { label: "Арт-объекты", value: "art" },
         { label: "Книги", value: "books" },
         { label: "Сувениры", value: "souvenirs" },
+        { label: "Керамика", value: "ceramics" },
+        { label: "Еда и напитки", value: "food" },
       ],
     },
     {
@@ -65,7 +98,7 @@ export const Products: CollectionConfig = {
     {
       name: "story",
       type: "richText",
-      label: "История товара (storytelling)",
+      label: "История товара",
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [...defaultFeatures],
       }),
@@ -89,6 +122,18 @@ export const Products: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "externalLink",
+      type: "text",
+      label: "Внешняя ссылка на покупку",
+      admin: { description: "Если товар продаётся на внешней площадке." },
+    },
+    {
+      name: "relatedRoute",
+      type: "relationship",
+      relationTo: "routes",
+      label: "Связанный маршрут",
+    },
+    {
       name: "stripePriceId",
       type: "text",
       label: "Stripe Price ID",
@@ -97,7 +142,7 @@ export const Products: CollectionConfig = {
     {
       name: "isFeatured",
       type: "checkbox",
-      label: "Рекомендуемый (на главной)",
+      label: "На главной",
       defaultValue: false,
       admin: { position: "sidebar" },
     },

@@ -1,14 +1,20 @@
 import type { CollectionConfig } from "payload";
+import { adminCrud, adminPanelAccess } from "../access";
 
 export const Places: CollectionConfig = {
   slug: "places",
+  labels: { singular: "Место", plural: "Места" },
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "isLocalGem", "updatedAt"],
     group: "Маршруты и места",
   },
   access: {
+    admin: adminPanelAccess,
     read: () => true,
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
   },
   fields: [
     {

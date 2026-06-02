@@ -1,13 +1,24 @@
 import type { CollectionConfig } from "payload";
+import { adminCrud, adminPanelAccess } from "../access";
 
 export const Users: CollectionConfig = {
   slug: "users",
+  labels: {
+    singular: "Пользователь",
+    plural: "Пользователи",
+  },
   auth: true,
   admin: {
     useAsTitle: "email",
+    group: "Система",
+    description: "Доступ к /admin только для роли «Администратор».",
   },
   access: {
-    read: () => true,
+    admin: adminPanelAccess,
+    read: adminCrud,
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
   },
   fields: [
     {
@@ -19,11 +30,15 @@ export const Users: CollectionConfig = {
       name: "role",
       type: "select",
       label: "Роль",
+      required: true,
       options: [
         { label: "Администратор", value: "admin" },
         { label: "Редактор", value: "editor" },
       ],
-      defaultValue: "editor",
+      defaultValue: "admin",
+      admin: {
+        description: "Только администраторы могут входить в панель CMS.",
+      },
     },
   ],
 };

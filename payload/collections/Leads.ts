@@ -1,5 +1,13 @@
 import type { CollectionConfig, CollectionAfterChangeHook } from "payload";
 import { sendReviewRequest } from "@/lib/email";
+import {
+  adminCrud,
+  adminPanelAccess,
+  leadsCreateAccess,
+  leadsDeleteAccess,
+  leadsReadAccess,
+  leadsUpdateAccess,
+} from "../access";
 
 const afterChangeHook: CollectionAfterChangeHook = async ({ doc, previousDoc }) => {
   if (
@@ -22,16 +30,23 @@ const afterChangeHook: CollectionAfterChangeHook = async ({ doc, previousDoc }) 
 
 export const Leads: CollectionConfig = {
   slug: "leads",
+  labels: {
+    singular: "Заявка",
+    plural: "Заявки",
+  },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "serviceType", "createdAt"],
+    defaultColumns: ["name", "email", "status", "source", "serviceType", "createdAt"],
     group: "CRM",
+    listSearchableFields: ["name", "email", "phone", "message"],
+    description: "Фильтруйте по статусу «Новый» для необработанных заявок.",
   },
   access: {
-    read: ({ req }) => !!req.user,
-    create: () => true,
-    update: ({ req }) => !!req.user,
-    delete: ({ req }) => req.user?.role === "admin",
+    admin: adminPanelAccess,
+    read: leadsReadAccess,
+    create: leadsCreateAccess,
+    update: leadsUpdateAccess,
+    delete: leadsDeleteAccess,
   },
   fields: [
     {
@@ -102,15 +117,32 @@ export const Leads: CollectionConfig = {
       options: [
         { label: "Новый", value: "new" },
         { label: "В работе", value: "in_progress" },
+        { label: "Ответ отправлен", value: "replied" },
         { label: "Закрыт", value: "closed" },
+        { label: "Спам", value: "spam" },
       ],
       defaultValue: "new",
       admin: { position: "sidebar" },
     },
     {
+      name: "adminComment",
+      type: "textarea",
+      label: "Комментарий администратора",
+      admin: { position: "sidebar" },
+    },
+    {
       name: "source",
-      type: "text",
-      label: "Источник (utm/page)",
+      type: "select",
+      label: "Источник",
+      options: [
+        { label: "Форма программы", value: "program_form" },
+        { label: "Страница контактов", value: "contacts" },
+        { label: "Событие", value: "event" },
+        { label: "Магазин", value: "shop" },
+        { label: "Карта / маршрут", value: "map" },
+        { label: "Прямой заход", value: "direct" },
+        { label: "Другое", value: "other" },
+      ],
       admin: { position: "sidebar" },
     },
   ],

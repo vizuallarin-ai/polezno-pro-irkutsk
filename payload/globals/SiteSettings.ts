@@ -1,5 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { adminCrud } from "../access";
+import { revalidateGlobalAfterChange } from "../hooks/revalidate";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
@@ -9,8 +11,40 @@ export const SiteSettings: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: adminCrud,
+  },
+  hooks: {
+    afterChange: [revalidateGlobalAfterChange],
   },
   fields: [
+    {
+      name: "contact",
+      type: "group",
+      label: "Контакты",
+      fields: [
+        { name: "phone", type: "text", label: "Телефон" },
+        { name: "email", type: "email", label: "Email" },
+        { name: "telegram", type: "text", label: "Telegram" },
+        { name: "whatsapp", type: "text", label: "WhatsApp" },
+        { name: "vk", type: "text", label: "ВКонтакте" },
+        { name: "boosty", type: "text", label: "Boosty" },
+      ],
+    },
+    {
+      name: "mainCta",
+      type: "group",
+      label: "Главный CTA",
+      fields: [
+        { name: "label", type: "text", label: "Текст кнопки", defaultValue: "Создать тур" },
+        { name: "href", type: "text", label: "Ссылка", defaultValue: "/program" },
+        { name: "description", type: "textarea", label: "Подзаголовок" },
+      ],
+    },
+    {
+      name: "footerText",
+      type: "textarea",
+      label: "Текст в подвале",
+    },
     {
       name: "heroVideo",
       type: "upload",
@@ -21,7 +55,7 @@ export const SiteSettings: GlobalConfig = {
       name: "heroVideoPoster",
       type: "upload",
       relationTo: "media",
-      label: "Постер для Hero-видео",
+      label: "Постер Hero-видео",
     },
     {
       name: "founderName",
@@ -45,7 +79,7 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "stats",
       type: "array",
-      label: "Статистика (social proof)",
+      label: "Статистика",
       fields: [
         { name: "value", type: "text", label: "Значение", required: true },
         { name: "label", type: "text", label: "Подпись", required: true },
@@ -65,7 +99,8 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "socialLinks",
       type: "group",
-      label: "Социальные сети",
+      label: "Социальные сети (legacy)",
+      admin: { description: "Дублирует contact — для обратной совместимости." },
       fields: [
         { name: "telegram", type: "text", label: "Telegram" },
         { name: "instagram", type: "text", label: "Instagram" },

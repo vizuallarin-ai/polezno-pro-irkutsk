@@ -380,7 +380,10 @@ const articles = [
 ];
 
 for (const article of articles) {
-  await upsert("articles", "slug", article.slug, article);
+  await upsert("articles", "slug", article.slug, {
+    ...article,
+    _status: "published",
+  });
 }
 
 // ─── Events ─────────────────────────────────────────────────────────────────
@@ -431,7 +434,10 @@ const events = [
 ];
 
 for (const event of events) {
-  await upsert("events", "slug", event.slug, event);
+  await upsert("events", "slug", event.slug, {
+    ...event,
+    status: "published",
+  });
 }
 
 // ─── Products ───────────────────────────────────────────────────────────────
@@ -476,10 +482,25 @@ const products = [
 ];
 
 for (const product of products) {
-  await upsert("products", "slug", product.slug, product);
+  await upsert("products", "slug", product.slug, {
+    ...product,
+    status: "published",
+  });
 }
 
 // ─── Routes ─────────────────────────────────────────────────────────────────
+function geoToRoutePoints(geoLine) {
+  if (!geoLine?.coordinates?.length) return [];
+  return geoLine.coordinates.map(([lng, lat], i) => ({
+    title: `Точка ${i + 1}`,
+    lat,
+    lng,
+    order: i + 1,
+    published: true,
+    description: "",
+  }));
+}
+
 const routes = [
   {
     title: "Деревянный Иркутск",
@@ -583,7 +604,25 @@ const routes = [
 ];
 
 for (const route of routes) {
-  await upsert("routes", "slug", route.slug, route);
+  await upsert("routes", "slug", route.slug, {
+    ...route,
+    status: "published",
+    format: route.format || "walking",
+    difficulty: route.difficulty || "medium",
+    routePoints: geoToRoutePoints(route.geoLine),
+  });
+}
+
+// ─── Admin user (skip if exists) ─────────────────────────────────────────────
+const admins = await payload.find({
+  collection: "users",
+  where: { role: { equals: "admin" } },
+  limit: 1,
+});
+if (admins.docs.length === 0) {
+  console.log("\n⚠️  Администратор не найден.");
+  console.log("   Создайте первого пользователя: откройте /admin и зарегистрируйтесь.");
+  console.log("   Или: payload create-user (email, password, role: admin)\n");
 }
 
 // ─── Reviews ────────────────────────────────────────────────────────────────

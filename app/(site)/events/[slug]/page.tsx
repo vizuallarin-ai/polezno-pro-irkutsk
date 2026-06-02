@@ -13,11 +13,15 @@ interface PageProps {
 
 async function getEvent(slug: string) {
   try {
+    if (!process.env.DATABASE_URL) return null;
     const { getPayloadClient } = await import("@/lib/payload");
+    const { PUBLISHED_STATUS_WHERE } = await import("@/lib/cms-filters");
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "events",
-      where: { slug: { equals: slug } },
+      where: {
+        and: [{ slug: { equals: slug } }, PUBLISHED_STATUS_WHERE],
+      },
       limit: 1,
     });
     return result.docs[0] || null;

@@ -63,10 +63,13 @@ const categories = [
 
 async function getAllArticles() {
   try {
+    if (!process.env.DATABASE_URL) return [];
     const { getPayloadClient } = await import("@/lib/payload");
+    const { ARTICLE_PUBLISHED_WHERE } = await import("@/lib/cms-filters");
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "articles",
+      where: ARTICLE_PUBLISHED_WHERE,
       limit: 12,
       sort: "-publishedAt",
     });

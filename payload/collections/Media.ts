@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 import path from "path";
 import { fileURLToPath } from "url";
+import { adminPanelAccess, mediaReadAccess, mediaWriteAccess } from "../access";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -31,7 +32,11 @@ export const Media: CollectionConfig = {
     useAsTitle: "filename",
   },
   access: {
-    read: () => true,
+    admin: adminPanelAccess,
+    read: mediaReadAccess,
+    create: mediaWriteAccess,
+    update: mediaWriteAccess,
+    delete: mediaWriteAccess,
   },
   fields: [
     {

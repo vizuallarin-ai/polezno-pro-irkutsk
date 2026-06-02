@@ -11,6 +11,7 @@ import { Places } from "./payload/collections/Places";
 import { Articles } from "./payload/collections/Articles";
 import { Events } from "./payload/collections/Events";
 import { Products } from "./payload/collections/Products";
+import { Excursions } from "./payload/collections/Excursions";
 import { Reviews } from "./payload/collections/Reviews";
 import { Partners } from "./payload/collections/Partners";
 import { Leads } from "./payload/collections/Leads";
@@ -31,12 +32,16 @@ export default buildConfig({
       titleSuffix: "— Полезно про Иркутск CMS",
     },
     dateFormat: "dd.MM.yyyy",
+    components: {
+      beforeDashboard: ["./payload/components/BeforeDashboard#default"],
+    },
   },
   collections: [
     Users,
     Media,
     Routes,
     Places,
+    Excursions,
     Articles,
     Events,
     Products,
@@ -53,7 +58,7 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: process.env.DATABASE_URL || "",
     },
   }),
   upload: {

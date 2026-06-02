@@ -1,26 +1,45 @@
 import type { MetadataRoute } from "next";
-import { DEMO_ROUTES } from "@/lib/data/routes";
+import { getRoutesForMap } from "@/lib/routes";
+import {
+  ARTICLE_PUBLISHED_WHERE,
+  PUBLISHED_STATUS_WHERE,
+} from "@/lib/cms-filters";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SERVER_URL || "https://polezno.irkutsk.ru";
 
-const demoRouteUrls = DEMO_ROUTES.map((r) => ({
-  url: `${BASE_URL}/map/${r.slug}`,
-  lastModified: new Date(),
-  changeFrequency: "monthly" as const,
-  priority: 0.85,
-}));
-
 async function getCmsUrls() {
+  if (!process.env.DATABASE_URL) return [];
+
   try {
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const [articles, events, products, routes] = await Promise.all([
-      payload.find({ collection: "articles", limit: 1000, depth: 0 }),
-      payload.find({ collection: "events", limit: 1000, depth: 0 }),
-      payload.find({ collection: "products", limit: 1000, depth: 0 }),
-      payload.find({ collection: "routes", limit: 1000, depth: 0 }),
+    const [articles, events, products, routesRes] = await Promise.all([
+      payload.find({
+        collection: "articles",
+        where: ARTICLE_PUBLISHED_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
+      payload.find({
+        collection: "events",
+        where: PUBLISHED_STATUS_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
+      payload.find({
+        collection: "products",
+        where: PUBLISHED_STATUS_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
+      payload.find({
+        collection: "routes",
+        where: PUBLISHED_STATUS_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
     ]);
 
     const articleUrls = articles.docs.map((a) => ({
@@ -44,14 +63,12 @@ async function getCmsUrls() {
       priority: 0.6,
     }));
 
-    const cmsRouteUrls = routes.docs
-      .filter((r) => !DEMO_ROUTES.some((d) => d.slug === r.slug))
-      .map((r) => ({
-        url: `${BASE_URL}/map/${r.slug}`,
-        lastModified: new Date(String(r.updatedAt)),
-        changeFrequency: "monthly" as const,
-        priority: 0.8,
-      }));
+    const cmsRouteUrls = routesRes.docs.map((r) => ({
+      url: `${BASE_URL}/map/${r.slug}`,
+      lastModified: new Date(String(r.updatedAt)),
+      changeFrequency: "monthly" as const,
+      priority: 0.85,
+    }));
 
     return [...articleUrls, ...eventUrls, ...productUrls, ...cmsRouteUrls];
   } catch {
@@ -73,5 +90,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const cmsUrls = await getCmsUrls();
 
-  return [...staticPages, ...demoRouteUrls, ...cmsUrls];
+  if (cmsUrls.length > 0) {
+    return [...staticPages, ...cmsUrls];
+  }
+
+  const { routes } = await getRoutesForMap();
+  const demoRouteUrls = routes.map((r) => ({
+    url: `${BASE_URL}/map/${r.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.85,
+  }));
+
+  return [...staticPages, ...demoRouteUrls];
 }

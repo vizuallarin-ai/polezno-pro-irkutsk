@@ -100,11 +100,15 @@ const ARTICLE_CATEGORY_LABELS: Record<string, string> = {
 // ─── Data fetchers ────────────────────────────────────────────────────────────
 async function getArticle(slug: string) {
   try {
+    if (!process.env.DATABASE_URL) return null;
     const { getPayloadClient } = await import("@/lib/payload");
+    const { ARTICLE_PUBLISHED_WHERE } = await import("@/lib/cms-filters");
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "articles",
-      where: { slug: { equals: slug } },
+      where: {
+        and: [{ slug: { equals: slug } }, ARTICLE_PUBLISHED_WHERE],
+      },
       limit: 1,
       depth: 2,
     });
@@ -116,11 +120,15 @@ async function getArticle(slug: string) {
 
 async function getArticlesByCategory(category: string) {
   try {
+    if (!process.env.DATABASE_URL) return [];
     const { getPayloadClient } = await import("@/lib/payload");
+    const { ARTICLE_PUBLISHED_WHERE } = await import("@/lib/cms-filters");
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "articles",
-      where: { category: { equals: category } },
+      where: {
+        and: [{ category: { equals: category } }, ARTICLE_PUBLISHED_WHERE],
+      },
       limit: 50,
       sort: "-publishedAt",
       depth: 1,

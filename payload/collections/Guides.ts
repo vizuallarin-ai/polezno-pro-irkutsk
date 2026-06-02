@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { adminCrud, adminPanelAccess } from "../access";
 
 export const Guides: CollectionConfig = {
   slug: "guides",
@@ -10,7 +11,11 @@ export const Guides: CollectionConfig = {
       "Гиды и авторы маршрутов. Отображаются на странице /about#guides и в карточках экскурсий.",
   },
   access: {
+    admin: adminPanelAccess,
     read: () => true,
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
   },
   fields: [
     {

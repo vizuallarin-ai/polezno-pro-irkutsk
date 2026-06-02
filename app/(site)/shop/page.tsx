@@ -19,11 +19,15 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 async function getProducts() {
   try {
+    if (!process.env.DATABASE_URL) return [];
     const { getPayloadClient } = await import("@/lib/payload");
+    const { PUBLISHED_STATUS_WHERE } = await import("@/lib/cms-filters");
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "products",
-      where: { inStock: { equals: true } },
+      where: {
+        and: [PUBLISHED_STATUS_WHERE, { inStock: { equals: true } }],
+      },
       limit: 100,
       sort: "-createdAt",
     });

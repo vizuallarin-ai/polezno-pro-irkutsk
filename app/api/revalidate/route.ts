@@ -27,6 +27,12 @@ export async function POST(request: NextRequest) {
       revalidatePath("/shop");
     } else if (collection === "routes") {
       revalidatePath("/map");
+      if (slug) revalidatePath(`/map/${slug}`);
+    } else if (collection === "excursions") {
+      revalidatePath("/program");
+    } else if (collection === "site-settings") {
+      revalidatePath("/");
+      revalidatePath("/about");
     } else {
       revalidatePath("/");
     }

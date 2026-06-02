@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { adminCrud, adminPanelAccess } from "../access";
 
 export const Reviews: CollectionConfig = {
   slug: "reviews",
@@ -9,7 +10,11 @@ export const Reviews: CollectionConfig = {
     description: "Добавьте отзывы — они отобразятся в секции «Нам доверяют» на главной странице.",
   },
   access: {
+    admin: adminPanelAccess,
     read: () => true,
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
   },
   fields: [
     {

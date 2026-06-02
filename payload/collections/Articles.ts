@@ -1,11 +1,21 @@
 import type { CollectionConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import {
+  adminCrud,
+  adminPanelAccess,
+  articleReadAccess,
+} from "../access";
+import { revalidateAfterChange } from "../hooks/revalidate";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
+  labels: {
+    singular: "Статья",
+    plural: "Статьи",
+  },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "category", "publishedAt", "_status", "updatedAt"],
     group: "Контент",
     preview: (doc) => {
       if (doc?.slug) {
@@ -15,12 +25,19 @@ export const Articles: CollectionConfig = {
     },
   },
   access: {
-    read: () => true,
+    admin: adminPanelAccess,
+    read: articleReadAccess,
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
   },
   versions: {
     drafts: {
       autosave: true,
     },
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange],
   },
   fields: [
     {
@@ -80,7 +97,7 @@ export const Articles: CollectionConfig = {
     {
       name: "isFeatured",
       type: "checkbox",
-      label: "Рекомендуемая (на главной)",
+      label: "На главной",
       defaultValue: false,
       admin: { position: "sidebar" },
     },
@@ -112,6 +129,12 @@ export const Articles: CollectionConfig = {
       }),
     },
     {
+      name: "relatedRoute",
+      type: "relationship",
+      relationTo: "routes",
+      label: "Связанный маршрут",
+    },
+    {
       name: "relatedPlaces",
       type: "relationship",
       relationTo: "places",
@@ -119,10 +142,21 @@ export const Articles: CollectionConfig = {
       hasMany: true,
     },
     {
+      name: "ctaText",
+      type: "text",
+      label: "Текст CTA-блока",
+      admin: { description: "Например: «Записаться на экскурсию»" },
+    },
+    {
+      name: "ctaLink",
+      type: "text",
+      label: "Ссылка CTA",
+    },
+    {
       name: "publishedAt",
       type: "date",
       label: "Дата публикации",
-      admin: { position: "sidebar" },
+      admin: { position: "sidebar", date: { pickerAppearance: "dayAndTime" } },
     },
     {
       name: "seo",

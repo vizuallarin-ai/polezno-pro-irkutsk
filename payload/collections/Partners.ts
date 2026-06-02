@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { adminCrud, adminPanelAccess } from "../access";
 
 export const Partners: CollectionConfig = {
   slug: "partners",
@@ -8,7 +9,11 @@ export const Partners: CollectionConfig = {
     description: "Логотипы партнёров — отображаются в секции «Нам доверяют» на главной странице.",
   },
   access: {
+    admin: adminPanelAccess,
     read: () => true,
+    create: adminCrud,
+    update: adminCrud,
+    delete: adminCrud,
   },
   fields: [
     {

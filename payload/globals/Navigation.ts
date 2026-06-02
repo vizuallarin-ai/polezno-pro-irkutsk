@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { adminCrud } from "../access";
 
 export const Navigation: GlobalConfig = {
   slug: "navigation",
@@ -8,6 +9,7 @@ export const Navigation: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: adminCrud,
   },
   fields: [
     {

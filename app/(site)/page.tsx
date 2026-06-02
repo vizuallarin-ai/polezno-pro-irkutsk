@@ -22,20 +22,34 @@ export const metadata: Metadata = {
 
 async function getHomeData() {
   try {
+    if (!process.env.DATABASE_URL) return null;
     const { getPayloadClient } = await import("@/lib/payload");
+    const { ARTICLE_PUBLISHED_WHERE, PUBLISHED_STATUS_WHERE } = await import(
+      "@/lib/cms-filters"
+    );
     const payload = await getPayloadClient();
 
     const [articlesRes, productsRes, reviewsRes, settings] =
       await Promise.all([
         payload.find({
           collection: "articles",
-          where: { isFeatured: { equals: true } },
+          where: {
+            and: [
+              ARTICLE_PUBLISHED_WHERE,
+              { isFeatured: { equals: true } },
+            ],
+          },
           limit: 4,
           sort: "-publishedAt",
         }),
         payload.find({
           collection: "products",
-          where: { isFeatured: { equals: true } },
+          where: {
+            and: [
+              PUBLISHED_STATUS_WHERE,
+              { isFeatured: { equals: true } },
+            ],
+          },
           limit: 4,
         }),
         payload.find({
@@ -79,7 +93,11 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { articles, products, stats, reviews } = await getHomeData();
+  const homeData = await getHomeData();
+  const articles = homeData?.articles;
+  const products = homeData?.products;
+  const stats = homeData?.stats;
+  const reviews = homeData?.reviews;
 
   return (
     <>

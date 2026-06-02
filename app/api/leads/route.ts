@@ -1,13 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendLeadNotification } from "@/lib/email";
 
+const SOURCE_VALUES = new Set([
+  "program_form",
+  "contacts",
+  "event",
+  "shop",
+  "map",
+  "direct",
+  "other",
+]);
+
+function normalizeSource(referer: string | null, bodySource?: unknown): string {
+  if (typeof bodySource === "string" && SOURCE_VALUES.has(bodySource)) {
+    return bodySource;
+  }
+  if (!referer) return "direct";
+  if (referer.includes("/program")) return "program_form";
+  if (referer.includes("/contacts")) return "contacts";
+  if (referer.includes("/events")) return "event";
+  if (referer.includes("/shop")) return "shop";
+  if (referer.includes("/map")) return "map";
+  return "other";
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
+
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: "CMS unavailable" },
+        { status: 503 }
+      );
+    }
+
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const source = request.headers.get("referer") || "direct";
+    const referer = request.headers.get("referer");
+    const source = normalizeSource(referer, body.source);
 
     const lead = await payload.create({
       collection: "leads",
