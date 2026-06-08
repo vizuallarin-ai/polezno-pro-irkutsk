@@ -20,55 +20,16 @@ export type Product = {
   story?: string;
 };
 
-const fallbackProducts: Product[] = [
-  {
-    id: "1",
-    title: "Свитшот «Байкал»",
-    category: "Одежда",
-    price: 4200,
-    slug: "baikal-sweatshirt",
-    image: "/images/product-sweatshirt.svg",
-    story: "Глубокий синий цвет байкальской воды в 6 часов утра",
-  },
-  {
-    id: "2",
-    title: "Постер «Иркутск. Деревянные кружева»",
-    category: "Постеры",
-    price: 1800,
-    slug: "wooden-lace-poster",
-    image: "/images/product-poster.svg",
-    story: "A3, офсетная печать, 200 г/м²",
-  },
-  {
-    id: "3",
-    title: "Набор открыток «130-й квартал»",
-    category: "Открытки",
-    price: 650,
-    slug: "130-postcards",
-    image: "/images/product-postcards.svg",
-    story: "8 открыток с акварельными иллюстрациями",
-  },
-  {
-    id: "4",
-    title: "Путеводитель «Иркутск за 3 дня»",
-    category: "Книги",
-    price: 980,
-    slug: "guide-3days",
-    image: "/images/product-guide.svg",
-    story: "Авторский маршрут, 128 страниц",
-  },
-];
-
 export function ShopPreview({ products }: { products?: Product[] }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const items = products ?? fallbackProducts;
+  const items = products ?? [];
 
   useGSAP(
     () => {
       const prefersReduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches;
-      if (prefersReduced) return;
+      if (prefersReduced || items.length === 0) return;
 
       gsap.from(".shop-header", {
         opacity: 0,
@@ -90,7 +51,7 @@ export function ShopPreview({ products }: { products?: Product[] }) {
         },
       });
     },
-    { scope: sectionRef }
+    { scope: sectionRef, dependencies: [items.length] }
   );
 
   return (
@@ -125,49 +86,59 @@ export function ShopPreview({ products }: { products?: Product[] }) {
           </Link>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-10 max-w-md">
-          Коллекция открывается — пока смотрите подборку. Оплата и доставка
-          появятся позже.
-        </p>
-
-        <div className="products-grid grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {items.map((product) => (
-            <Link
-              key={product.id}
-              href={`/shop/${product.slug}`}
-              className="product-card group flex flex-col"
-              aria-label={product.title}
-            >
-              <div className="img-reveal relative aspect-square overflow-hidden bg-card mb-4">
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-                  {product.category}
-                </p>
-                <p className="text-sm font-medium text-foreground leading-snug mb-1 group-hover:text-baikal transition-colors duration-200">
-                  {product.title}
-                </p>
-                {product.story && (
-                  <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
-                    {product.story}
-                  </p>
-                )}
-                <p className="text-sm font-medium">
-                  {product.price.toLocaleString("ru-RU")} ₽
-                </p>
-              </div>
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border">
+            <p className="text-muted-foreground mb-2">
+              Магазин открывается — скоро здесь будут коллекции
+            </p>
+            <Link href="/shop" className="text-sm text-baikal hover:underline">
+              Страница магазина
             </Link>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground mb-10 max-w-md">
+              Подборка из каталога. Полный ассортимент — в магазине.
+            </p>
+            <div className="products-grid grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+              {items.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/shop/${product.slug}`}
+                  className="product-card group flex flex-col"
+                  aria-label={product.title}
+                >
+                  <div className="img-reveal relative aspect-square overflow-hidden bg-card mb-4">
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+                      {product.category}
+                    </p>
+                    <p className="text-sm font-medium text-foreground leading-snug mb-1 group-hover:text-baikal transition-colors duration-200">
+                      {product.title}
+                    </p>
+                    {product.story && (
+                      <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
+                        {product.story}
+                      </p>
+                    )}
+                    <p className="text-sm font-medium">
+                      {product.price.toLocaleString("ru-RU")} ₽
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
 }
-

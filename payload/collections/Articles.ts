@@ -5,7 +5,9 @@ import {
   adminPanelAccess,
   articleReadAccess,
 } from "../access";
+import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { validateRequiredSlug } from "../validators";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
@@ -15,10 +17,10 @@ export const Articles: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "publishedAt", "_status", "updatedAt"],
-    group: "Позже",
-    hidden: true,
-    description: "Скоро — полный CRUD статей в следующей фазе.",
+    defaultColumns: ["title", "category", "status", "publishedAt", "_status", "updatedAt"],
+    group: ADMIN_GROUPS.articles,
+    listSearchableFields: ["title", "excerpt", "slug"],
+    description: "Материалы для раздела /explore. Публично — только status «Опубликован» и версия published.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/${doc.slug}`;
@@ -54,6 +56,16 @@ export const Articles: CollectionConfig = {
       label: "URL-slug",
       required: true,
       unique: true,
+      validate: validateRequiredSlug,
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "status",
+      type: "select",
+      label: "Статус публикации",
+      defaultValue: "draft",
+      required: true,
+      options: [...CONTENT_STATUS_OPTIONS],
       admin: { position: "sidebar" },
     },
     {
@@ -74,6 +86,12 @@ export const Articles: CollectionConfig = {
         { label: "Архитектура", value: "architecture" },
         { label: "Экскурсии", value: "excursions" },
       ],
+    },
+    {
+      name: "tags",
+      type: "array",
+      label: "Теги",
+      fields: [{ name: "tag", type: "text", label: "Тег", required: true }],
     },
     {
       name: "season",
@@ -108,7 +126,15 @@ export const Articles: CollectionConfig = {
       type: "upload",
       relationTo: "media",
       label: "Обложка",
-      required: true,
+      admin: {
+        description: "Или укажите coverUrl, если нет файла в медиатеке.",
+      },
+    },
+    {
+      name: "coverUrl",
+      type: "text",
+      label: "Обложка (URL)",
+      admin: { position: "sidebar" },
     },
     {
       name: "excerpt",
@@ -120,6 +146,12 @@ export const Articles: CollectionConfig = {
       name: "readTime",
       type: "number",
       label: "Время чтения (мин)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "author",
+      type: "text",
+      label: "Автор",
       admin: { position: "sidebar" },
     },
     {
@@ -135,6 +167,12 @@ export const Articles: CollectionConfig = {
       type: "relationship",
       relationTo: "routes",
       label: "Связанный маршрут",
+    },
+    {
+      name: "relatedExcursion",
+      type: "relationship",
+      relationTo: "excursions",
+      label: "Связанная экскурсия",
     },
     {
       name: "relatedPlaces",

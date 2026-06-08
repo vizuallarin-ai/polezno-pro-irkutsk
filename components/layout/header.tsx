@@ -45,13 +45,23 @@ interface HeaderProps {
   links?: NavItem[];
   ctaLabel?: string;
   ctaHref?: string;
+  projectName?: string;
+}
+
+function splitProjectName(name: string) {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length <= 1) return { prefix: name, accent: "" };
+  const accent = parts.pop() || "";
+  return { prefix: parts.join(" "), accent };
 }
 
 export function Header({
   links = DEFAULT_NAV_LINKS,
   ctaLabel = DEFAULT_CTA.label,
   ctaHref = DEFAULT_CTA.href,
+  projectName = "Полезно про Иркутск",
 }: HeaderProps) {
+  const { prefix, accent } = splitProjectName(projectName);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -90,11 +100,13 @@ export function Header({
               aria-label="Полезно про Иркутск — домой"
             >
               <span className="text-sm font-medium tracking-widest uppercase">
-                Полезно про
+                {prefix}
               </span>
-              <span className="text-sm font-medium tracking-widest uppercase text-baikal">
-                Иркутск
-              </span>
+              {accent && (
+                <span className="text-sm font-medium tracking-widest uppercase text-baikal">
+                  {accent}
+                </span>
+              )}
             </Link>
 
             <nav

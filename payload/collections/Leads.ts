@@ -8,6 +8,7 @@ import {
   leadsReadAccess,
   leadsUpdateAccess,
 } from "../access";
+import { ADMIN_GROUPS, LEAD_SOURCE_OPTIONS } from "../constants";
 
 const afterChangeHook: CollectionAfterChangeHook = async ({ doc, previousDoc }) => {
   if (
@@ -42,11 +43,21 @@ export const Leads: CollectionConfig = {
       "status",
       "source",
       "routeSlug",
-      "serviceType",
+      "articleSlug",
       "createdAt",
     ],
-    group: "CMS",
-    listSearchableFields: ["name", "email", "phone", "message", "routeSlug"],
+    group: ADMIN_GROUPS.leads,
+    listSearchableFields: [
+      "name",
+      "email",
+      "phone",
+      "message",
+      "routeSlug",
+      "articleSlug",
+      "eventSlug",
+      "excursionSlug",
+      "productSlug",
+    ],
     description:
       "Фильтруйте по колонке «Статус» в списке. Новые заявки — status «Новый».",
   },
@@ -144,26 +155,38 @@ export const Leads: CollectionConfig = {
       name: "source",
       type: "select",
       label: "Источник",
-      options: [
-        { label: "Форма программы", value: "program_form" },
-        { label: "Страница контактов", value: "contacts" },
-        { label: "Событие", value: "event" },
-        { label: "Магазин", value: "shop" },
-        { label: "Карта / маршрут", value: "map" },
-        { label: "Экскурсии", value: "excursions" },
-        { label: "Прямой заход", value: "direct" },
-        { label: "Другое", value: "other" },
-      ],
+      options: [...LEAD_SOURCE_OPTIONS],
       admin: { position: "sidebar" },
     },
     {
       name: "routeSlug",
       type: "text",
       label: "Маршрут (slug)",
-      admin: {
-        position: "sidebar",
-        description: "Slug маршрута, если заявка пришла со страницы /map или /program?route=…",
-      },
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "articleSlug",
+      type: "text",
+      label: "Статья (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "eventSlug",
+      type: "text",
+      label: "Событие (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "excursionSlug",
+      type: "text",
+      label: "Экскурсия (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "productSlug",
+      type: "text",
+      label: "Товар (slug)",
+      admin: { position: "sidebar" },
     },
   ],
   hooks: {

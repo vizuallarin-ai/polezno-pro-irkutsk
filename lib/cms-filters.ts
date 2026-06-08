@@ -5,14 +5,39 @@ export const PUBLISHED_STATUS_WHERE: Where = {
 };
 
 export const ARTICLE_PUBLISHED_WHERE: Where = {
-  _status: { equals: "published" },
+  and: [
+    { _status: { equals: "published" } },
+    { status: { equals: "published" } },
+  ],
 };
 
 export function upcomingEventsWhere(): Where {
   return {
     and: [
       PUBLISHED_STATUS_WHERE,
-      { startDate: { greater_than_equal: new Date().toISOString() } },
+      { isPast: { equals: false } },
+    ],
+  };
+}
+
+export function pastEventsWhere(): Where {
+  return {
+    and: [
+      PUBLISHED_STATUS_WHERE,
+      { isPast: { equals: true } },
+    ],
+  };
+}
+
+export function catalogProductsWhere(): Where {
+  return {
+    and: [
+      PUBLISHED_STATUS_WHERE,
+      {
+        stockStatus: {
+          not_equals: "out_of_stock",
+        },
+      },
     ],
   };
 }

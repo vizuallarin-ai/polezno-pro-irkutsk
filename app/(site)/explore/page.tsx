@@ -121,7 +121,13 @@ export default async function ExplorePage() {
           ))}
         </div>
 
-        {articles.length > 0 && (
+        {articles.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center border border-dashed border-border">
+            <p className="text-lg text-muted-foreground mb-4">
+              Материалы появятся после публикации статей в CMS
+            </p>
+          </div>
+        ) : (
           <div>
             <h2 className="text-2xl font-light tracking-tight mb-10">
               Последние материалы
@@ -134,20 +140,28 @@ export default async function ExplorePage() {
                   className="group flex flex-col"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted mb-4">
-                    {article.coverImage &&
-                      typeof article.coverImage === "object" &&
-                      "url" in article.coverImage && (
+                    {(() => {
+                      const coverUrl =
+                        article.coverImage &&
+                        typeof article.coverImage === "object" &&
+                        "url" in article.coverImage
+                          ? (article.coverImage.url as string)
+                          : article.coverUrl
+                            ? String(article.coverUrl)
+                            : null;
+                      return coverUrl ? (
                         <Image
-                          src={article.coverImage.url as string}
+                          src={coverUrl}
                           alt={
-                            (article.coverImage as { alt?: string }).alt ||
+                            (article.coverImage as { alt?: string } | undefined)?.alt ||
                             String(article.title)
                           }
                           fill
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         />
-                      )}
+                      ) : null;
+                    })()}
                     {article.isHiddenGem && (
                       <div className="absolute top-3 left-3">
                         <Badge variant="ice">Hidden gem</Badge>
@@ -175,3 +189,4 @@ export default async function ExplorePage() {
     </main>
   );
 }
+

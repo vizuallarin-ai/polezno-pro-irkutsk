@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { getSiteSettings } from "@/lib/site-settings";
 
-export const metadata: Metadata = {
-  title: "Магазин — байкальская эстетика в предметах",
-  description:
-    "Мерч и сувениры с иркутской и байкальской идентичностью: одежда, постеры, открытки, книги и арт-объекты. Concept store.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: "Магазин — байкальская эстетика в предметах",
+    description:
+      settings.metaDescription ||
+      "Мерч и сувениры с иркутской и байкальской идентичностью.",
+  };
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   clothing: "Одежда",
@@ -15,6 +21,15 @@ const CATEGORY_LABELS: Record<string, string> = {
   art: "Арт-объекты",
   books: "Книги",
   souvenirs: "Сувениры",
+  ceramics: "Керамика",
+  food: "Еда и напитки",
+};
+
+const STOCK_LABELS: Record<string, string> = {
+  in_stock: "В наличии",
+  pre_order: "Предзаказ",
+  out_of_stock: "Нет в наличии",
+  soon: "Скоро",
 };
 
 async function getProducts() {
@@ -25,11 +40,10 @@ async function getProducts() {
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "products",
-      where: {
-        and: [PUBLISHED_STATUS_WHERE, { inStock: { equals: true } }],
-      },
+      where: PUBLISHED_STATUS_WHERE,
       limit: 100,
       sort: "-createdAt",
+      depth: 1,
     });
     return result.docs;
   } catch {
@@ -39,13 +53,8 @@ async function getProducts() {
 
 export default async function ShopPage() {
   const products = await getProducts();
-
-  const categories = [
-    "all",
-    ...Array.from(
-      new Set(products.map((p) => String(p.category)).filter(Boolean))
-    ),
-  ];
+  const settings = await getSiteSettings();
+  const telegram = settings.contact.telegram;
 
   return (
     <main className="pt-24">
@@ -55,12 +64,11 @@ export default async function ShopPage() {
             Concept store
           </p>
           <h1 className="text-5xl lg:text-7xl font-light tracking-tight text-foreground mb-6 max-w-xl">
-            Байкальская{" "}
-            <span className="font-serif italic">эстетика</span>
+            Байкальская <span className="font-serif italic">эстетика</span>
           </h1>
           <p className="text-muted-foreground max-w-sm leading-relaxed">
-            Предметы с характером. Каждая вещь — это история места, материала
-            и человека, который её создал.
+            Предметы с характером. Каждая вещь — история места, материала и
+            человека, который её создал.
           </p>
 
           {products.length === 0 && (
@@ -68,14 +76,18 @@ export default async function ShopPage() {
               <span className="w-2 h-2 rounded-full bg-baikal animate-pulse" />
               <p className="text-sm text-baikal">
                 Магазин открывается — подпишитесь на{" "}
-                <a
-                  href="https://t.me/polezno_irkutsk"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-2 hover:no-underline"
-                >
-                  Telegram
-                </a>
+                {telegram ? (
+                  <a
+                    href={telegram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 hover:no-underline"
+                  >
+                    Telegram
+                  </a>
+                ) : (
+                  "Telegram"
+                )}
                 , чтобы узнать первым
               </p>
             </div>
@@ -97,6 +109,8 @@ export default async function ShopPage() {
                 | Array<{ image: { url?: string; alt?: string } }>
                 | undefined;
               const firstImage = gallery?.[0]?.image;
+              const stockStatus = String(product.stockStatus || "in_stock");
+              const isAvailable = stockStatus !== "out_of_stock";
 
               return (
                 <Link
@@ -119,6 +133,13 @@ export default async function ShopPage() {
                         <span className="text-4xl font-serif">—</span>
                       </div>
                     )}
+                    {stockStatus !== "in_stock" && (
+                      <div className="absolute top-2 left-2">
+                        <Badge variant="outline" className="text-xs bg-background/90">
+                          {STOCK_LABELS[stockStatus] || stockStatus}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
                     {CATEGORY_LABELS[String(product.category)] ||
@@ -133,7 +154,9 @@ export default async function ShopPage() {
                     </p>
                   )}
                   <p className="text-sm font-medium mt-auto">
-                    {Number(product.price).toLocaleString("ru-RU")} ₽
+                    {isAvailable
+                      ? `${Number(product.price).toLocaleString("ru-RU")} ₽`
+                      : STOCK_LABELS[stockStatus]}
                   </p>
                 </Link>
               );

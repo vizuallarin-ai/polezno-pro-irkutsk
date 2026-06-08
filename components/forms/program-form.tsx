@@ -120,7 +120,7 @@ export function ProgramForm({ initialRouteSlug }: ProgramFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          source: "program_form",
+          source: "program",
           ...(initialRouteSlug && { routeSlug: initialRouteSlug }),
         }),
       });

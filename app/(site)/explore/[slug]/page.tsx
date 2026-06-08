@@ -5,7 +5,15 @@ import Link from "next/link";
 import { ArrowLeft, Clock, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { JsonLd } from "@/components/seo/json-ld";
+import { LexicalContent } from "@/components/cms/lexical-content";
+import {
+  ArticleCtaBlock,
+  RelatedExcursionBlock,
+  RelatedRouteBlock,
+} from "@/components/cms/related-blocks";
 import { articleSchema, breadcrumbSchema } from "@/lib/jsonld";
+import { buildPageMetadata } from "@/lib/seo-metadata";
+import { getSiteSettings } from "@/lib/site-settings";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -158,15 +166,33 @@ export async function generateMetadata({
   const article = await getArticle(slug);
   if (!article) return { title: "Страница не найдена" };
 
-  const seo = article.seo as { title?: string; description?: string } | undefined;
-  return {
-    title: seo?.title || String(article.title),
-    description: seo?.description || String(article.excerpt || ""),
-    openGraph: {
-      title: seo?.title || String(article.title),
-      description: seo?.description || String(article.excerpt || ""),
+  const site = await getSiteSettings();
+  return buildPageMetadata(
+    {
+      title: String(article.title),
+      excerpt: String(article.excerpt || ""),
+      seo: article.seo as {
+        title?: string;
+        description?: string;
+        image?: { url?: string } | null;
+      },
+      coverImage: article.coverImage as { url?: string } | undefined,
+      coverUrl: article.coverUrl ? String(article.coverUrl) : undefined,
     },
-  };
+    String(article.title),
+    site
+  );
+}
+
+function articleCoverUrl(article: {
+  coverImage?: { url?: string } | null;
+  coverUrl?: string | null;
+}): string | undefined {
+  if (article.coverImage && typeof article.coverImage === "object" && article.coverImage.url) {
+    return String(article.coverImage.url);
+  }
+  if (article.coverUrl) return String(article.coverUrl);
+  return undefined;
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -266,16 +292,46 @@ export default async function ExploreSlugPage({ params }: PageProps) {
   const article = await getArticle(slug);
   if (!article) notFound();
 
-  const cover = article.coverImage as { url?: string; alt?: string } | undefined;
+  const coverUrl = articleCoverUrl({
+    coverImage: article.coverImage as { url?: string; alt?: string } | undefined,
+    coverUrl: article.coverUrl ? String(article.coverUrl) : undefined,
+  });
+  const coverAlt =
+    (article.coverImage as { alt?: string } | undefined)?.alt || String(article.title);
+
+  const relatedRoute =
+    article.relatedRoute &&
+    typeof article.relatedRoute === "object" &&
+    "slug" in article.relatedRoute
+      ? (article.relatedRoute as {
+          slug: string;
+          title: string;
+          description?: string;
+          coverImage?: { url?: string; alt?: string };
+        })
+      : null;
+
+  const relatedExcursion =
+    article.relatedExcursion &&
+    typeof article.relatedExcursion === "object" &&
+    "slug" in article.relatedExcursion
+      ? (article.relatedExcursion as {
+          slug: string;
+          title: string;
+          shortDescription?: string;
+          cover?: { url?: string };
+          coverUrl?: string;
+          price?: number;
+        })
+      : null;
 
   const BASE_URL =
     (await import("@/lib/site-url")).getSiteUrl();
-  const cover2 = article.coverImage as { url?: string; alt?: string } | undefined;
   const articleJsonLd = articleSchema({
     title: String(article.title),
     description: String(article.excerpt || ""),
     url: `${BASE_URL}/explore/${article.slug}`,
-    imageUrl: cover2?.url,
+    imageUrl: coverUrl,
     publishedAt: article.publishedAt ? String(article.publishedAt) : undefined,
     updatedAt: String(article.updatedAt),
   });
@@ -339,11 +395,11 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           )}
         </header>
 
-        {cover?.url && (
+        {coverUrl && (
           <div className="relative aspect-video overflow-hidden bg-muted mb-12">
             <Image
-              src={cover.url}
-              alt={cover.alt || String(article.title)}
+              src={coverUrl}
+              alt={coverAlt}
               fill
               className="object-cover"
               priority
@@ -352,17 +408,21 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           </div>
         )}
 
-        <div className="prose prose-neutral max-w-none text-foreground leading-relaxed">
-          {article.content ? (
-            <p className="text-base leading-relaxed">
-              {/* RichText rendered by Payload Lexical will go here */}
-            </p>
-          ) : (
-            <p className="text-muted-foreground">
-              Содержание статьи будет добавлено в CMS.
-            </p>
-          )}
-        </div>
+        {article.author && (
+          <p className="text-sm text-muted-foreground mb-8">
+            Автор: {String(article.author)}
+          </p>
+        )}
+
+        <LexicalContent
+          data={article.content as never}
+          className="prose prose-neutral max-w-none text-foreground leading-relaxed"
+        />
+        {!article.content && (
+          <p className="text-muted-foreground">
+            Содержание статьи будет добавлено в CMS.
+          </p>
+        )}
 
         {Array.isArray(article.relatedPlaces) &&
           article.relatedPlaces.length > 0 && (
@@ -403,22 +463,15 @@ export default async function ExploreSlugPage({ params }: PageProps) {
             </aside>
           )}
 
-        <div className="mt-16 bg-card p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <p className="text-sm font-medium mb-1">
-              Хотите увидеть это вживую?
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Организуем экскурсию по местам из статьи.
-            </p>
-          </div>
-          <Link
-            href="/program"
-            className="inline-flex h-10 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 shrink-0"
-          >
-            Создать программу
-          </Link>
-        </div>
+        {relatedRoute && <RelatedRouteBlock route={relatedRoute} />}
+        {relatedExcursion && (
+          <RelatedExcursionBlock excursion={relatedExcursion} />
+        )}
+
+        <ArticleCtaBlock
+          ctaText={article.ctaText ? String(article.ctaText) : undefined}
+          ctaLink={article.ctaLink ? String(article.ctaLink) : undefined}
+        />
       </div>
     </article>
   );

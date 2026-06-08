@@ -18,10 +18,18 @@ export type ExcursionDoc = {
   fullDescription?: string | null;
   format: string;
   price?: number | null;
+  priceOnRequest?: boolean | null;
   duration?: number | null;
   groupSize?: string | null;
   coverUrl?: string | null;
   cover?: { url?: string; alt?: string } | null;
+  includes?: Array<{ item: string }> | null;
+  excludes?: Array<{ item: string }> | null;
+  relatedRoutes?: Array<{
+    slug: string;
+    title: string;
+    description?: string | null;
+  }> | null;
 };
 
 export async function getPublishedExcursions(): Promise<ExcursionDoc[]> {
@@ -67,26 +75,46 @@ export async function getExcursionBySlug(
         and: [{ slug: { equals: slug } }, PUBLISHED_STATUS_WHERE],
       },
       limit: 1,
-      depth: 1,
+      depth: 2,
     });
     const doc = result.docs[0];
     if (!doc) return null;
-    return {
-      id: doc.id,
-      slug: String(doc.slug),
-      title: String(doc.title),
-      shortDescription: String(doc.shortDescription),
-      fullDescription: doc.fullDescription ? String(doc.fullDescription) : null,
-      format: String(doc.format),
-      price: doc.price != null ? Number(doc.price) : null,
-      duration: doc.duration != null ? Number(doc.duration) : null,
-      groupSize: doc.groupSize ? String(doc.groupSize) : null,
-      coverUrl: doc.coverUrl ? String(doc.coverUrl) : null,
-      cover: doc.cover as ExcursionDoc["cover"],
-    };
+    return mapExcursionDoc(doc);
   } catch {
     return null;
   }
+}
+
+function mapExcursionDoc(doc: Record<string, unknown>): ExcursionDoc {
+  const relatedRoutes = Array.isArray(doc.relatedRoutes)
+    ? doc.relatedRoutes
+        .filter((r) => r && typeof r === "object" && "slug" in r)
+        .map((r) => ({
+          slug: String((r as { slug: string }).slug),
+          title: String((r as { title: string }).title),
+          description: (r as { description?: string }).description
+            ? String((r as { description: string }).description)
+            : undefined,
+        }))
+    : null;
+
+  return {
+    id: doc.id as string | number,
+    slug: String(doc.slug),
+    title: String(doc.title),
+    shortDescription: String(doc.shortDescription),
+    fullDescription: doc.fullDescription ? String(doc.fullDescription) : null,
+    format: String(doc.format),
+    price: doc.price != null ? Number(doc.price) : null,
+    priceOnRequest: Boolean(doc.priceOnRequest),
+    duration: doc.duration != null ? Number(doc.duration) : null,
+    groupSize: doc.groupSize ? String(doc.groupSize) : null,
+    coverUrl: doc.coverUrl ? String(doc.coverUrl) : null,
+    cover: doc.cover as ExcursionDoc["cover"],
+    includes: doc.includes as ExcursionDoc["includes"],
+    excludes: doc.excludes as ExcursionDoc["excludes"],
+    relatedRoutes,
+  };
 }
 
 /** First published excursion linked to a route slug, if any. */

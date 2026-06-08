@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { ArrowLeft, ExternalLink, ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AddToCartButton } from "@/components/shop/add-to-cart-button";
+import { RelatedRouteBlock } from "@/components/cms/related-blocks";
 import { JsonLd } from "@/components/seo/json-ld";
 import { productSchema, breadcrumbSchema } from "@/lib/jsonld";
+import { buildPageMetadata } from "@/lib/seo-metadata";
+import { getSiteSettings } from "@/lib/site-settings";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -39,15 +42,32 @@ export async function generateMetadata({
   const product = await getProduct(slug);
   if (!product) return { title: "Товар не найден" };
 
-  const seo = product.seo as
-    | { title?: string; description?: string }
+  const site = await getSiteSettings();
+  const gallery = product.gallery as
+    | Array<{ image: { url?: string } }>
     | undefined;
-  return {
-    title: seo?.title || String(product.title),
-    description:
-      seo?.description || String(product.shortDescription || ""),
-  };
+  return buildPageMetadata(
+    {
+      title: String(product.title),
+      shortDescription: String(product.shortDescription || ""),
+      seo: product.seo as {
+        title?: string;
+        description?: string;
+        image?: { url?: string } | null;
+      },
+      gallery,
+    },
+    String(product.title),
+    site
+  );
 }
+
+const STOCK_LABELS: Record<string, string> = {
+  in_stock: "В наличии",
+  pre_order: "Предзаказ",
+  out_of_stock: "Нет в наличии",
+  soon: "Скоро",
+};
 
 const CATEGORY_LABELS: Record<string, string> = {
   clothing: "Одежда",
@@ -67,6 +87,19 @@ export default async function ProductPage({ params }: PageProps) {
   const gallery = product.gallery as
     | Array<{ image: { url?: string; alt?: string } }>
     | undefined;
+  const stockStatus = String(product.stockStatus || "in_stock");
+  const inStock =
+    stockStatus === "in_stock" || stockStatus === "pre_order" || Boolean(product.inStock);
+  const relatedRoute =
+    product.relatedRoute &&
+    typeof product.relatedRoute === "object" &&
+    "slug" in product.relatedRoute
+      ? (product.relatedRoute as {
+          slug: string;
+          title: string;
+          description?: string;
+        })
+      : null;
 
   const { getSiteUrl } = await import("@/lib/site-url");
   const BASE_URL = getSiteUrl();
@@ -77,7 +110,7 @@ export default async function ProductPage({ params }: PageProps) {
     price: Number(product.price),
     imageUrl: gallery?.[0]?.image?.url,
     sku: String(product.id),
-    inStock: Boolean(product.inStock),
+    inStock,
   });
   const breadcrumbProduct = breadcrumbSchema([
     { label: "Главная", href: "/" },
@@ -157,7 +190,21 @@ export default async function ProductPage({ params }: PageProps) {
               {Number(product.price).toLocaleString("ru-RU")} ₽
             </p>
 
-            {product.inStock ? (
+            <Badge variant="outline" className="mb-4 w-fit">
+              {STOCK_LABELS[stockStatus] || stockStatus}
+            </Badge>
+
+            {product.externalLink ? (
+              <a
+                href={String(product.externalLink)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
+              >
+                Купить
+                <ExternalLink size={13} />
+              </a>
+            ) : inStock && stockStatus !== "soon" ? (
               <AddToCartButton
                 productId={String(product.id)}
                 stripePriceId={
@@ -169,7 +216,13 @@ export default async function ProductPage({ params }: PageProps) {
             ) : (
               <div className="flex items-center gap-2 text-sm text-muted-foreground border border-border px-5 py-3 w-fit">
                 <ShoppingBag size={14} />
-                Нет в наличии
+                {STOCK_LABELS[stockStatus] || "Недоступно"}
+              </div>
+            )}
+
+            {relatedRoute && (
+              <div className="mt-10">
+                <RelatedRouteBlock route={relatedRoute} />
               </div>
             )}
 

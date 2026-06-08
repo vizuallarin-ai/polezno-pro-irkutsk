@@ -1,4 +1,4 @@
-import type { Access, AccessArgs, FieldAccess } from "payload";
+import type { Access, AccessArgs, FieldAccess, Where } from "payload";
 
 type UserWithRole = { role?: "admin" | "editor" | null };
 
@@ -28,10 +28,17 @@ export const publishedOrStaff = (
     return { [statusField]: { equals: "published" } };
   };
 
+const ARTICLE_PUBLIC_WHERE: Where = {
+  and: [
+    { _status: { equals: "published" } },
+    { status: { equals: "published" } },
+  ],
+};
+
 /** Статьи с drafts: staff видит всё, публично — только published. */
 export const articleReadAccess: Access = ({ req: { user } }) => {
   if (isStaff({ req: { user } } as AccessArgs)) return true;
-  return { _status: { equals: "published" } };
+  return ARTICLE_PUBLIC_WHERE;
 };
 
 export const leadsReadAccess: Access = isAdmin;

@@ -4,7 +4,9 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { validateRequiredSlug } from "../validators";
 
 export const Events: CollectionConfig = {
   slug: "events",
@@ -15,10 +17,15 @@ export const Events: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "startDate", "status", "isPast", "updatedAt"],
-    group: "Позже",
-    hidden: true,
-    description: "Скоро — полный CRUD событий в следующей фазе.",
-    listSearchableFields: ["title", "venue"],
+    group: ADMIN_GROUPS.events,
+    listSearchableFields: ["title", "venue", "slug"],
+    description: "Календарь событий на /events. Публично — только опубликованные.",
+    preview: (doc) => {
+      if (doc?.slug) {
+        return `${process.env.NEXT_PUBLIC_SERVER_URL}/events/${doc.slug}`;
+      }
+      return null;
+    },
   },
   access: {
     admin: adminPanelAccess,
@@ -31,7 +38,9 @@ export const Events: CollectionConfig = {
     beforeChange: [
       ({ data }) => {
         if (data?.startDate) {
-          const end = data.endDate ? new Date(data.endDate) : new Date(data.startDate);
+          const end = data.endDate
+            ? new Date(data.endDate)
+            : new Date(data.startDate);
           data.isPast = end.getTime() < Date.now();
         }
         return data;
@@ -52,6 +61,7 @@ export const Events: CollectionConfig = {
       label: "Slug",
       required: true,
       unique: true,
+      validate: validateRequiredSlug,
       admin: { position: "sidebar" },
     },
     {
@@ -60,12 +70,7 @@ export const Events: CollectionConfig = {
       label: "Статус",
       defaultValue: "draft",
       required: true,
-      options: [
-        { label: "Черновик", value: "draft" },
-        { label: "Опубликован", value: "published" },
-        { label: "Скрыт", value: "hidden" },
-        { label: "В архиве", value: "archived" },
-      ],
+      options: [...CONTENT_STATUS_OPTIONS],
       admin: { position: "sidebar" },
     },
     {
@@ -157,6 +162,12 @@ export const Events: CollectionConfig = {
       type: "relationship",
       relationTo: "routes",
       label: "Связанный маршрут",
+    },
+    {
+      name: "relatedExcursion",
+      type: "relationship",
+      relationTo: "excursions",
+      label: "Связанная экскурсия",
     },
     {
       name: "isFeatured",

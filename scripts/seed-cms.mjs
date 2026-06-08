@@ -379,9 +379,11 @@ const articles = [
   },
 ];
 
-for (const article of articles.slice(0, 3)) {
+for (const article of articles) {
+  const { content: _omitContent, ...articleData } = article;
   await upsert("articles", "slug", article.slug, {
-    ...article,
+    ...articleData,
+    status: "published",
     _status: "published",
   });
 }
@@ -463,6 +465,7 @@ for (const product of products) {
   await upsert("products", "slug", product.slug, {
     ...product,
     status: "published",
+    stockStatus: "in_stock",
   });
 }
 
@@ -625,6 +628,11 @@ for (const excursion of excursionsSeed) {
   await upsert("excursions", "slug", excursion.slug, {
     ...data,
     status: "published",
+    includes: [
+      { item: "Гид-автор проекта" },
+      { item: "Маршрут и комментарии" },
+    ],
+    excludes: [{ item: "Питание и трансфер (если не оговорено)" }],
     ...(relatedRoutes?.length ? { relatedRoutes } : {}),
   });
 }
@@ -635,10 +643,17 @@ if (!existingSettings?.contact?.email) {
   await payload.updateGlobal({
     slug: "site-settings",
     data: {
+      projectName: "Полезно про Иркутск",
+      description:
+        "Авторский навигатор по Иркутску: маршруты, экскурсии, медиа и клуб на Boosty.",
+      city: "Иркутск",
+      heroTitle: "Иркутск",
+      heroSubtitle: "Авторский навигатор по городу и Байкалу",
       contact: {
         phone: "+7 (3952) 000-00-00",
         email: "info@irkportal.ru",
         telegram: "https://t.me/polezno_irkutsk",
+        instagram: "https://instagram.com/polezno.irkutsk",
         boosty: "https://boosty.to/polezno_irkutsk",
       },
       mainCta: {
@@ -646,8 +661,17 @@ if (!existingSettings?.contact?.email) {
         href: "/program",
         description: "Экскурсии и программы под ваш визит",
       },
+      secondaryCta: {
+        label: "Маршруты",
+        href: "/map",
+      },
       footerText:
-        "Полезно про Иркутск — авторские маршруты, экскурсии и культурные проекты.",
+        "Маршруты, экскурсии и материалы о городе — без туристических штампов. С 2019 года.",
+      footerTagline: "Авторский навигатор по Иркутску",
+      defaultSeo: {
+        metaDescription:
+          "Иркутск и Байкал: маршруты, экскурсии, события и программы под ключ.",
+      },
       metaDescription:
         "Иркутск и Байкал: маршруты, экскурсии, события и программы под ключ.",
     },

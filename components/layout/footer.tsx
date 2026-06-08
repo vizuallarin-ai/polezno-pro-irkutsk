@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
 import { BOOSTY_URL } from "@/lib/site-links";
+import type { SiteSettingsData } from "@/lib/site-settings";
 
 const footerLinks = {
   explore: [
@@ -13,7 +14,7 @@ const footerLinks = {
     { href: "/explore/hidden", label: "Hidden Places" },
   ],
   services: [
-    { href: "/program", label: "Экскурсии" },
+    { href: "/excursions", label: "Экскурсии" },
     { href: "/program", label: "Для компаний" },
     { href: BOOSTY_URL, label: "Клуб на Boosty", external: true },
     { href: "/shop", label: "Магазин" },
@@ -22,7 +23,21 @@ const footerLinks = {
   ],
 };
 
-export function Footer() {
+interface FooterProps {
+  settings?: SiteSettingsData;
+}
+
+export function Footer({ settings }: FooterProps) {
+  const projectName = settings?.projectName || "Полезно про Иркутск";
+  const tagline = settings?.footerTagline || "Авторский навигатор по Иркутску";
+  const footerText =
+    settings?.footerText ||
+    "Маршруты, экскурсии и материалы о городе — без туристических штампов.";
+  const telegram = settings?.contact.telegram || "https://t.me/polezno_irkutsk";
+  const instagram =
+    settings?.contact.instagram || "https://instagram.com/polezno.irkutsk";
+  const email = settings?.contact.email;
+
   return (
     <footer className="bg-foreground text-primary-foreground" role="contentinfo">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-20">
@@ -31,35 +46,48 @@ export function Footer() {
             <div>
               <Link href="/" className="inline-flex flex-col gap-1 mb-6">
                 <span className="text-lg font-medium tracking-widest uppercase text-primary-foreground">
-                  Полезно про Иркутск
+                  {projectName}
                 </span>
                 <span className="text-sm text-primary-foreground/50 font-light">
-                  Авторский навигатор по Иркутску
+                  {tagline}
                 </span>
               </Link>
               <p className="text-sm text-primary-foreground/60 leading-relaxed max-w-xs">
-                Маршруты, экскурсии и материалы о городе — без туристических
-                штампов. С 2019 года.
+                {footerText}
               </p>
-              <div className="flex items-center gap-4 mt-6">
-                <a
-                  href="https://t.me/polezno_irkutsk"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs uppercase tracking-widest text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
-                  aria-label="Telegram"
-                >
-                  Telegram
-                </a>
-                <a
-                  href="https://instagram.com/polezno.irkutsk"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs uppercase tracking-widest text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
-                  aria-label="Instagram"
-                >
-                  Instagram
-                </a>
+              <div className="flex items-center gap-4 mt-6 flex-wrap">
+                {telegram && (
+                  <a
+                    href={telegram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs uppercase tracking-widest text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
+                    aria-label="Telegram"
+                  >
+                    Telegram
+                  </a>
+                )}
+                {instagram && (
+                  <a
+                    href={instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs uppercase tracking-widest text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
+                    aria-label="Instagram"
+                  >
+                    Instagram
+                  </a>
+                )}
+                {settings?.contact.vk && (
+                  <a
+                    href={settings.contact.vk}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs uppercase tracking-widest text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
+                  >
+                    ВКонтакте
+                  </a>
+                )}
               </div>
             </div>
             <NewsletterForm />
@@ -117,8 +145,7 @@ export function Footer() {
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-xs text-primary-foreground/40">
-            © {new Date().getFullYear()} Полезно про Иркутск. Все права
-            защищены.
+            © {new Date().getFullYear()} {projectName}. Все права защищены.
           </p>
           <div className="flex items-center gap-6">
             <Link
@@ -127,18 +154,17 @@ export function Footer() {
             >
               Контакты
             </Link>
-            <a
-              href="https://t.me/polezno_irkutsk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-primary-foreground/40 hover:text-primary-foreground/70 transition-colors duration-200"
-            >
-              Telegram
-            </a>
+            {email && (
+              <a
+                href={`mailto:${email}`}
+                className="text-xs text-primary-foreground/40 hover:text-primary-foreground/70 transition-colors duration-200"
+              >
+                {email}
+              </a>
+            )}
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

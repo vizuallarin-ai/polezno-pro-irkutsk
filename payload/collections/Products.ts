@@ -5,7 +5,9 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { validateRequiredSlug } from "../validators";
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -15,10 +17,10 @@ export const Products: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "price", "inStock", "status", "updatedAt"],
-    group: "Позже",
-    hidden: true,
-    description: "Скоро — полный CRUD товаров в следующей фазе.",
+    defaultColumns: ["title", "category", "price", "stockStatus", "status", "updatedAt"],
+    group: ADMIN_GROUPS.products,
+    listSearchableFields: ["title", "slug", "shortDescription"],
+    description: "Каталог /shop. Публично — только опубликованные товары.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/shop/${doc.slug}`;
@@ -49,6 +51,7 @@ export const Products: CollectionConfig = {
       label: "Slug",
       required: true,
       unique: true,
+      validate: validateRequiredSlug,
       admin: { position: "sidebar" },
     },
     {
@@ -57,11 +60,20 @@ export const Products: CollectionConfig = {
       label: "Статус",
       defaultValue: "draft",
       required: true,
+      options: [...CONTENT_STATUS_OPTIONS],
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "stockStatus",
+      type: "select",
+      label: "Наличие",
+      defaultValue: "in_stock",
+      required: true,
       options: [
-        { label: "Черновик", value: "draft" },
-        { label: "Опубликован", value: "published" },
-        { label: "Скрыт", value: "hidden" },
-        { label: "В архиве", value: "archived" },
+        { label: "В наличии", value: "in_stock" },
+        { label: "Предзаказ", value: "pre_order" },
+        { label: "Нет в наличии", value: "out_of_stock" },
+        { label: "Скоро", value: "soon" },
       ],
       admin: { position: "sidebar" },
     },
@@ -113,9 +125,12 @@ export const Products: CollectionConfig = {
     {
       name: "inStock",
       type: "checkbox",
-      label: "В наличии",
+      label: "В наличии (legacy)",
       defaultValue: true,
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Дублирует stockStatus — для обратной совместимости.",
+      },
     },
     {
       name: "stockQuantity",
@@ -134,6 +149,12 @@ export const Products: CollectionConfig = {
       type: "relationship",
       relationTo: "routes",
       label: "Связанный маршрут",
+    },
+    {
+      name: "relatedArticle",
+      type: "relationship",
+      relationTo: "articles",
+      label: "Связанная статья",
     },
     {
       name: "stripePriceId",

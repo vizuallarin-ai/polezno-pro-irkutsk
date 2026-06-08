@@ -1,28 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendLeadNotification } from "@/lib/email";
+import { LEAD_SOURCE_OPTIONS } from "@/payload/constants";
 
-const SOURCE_VALUES = new Set([
-  "program_form",
-  "contacts",
-  "event",
-  "shop",
-  "map",
-  "excursions",
-  "direct",
-  "other",
-]);
+const SOURCE_VALUES = new Set(LEAD_SOURCE_OPTIONS.map((o) => o.value));
 
 function normalizeSource(referer: string | null, bodySource?: unknown): string {
-  if (typeof bodySource === "string" && SOURCE_VALUES.has(bodySource)) {
+  if (typeof bodySource === "string" && SOURCE_VALUES.has(bodySource as never)) {
     return bodySource;
   }
   if (!referer) return "direct";
-  if (referer.includes("/program")) return "program_form";
+  if (referer.includes("/program")) return "program";
   if (referer.includes("/contact")) return "contacts";
+  if (referer.match(/\/explore\/[^/]+/)) return "article";
+  if (referer.includes("/explore")) return "article";
+  if (referer.match(/\/events\/[^/]+/)) return "event";
   if (referer.includes("/events")) return "event";
+  if (referer.match(/\/shop\/[^/]+/)) return "product";
   if (referer.includes("/shop")) return "shop";
+  if (referer.match(/\/excursions\/[^/]+/)) return "excursion";
   if (referer.includes("/excursions")) return "excursions";
-  if (referer.includes("/map")) return "map";
+  if (referer.match(/\/map\/[^/]+/)) return "route";
+  if (referer.includes("/map")) return "route";
+  if (referer.endsWith("/") || referer.match(/\/$/)) return "home";
   return "other";
 }
 
@@ -60,10 +59,13 @@ export async function POST(request: NextRequest) {
         status: "new",
         source,
         routeSlug: body.routeSlug ? String(body.routeSlug) : undefined,
+        articleSlug: body.articleSlug ? String(body.articleSlug) : undefined,
+        eventSlug: body.eventSlug ? String(body.eventSlug) : undefined,
+        excursionSlug: body.excursionSlug ? String(body.excursionSlug) : undefined,
+        productSlug: body.productSlug ? String(body.productSlug) : undefined,
       },
     });
 
-    // Notify admin about new lead (non-blocking)
     sendLeadNotification({
       name: String(body.name || ""),
       email: String(body.email || ""),

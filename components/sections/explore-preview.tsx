@@ -22,49 +22,6 @@ export type Article = {
   isHiddenGem?: boolean;
 };
 
-const fallbackArticles: Article[] = [
-  {
-    id: "1",
-    title: "Деревянное зодчество: 10 домов, которые нужно увидеть",
-    category: "Архитектура",
-    excerpt: "Резные наличники, замысловатые карнизы и вековая история в каждом бревне",
-    slug: "wooden-architecture",
-    coverImage: "/images/article-wooden.svg",
-    readTime: 8,
-    isHiddenGem: false,
-  },
-  {
-    id: "2",
-    title: "Гастрономический Иркутск: от омуля до модных ресторанов",
-    category: "Гастрономия",
-    excerpt: "Куда идти есть в Иркутске и что обязательно попробовать на Байкале",
-    slug: "gastronomic-irkutsk",
-    coverImage: "/images/article-food.svg",
-    readTime: 6,
-    isHiddenGem: false,
-  },
-  {
-    id: "3",
-    title: "Секретные дворы и скрытые места центра",
-    category: "Hidden Places",
-    excerpt: "Места, которые туристы обходят стороной — и зря",
-    slug: "hidden-courtyards",
-    coverImage: "/images/article-hidden.svg",
-    readTime: 5,
-    isHiddenGem: true,
-  },
-  {
-    id: "4",
-    title: "Байкал зимой: как подготовиться к поездке",
-    category: "Байкал",
-    excerpt: "Лёд, торосы, нерпы и незабываемые закаты на замёрзшем море",
-    slug: "baikal-winter",
-    coverImage: "/images/article-baikal.svg",
-    readTime: 10,
-    isHiddenGem: false,
-  },
-];
-
 function ArticleCard({ article }: { article: Article }) {
   return (
     <Link
@@ -106,14 +63,14 @@ function ArticleCard({ article }: { article: Article }) {
 
 export function ExplorePreview({ articles }: { articles?: Article[] }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const items = articles ?? fallbackArticles;
+  const items = articles ?? [];
 
   useGSAP(
     () => {
       const prefersReduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches;
-      if (prefersReduced) return;
+      if (prefersReduced || items.length === 0) return;
 
       gsap.from(".explore-header", {
         opacity: 0,
@@ -138,7 +95,7 @@ export function ExplorePreview({ articles }: { articles?: Article[] }) {
         },
       });
     },
-    { scope: sectionRef }
+    { scope: sectionRef, dependencies: [items.length] }
   );
 
   return (
@@ -172,15 +129,25 @@ export function ExplorePreview({ articles }: { articles?: Article[] }) {
           </Link>
         </div>
 
-        <div className="explore-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {items.map((article) => (
-            <div key={article.id} className="explore-card">
-              <ArticleCard article={article} />
-            </div>
-          ))}
-        </div>
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border">
+            <p className="text-muted-foreground mb-4">
+              Материалы появятся после публикации статей в CMS
+            </p>
+            <Link href="/explore" className="text-sm text-baikal hover:underline">
+              Раздел «Исследовать»
+            </Link>
+          </div>
+        ) : (
+          <div className="explore-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {items.map((article) => (
+              <div key={article.id} className="explore-card">
+                <ArticleCard article={article} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 }
-

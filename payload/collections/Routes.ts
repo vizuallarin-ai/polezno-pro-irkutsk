@@ -77,7 +77,7 @@ export const Routes: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "type", "status", "pointsCount", "updatedAt"],
-    group: "CMS",
+    group: "Маршруты",
     description: "Пешие и авторские маршруты для карты и страниц /map/[slug].",
   },
   access: {

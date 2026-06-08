@@ -5,7 +5,9 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { validateRequiredSlug } from "../validators";
 
 export const Excursions: CollectionConfig = {
   slug: "excursions",
@@ -16,9 +18,15 @@ export const Excursions: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "format", "price", "status", "updatedAt"],
-    group: "Позже",
-    hidden: true,
-    description: "Скоро — полный CRUD экскурсий в следующей фазе.",
+    group: ADMIN_GROUPS.excursions,
+    listSearchableFields: ["title", "slug", "shortDescription"],
+    description: "Экскурсии для /excursions. Публично — только опубликованные.",
+    preview: (doc) => {
+      if (doc?.slug) {
+        return `${process.env.NEXT_PUBLIC_SERVER_URL}/excursions/${doc.slug}`;
+      }
+      return null;
+    },
   },
   access: {
     admin: adminPanelAccess,
@@ -43,6 +51,7 @@ export const Excursions: CollectionConfig = {
       label: "Slug",
       required: true,
       unique: true,
+      validate: validateRequiredSlug,
       admin: { position: "sidebar" },
     },
     {
@@ -51,12 +60,7 @@ export const Excursions: CollectionConfig = {
       label: "Статус",
       defaultValue: "draft",
       required: true,
-      options: [
-        { label: "Черновик", value: "draft" },
-        { label: "Опубликован", value: "published" },
-        { label: "Скрыт", value: "hidden" },
-        { label: "В архиве", value: "archived" },
-      ],
+      options: [...CONTENT_STATUS_OPTIONS],
       admin: { position: "sidebar" },
     },
     {
@@ -86,21 +90,44 @@ export const Excursions: CollectionConfig = {
       label: "Полное описание",
     },
     {
+      name: "priceOnRequest",
+      type: "checkbox",
+      label: "Цена по запросу",
+      defaultValue: false,
+      admin: { position: "sidebar" },
+    },
+    {
       name: "price",
       type: "number",
       label: "Цена от (₽)",
       min: 0,
+      admin: {
+        condition: (_, siblingData) => !siblingData?.priceOnRequest,
+      },
     },
     {
       name: "duration",
       type: "number",
       label: "Длительность (мин)",
+      admin: { position: "sidebar" },
     },
     {
       name: "groupSize",
       type: "text",
       label: "Размер группы",
       admin: { description: "Например: до 12 человек" },
+    },
+    {
+      name: "includes",
+      type: "array",
+      label: "Включено",
+      fields: [{ name: "item", type: "text", label: "Пункт", required: true }],
+    },
+    {
+      name: "excludes",
+      type: "array",
+      label: "Не включено",
+      fields: [{ name: "item", type: "text", label: "Пункт", required: true }],
     },
     {
       name: "cover",
@@ -112,6 +139,7 @@ export const Excursions: CollectionConfig = {
       name: "coverUrl",
       type: "text",
       label: "Обложка (URL)",
+      admin: { position: "sidebar" },
     },
     {
       name: "relatedRoutes",

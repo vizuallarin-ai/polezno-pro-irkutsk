@@ -8,23 +8,27 @@ import { BoostyTeaser } from "@/components/sections/boosty-teaser";
 import { ShopPreview } from "@/components/sections/shop-preview";
 import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
 import { FinalCta } from "@/components/sections/final-cta";
+import { mapArticleForPreview, mapProductForPreview } from "@/lib/cms-mappers";
+import { getSiteSettings } from "@/lib/site-settings";
 
-export const metadata: Metadata = {
-  title: "Полезно про Иркутск — авторский навигатор по городу",
-  description:
-    "Маршруты, экскурсии и материалы об Иркутске и Байкале от местного автора. Без туристических штампов.",
-  openGraph: {
-    title: "Полезно про Иркутск",
-    description:
-      "Авторский навигатор по Иркутску: маршруты, экскурсии, медиа и клуб на Boosty.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: `${settings.projectName} — авторский навигатор по городу`,
+    description: settings.metaDescription,
+    openGraph: {
+      title: settings.projectName,
+      description: settings.description,
+      ...(settings.ogImageUrl ? { images: [{ url: settings.ogImageUrl }] } : {}),
+    },
+  };
+}
 
 async function getHomeData() {
   try {
     if (!process.env.DATABASE_URL) return null;
     const { getPayloadClient } = await import("@/lib/payload");
-    const { ARTICLE_PUBLISHED_WHERE, PUBLISHED_STATUS_WHERE } = await import(
+    const { ARTICLE_PUBLISHED_WHERE, catalogProductsWhere } = await import(
       "@/lib/cms-filters"
     );
     const payload = await getPayloadClient();
@@ -41,16 +45,18 @@ async function getHomeData() {
           },
           limit: 4,
           sort: "-publishedAt",
+          depth: 1,
         }),
         payload.find({
           collection: "products",
           where: {
             and: [
-              PUBLISHED_STATUS_WHERE,
+              catalogProductsWhere(),
               { isFeatured: { equals: true } },
             ],
           },
           limit: 4,
+          depth: 1,
         }),
         payload.find({
           collection: "reviews",
@@ -77,8 +83,12 @@ async function getHomeData() {
     }));
 
     return {
-      articles: articlesRes.docs,
-      products: productsRes.docs,
+      articles: articlesRes.docs.map((doc) =>
+        mapArticleForPreview(doc as Parameters<typeof mapArticleForPreview>[0])
+      ),
+      products: productsRes.docs.map((doc) =>
+        mapProductForPreview(doc as Parameters<typeof mapProductForPreview>[0])
+      ),
       stats,
       reviews,
     };
@@ -105,9 +115,9 @@ export default async function HomePage() {
       <ScenarioPicker />
       <DirectionsEditorial />
       <MapTeaser />
-      <ExplorePreview articles={articles as never} />
+      <ExplorePreview articles={articles} />
       <BoostyTeaser />
-      <ShopPreview products={products as never} />
+      <ShopPreview products={products} />
       <SocialProof stats={stats} reviews={reviews} />
       <FinalCta />
     </>
