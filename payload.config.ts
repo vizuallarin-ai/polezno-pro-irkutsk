@@ -1,6 +1,8 @@
 import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { en } from "payload/i18n/en";
+import { ru } from "payload/i18n/ru";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -60,6 +62,8 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
     },
+    // Sync schema in dev when collections change (fixes missing payload_locked_documents columns)
+    push: process.env.NODE_ENV !== "production",
   }),
   upload: {
     limits: {
@@ -67,4 +71,8 @@ export default buildConfig({
     },
   },
   plugins: [],
+  i18n: {
+    fallbackLanguage: "ru",
+    supportedLanguages: { en, ru },
+  },
 });
