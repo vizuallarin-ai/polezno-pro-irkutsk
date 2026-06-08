@@ -10,7 +10,7 @@ export const Users: CollectionConfig = {
   auth: true,
   admin: {
     useAsTitle: "email",
-    group: "Система",
+    group: "CMS",
     description: "Доступ к /admin только для роли «Администратор».",
   },
   access: {

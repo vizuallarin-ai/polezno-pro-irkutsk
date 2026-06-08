@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
         message: body.message ? String(body.message) : undefined,
         status: "new",
         source,
+        routeSlug: body.routeSlug ? String(body.routeSlug) : undefined,
       },
     });
 

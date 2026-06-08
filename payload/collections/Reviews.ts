@@ -6,8 +6,9 @@ export const Reviews: CollectionConfig = {
   admin: {
     useAsTitle: "author",
     defaultColumns: ["author", "rating", "isFeatured", "updatedAt"],
-    group: "Отзывы и партнёры",
-    description: "Добавьте отзывы — они отобразятся в секции «Нам доверяют» на главной странице.",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — отзывы в следующей фазе.",
   },
   access: {
     admin: adminPanelAccess,

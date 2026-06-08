@@ -7,7 +7,9 @@ export const Places: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "isLocalGem", "updatedAt"],
-    group: "Маршруты и места",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — справочник мест в следующей фазе.",
   },
   access: {
     admin: adminPanelAccess,

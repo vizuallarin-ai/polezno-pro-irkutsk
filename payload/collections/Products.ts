@@ -16,7 +16,9 @@ export const Products: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "price", "inStock", "status", "updatedAt"],
-    group: "Магазин",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — полный CRUD товаров в следующей фазе.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/shop/${doc.slug}`;

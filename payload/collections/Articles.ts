@@ -16,7 +16,9 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "publishedAt", "_status", "updatedAt"],
-    group: "Контент",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — полный CRUD статей в следующей фазе.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/${doc.slug}`;

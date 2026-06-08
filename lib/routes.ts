@@ -35,12 +35,32 @@ export function getSimilarRoutes(slug: string, limit = 3, pool?: Route[]): Route
     .slice(0, limit);
 }
 
-async function fetchPublishedCmsRoutes(): Promise<Route[]> {
-  if (!process.env.DATABASE_URL) return [];
-
+async function getPayloadSafe() {
+  if (!process.env.DATABASE_URL) return null;
   try {
     const { getPayloadClient } = await import("@/lib/payload");
-    const payload = await getPayloadClient();
+    return await getPayloadClient();
+  } catch {
+    return null;
+  }
+}
+
+async function cmsHasAnyRoutes(): Promise<boolean> {
+  const payload = await getPayloadSafe();
+  if (!payload) return false;
+  try {
+    const count = await payload.count({ collection: "routes" });
+    return count.totalDocs > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function fetchPublishedCmsRoutes(): Promise<Route[]> {
+  const payload = await getPayloadSafe();
+  if (!payload) return [];
+
+  try {
     const result = await payload.find({
       collection: "routes",
       where: PUBLISHED_STATUS_WHERE,
@@ -72,6 +92,11 @@ export async function getRoutesForMap(): Promise<{
     return { routes: cmsRoutes, mapRoutes, source: "cms" };
   }
 
+  const hasCmsData = await cmsHasAnyRoutes();
+  if (hasCmsData) {
+    return { routes: [], mapRoutes: [], source: "cms" };
+  }
+
   const demo = getAllDemoRoutes();
   return {
     routes: demo,
@@ -85,15 +110,42 @@ export async function getRoutePageData(slug: string): Promise<{
   similar: Route[];
   source: "cms" | "demo" | null;
 }> {
-  const cmsRoutes = await fetchPublishedCmsRoutes();
-  const cmsRoute = cmsRoutes.find((r) => r.slug === slug);
+  const payload = await getPayloadSafe();
 
-  if (cmsRoute) {
-    return {
-      route: cmsRoute,
-      similar: getSimilarRoutes(slug, 3, cmsRoutes),
-      source: "cms",
-    };
+  if (payload) {
+    const hasCmsData = await cmsHasAnyRoutes();
+
+    if (hasCmsData) {
+      try {
+        const result = await payload.find({
+          collection: "routes",
+          where: { slug: { equals: slug } },
+          limit: 1,
+          depth: 2,
+        });
+
+        const doc = result.docs[0] as Parameters<typeof payloadRouteToRoute>[0] | undefined;
+
+        if (!doc || !isPublishedRoute(doc)) {
+          const published = await fetchPublishedCmsRoutes();
+          return {
+            route: null,
+            similar: getSimilarRoutes(slug, 3, published),
+            source: "cms",
+          };
+        }
+
+        const route = payloadRouteToRoute(doc);
+        const published = await fetchPublishedCmsRoutes();
+        return {
+          route,
+          similar: getSimilarRoutes(slug, 3, published),
+          source: "cms",
+        };
+      } catch {
+        return { route: null, similar: [], source: "cms" };
+      }
+    }
   }
 
   const demo = getDemoRouteBySlug(slug);
@@ -101,9 +153,5 @@ export async function getRoutePageData(slug: string): Promise<{
     return { route: demo, similar: getSimilarRoutes(slug), source: "demo" };
   }
 
-  if (cmsRoutes.length === 0) {
-    return { route: null, similar: getSimilarRoutes(slug), source: null };
-  }
-
-  return { route: null, similar: getSimilarRoutes(slug, 3, cmsRoutes), source: "cms" };
+  return { route: null, similar: getSimilarRoutes(slug), source: null };
 }

@@ -30,6 +30,7 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: "filename",
+    hidden: true,
   },
   access: {
     admin: adminPanelAccess,

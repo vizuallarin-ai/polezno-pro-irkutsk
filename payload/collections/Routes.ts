@@ -77,7 +77,7 @@ export const Routes: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "type", "status", "pointsCount", "updatedAt"],
-    group: "Маршруты и места",
+    group: "CMS",
     description: "Пешие и авторские маршруты для карты и страниц /map/[slug].",
   },
   access: {
@@ -280,6 +280,7 @@ export const Routes: CollectionConfig = {
       type: "json",
       label: "GeoJSON маршрута (LineString)",
       admin: {
+        readOnly: true,
         description: "Заполняется автоматически из точек, если пусто.",
       },
     },

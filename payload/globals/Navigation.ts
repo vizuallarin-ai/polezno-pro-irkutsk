@@ -5,7 +5,9 @@ export const Navigation: GlobalConfig = {
   slug: "navigation",
   label: "Навигация",
   admin: {
-    group: "Настройки",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — настройка навигации в следующей фазе.",
   },
   access: {
     read: () => true,

@@ -7,7 +7,9 @@ export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: "Настройки сайта",
   admin: {
-    group: "Настройки",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — глобальные настройки в следующей фазе.",
   },
   access: {
     read: () => true,

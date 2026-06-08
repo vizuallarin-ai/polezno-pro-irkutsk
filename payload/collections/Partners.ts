@@ -5,8 +5,9 @@ export const Partners: CollectionConfig = {
   slug: "partners",
   admin: {
     useAsTitle: "name",
-    group: "Отзывы и партнёры",
-    description: "Логотипы партнёров — отображаются в секции «Нам доверяют» на главной странице.",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — партнёры в следующей фазе.",
   },
   access: {
     admin: adminPanelAccess,

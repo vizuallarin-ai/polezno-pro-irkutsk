@@ -2,36 +2,53 @@ import type { CSSProperties } from "react";
 import { getPayload } from "payload";
 import config from "../../payload.config";
 
-type Counts = {
-  routes: number;
-  articles: number;
-  events: number;
-  products: number;
-  newLeads: number;
+type DashboardCounts = {
+  routesTotal: number;
+  routesPublished: number;
+  routesDraft: number;
+  leadsNew: number;
+  leadsInProgress: number;
 };
 
-async function fetchCounts(): Promise<Counts> {
+async function fetchCounts(): Promise<DashboardCounts> {
   try {
     const payload = await getPayload({ config });
-    const [routes, articles, events, products, leads] = await Promise.all([
-      payload.count({ collection: "routes" }),
-      payload.count({ collection: "articles" }),
-      payload.count({ collection: "events" }),
-      payload.count({ collection: "products" }),
-      payload.count({
-        collection: "leads",
-        where: { status: { equals: "new" } },
-      }),
-    ]);
+    const [routesTotal, routesPublished, routesDraft, leadsNew, leadsInProgress] =
+      await Promise.all([
+        payload.count({ collection: "routes" }),
+        payload.count({
+          collection: "routes",
+          where: { status: { equals: "published" } },
+        }),
+        payload.count({
+          collection: "routes",
+          where: { status: { equals: "draft" } },
+        }),
+        payload.count({
+          collection: "leads",
+          where: { status: { equals: "new" } },
+        }),
+        payload.count({
+          collection: "leads",
+          where: { status: { equals: "in_progress" } },
+        }),
+      ]);
+
     return {
-      routes: routes.totalDocs,
-      articles: articles.totalDocs,
-      events: events.totalDocs,
-      products: products.totalDocs,
-      newLeads: leads.totalDocs,
+      routesTotal: routesTotal.totalDocs,
+      routesPublished: routesPublished.totalDocs,
+      routesDraft: routesDraft.totalDocs,
+      leadsNew: leadsNew.totalDocs,
+      leadsInProgress: leadsInProgress.totalDocs,
     };
   } catch {
-    return { routes: 0, articles: 0, events: 0, products: 0, newLeads: 0 };
+    return {
+      routesTotal: 0,
+      routesPublished: 0,
+      routesDraft: 0,
+      leadsNew: 0,
+      leadsInProgress: 0,
+    };
   }
 }
 
@@ -41,6 +58,16 @@ const statStyle: CSSProperties = {
   border: "1px solid var(--theme-elevation-150)",
   background: "var(--theme-elevation-50)",
   minWidth: "120px",
+};
+
+const actionStyle: CSSProperties = {
+  ...statStyle,
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.35rem",
+  fontSize: "0.875rem",
+  fontWeight: 500,
+  cursor: "pointer",
 };
 
 const valueStyle: CSSProperties = {
@@ -56,26 +83,79 @@ const labelStyle: CSSProperties = {
   opacity: 0.75,
 };
 
+const sectionTitleStyle: CSSProperties = {
+  fontSize: "0.75rem",
+  fontWeight: 600,
+  letterSpacing: "0.04em",
+  textTransform: "uppercase",
+  color: "var(--theme-elevation-800)",
+  opacity: 0.55,
+  marginBottom: "0.75rem",
+};
+
 export default async function BeforeDashboard() {
   const counts = await fetchCounts();
 
   const stats = [
-    { label: "Маршруты", value: counts.routes, href: "/admin/collections/routes" },
-    { label: "Статьи", value: counts.articles, href: "/admin/collections/articles" },
-    { label: "События", value: counts.events, href: "/admin/collections/events" },
-    { label: "Товары", value: counts.products, href: "/admin/collections/products" },
+    {
+      label: "Маршрутов всего",
+      value: counts.routesTotal,
+      href: "/admin/collections/routes",
+    },
+    {
+      label: "Опубликовано",
+      value: counts.routesPublished,
+      href: "/admin/collections/routes?limit=10&page=1&sort=title&where[status][equals]=published",
+    },
+    {
+      label: "Черновики",
+      value: counts.routesDraft,
+      href: "/admin/collections/routes?limit=10&page=1&sort=title&where[status][equals]=draft",
+    },
     {
       label: "Новые заявки",
-      value: counts.newLeads,
-      href: "/admin/collections/leads",
-      highlight: counts.newLeads > 0,
+      value: counts.leadsNew,
+      href: "/admin/collections/leads?limit=10&page=1&sort=-createdAt&where[status][equals]=new",
+      highlight: counts.leadsNew > 0,
     },
+    {
+      label: "Заявки в работе",
+      value: counts.leadsInProgress,
+      href: "/admin/collections/leads?limit=10&page=1&sort=-createdAt&where[status][equals]=in_progress",
+    },
+  ];
+
+  const quickActions = [
+    {
+      label: "+ Новый маршрут",
+      href: "/admin/collections/routes/create",
+    },
+    {
+      label: "Все заявки",
+      href: "/admin/collections/leads",
+    },
+    {
+      label: "Пользователи CMS",
+      href: "/admin/collections/users",
+    },
+  ];
+
+  const comingSoon = [
+    "Статьи",
+    "События",
+    "Товары",
+    "Экскурсии",
+    "Места",
+    "Гиды",
+    "Отзывы",
+    "Партнёры",
+    "Настройки сайта",
   ];
 
   return (
     <div style={{ marginBottom: "2rem" }}>
       <h2 style={{ fontSize: "1.5rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-        Добро пожаловать в CMS «Полезно про Иркутск»
+        CMS «Полезно про Иркутск» — фаза 3A
       </h2>
       <p
         style={{
@@ -86,14 +166,20 @@ export default async function BeforeDashboard() {
           lineHeight: 1.5,
         }}
       >
-        Управляйте маршрутами, статьями, событиями, товарами и заявками. Опубликованный
-        контент автоматически появляется на сайте.
+        Управляйте маршрутами и заявками. Опубликованные маршруты появляются на{" "}
+        <a href="/map" style={{ color: "inherit" }}>
+          /map
+        </a>
+        ; черновики и скрытые — только здесь.
       </p>
+
+      <p style={sectionTitleStyle}>Сводка</p>
       <div
         style={{
           display: "flex",
           flexWrap: "wrap",
           gap: "0.75rem",
+          marginBottom: "1.75rem",
         }}
       >
         {stats.map((item) => (
@@ -114,6 +200,39 @@ export default async function BeforeDashboard() {
           </a>
         ))}
       </div>
+
+      <p style={sectionTitleStyle}>Быстрые действия</p>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.75rem",
+          marginBottom: "1.75rem",
+        }}
+      >
+        {quickActions.map((item) => (
+          <a
+            key={item.label}
+            href={item.href}
+            style={{ ...actionStyle, textDecoration: "none", color: "inherit" }}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <p style={sectionTitleStyle}>Позже</p>
+      <p
+        style={{
+          fontSize: "0.8125rem",
+          color: "var(--theme-elevation-800)",
+          opacity: 0.7,
+          maxWidth: "640px",
+          lineHeight: 1.5,
+        }}
+      >
+        {comingSoon.join(" · ")} — будут добавлены в следующих фазах.
+      </p>
     </div>
   );
 }

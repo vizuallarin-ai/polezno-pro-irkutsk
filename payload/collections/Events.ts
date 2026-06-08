@@ -15,8 +15,9 @@ export const Events: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "startDate", "status", "isPast", "updatedAt"],
-    group: "Контент",
-    description: "Прошедшие события помечаются автоматически (поле «Прошло»).",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — полный CRUD событий в следующей фазе.",
     listSearchableFields: ["title", "venue"],
   },
   access: {

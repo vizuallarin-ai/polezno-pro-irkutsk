@@ -38,8 +38,9 @@ export default buildConfig({
   },
   collections: [
     Users,
-    Media,
     Routes,
+    Leads,
+    Media,
     Places,
     Excursions,
     Articles,
@@ -48,7 +49,6 @@ export default buildConfig({
     Guides,
     Reviews,
     Partners,
-    Leads,
   ],
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),

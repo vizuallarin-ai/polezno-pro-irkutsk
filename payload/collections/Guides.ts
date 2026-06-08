@@ -6,9 +6,9 @@ export const Guides: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "specialization", "isActive", "updatedAt"],
-    group: "Команда",
-    description:
-      "Гиды и авторы маршрутов. Отображаются на странице /about#guides и в карточках экскурсий.",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — управление гидами в следующей фазе.",
   },
   access: {
     admin: adminPanelAccess,

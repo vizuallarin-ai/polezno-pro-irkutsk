@@ -36,10 +36,19 @@ export const Leads: CollectionConfig = {
   },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "status", "source", "serviceType", "createdAt"],
-    group: "CRM",
-    listSearchableFields: ["name", "email", "phone", "message"],
-    description: "Фильтруйте по статусу «Новый» для необработанных заявок.",
+    defaultColumns: [
+      "name",
+      "email",
+      "status",
+      "source",
+      "routeSlug",
+      "serviceType",
+      "createdAt",
+    ],
+    group: "CMS",
+    listSearchableFields: ["name", "email", "phone", "message", "routeSlug"],
+    description:
+      "Фильтруйте по колонке «Статус» в списке. Новые заявки — status «Новый».",
   },
   access: {
     admin: adminPanelAccess,
@@ -48,6 +57,7 @@ export const Leads: CollectionConfig = {
     update: leadsUpdateAccess,
     delete: leadsDeleteAccess,
   },
+  defaultSort: "-createdAt",
   fields: [
     {
       name: "name",
@@ -145,6 +155,15 @@ export const Leads: CollectionConfig = {
         { label: "Другое", value: "other" },
       ],
       admin: { position: "sidebar" },
+    },
+    {
+      name: "routeSlug",
+      type: "text",
+      label: "Маршрут (slug)",
+      admin: {
+        position: "sidebar",
+        description: "Slug маршрута, если заявка пришла со страницы /map или /program?route=…",
+      },
     },
   ],
   hooks: {

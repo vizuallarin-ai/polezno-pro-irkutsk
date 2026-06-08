@@ -16,8 +16,9 @@ export const Excursions: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "format", "price", "status", "updatedAt"],
-    group: "Маршруты и места",
-    description: "Платные и авторские экскурсии с привязкой к маршрутам.",
+    group: "Позже",
+    hidden: true,
+    description: "Скоро — полный CRUD экскурсий в следующей фазе.",
   },
   access: {
     admin: adminPanelAccess,
