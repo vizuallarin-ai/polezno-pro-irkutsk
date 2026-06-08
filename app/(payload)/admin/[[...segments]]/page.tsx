@@ -1,6 +1,6 @@
 import { RootPage, generatePageMetadata } from "@payloadcms/next/views";
 import config from "../../../../payload.config";
-import { importMap } from "../importMap";
+import { importMap } from "../importMap.js";
 
 type Args = {
   params: Promise<{
@@ -12,8 +12,8 @@ type Args = {
 };
 
 export const generateMetadata = ({ params, searchParams }: Args) =>
-  generatePageMetadata({ config: Promise.resolve(config) as never, params, searchParams });
+  generatePageMetadata({ config, params, searchParams });
 
 export default function Page({ params, searchParams }: Args) {
-  return RootPage({ config: Promise.resolve(config) as never, params, searchParams, importMap });
+  return RootPage({ config, params, searchParams, importMap });
 }
