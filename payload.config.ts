@@ -60,6 +60,8 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
     },
+    // Sync schema in dev when collections change (fixes missing payload_locked_documents columns)
+    push: process.env.NODE_ENV !== "production",
   }),
   upload: {
     limits: {
