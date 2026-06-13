@@ -11,10 +11,13 @@
 | Framework | Next.js 16 App Router, TypeScript strict |
 | Стили | Tailwind CSS v4, shadcn/ui |
 | CMS | Payload CMS 3 + PostgreSQL |
-| Карта | Mapbox GL JS |
+| Карта | Leaflet + OpenStreetMap |
+| Деплой | Beget VPS, PM2, Nginx |
 | Анимации | Lenis, GSAP + ScrollTrigger, Framer Motion |
-| Оплата | Stripe Checkout |
+| Оплата | Stripe Checkout (опционально) |
 | Формы | React Hook Form + Zod |
+
+Production: [irkportal.ru](https://irkportal.ru). Деплой — `docs/DEPLOY-BEGET.md`.
 
 ---
 
@@ -22,7 +25,7 @@
 
 ### 1. Требования
 - Node.js 20+
-- PostgreSQL 14+ (или Neon/Supabase)
+- PostgreSQL 14+ (локально или на VPS)
 
 ### 2. Установка
 
@@ -42,10 +45,7 @@ cp .env.example .env.local
 |------------|-----------|
 | `DATABASE_URL` | Строка подключения к PostgreSQL |
 | `PAYLOAD_SECRET` | Любая строка 32+ символов |
-| `NEXT_PUBLIC_MAPBOX_TOKEN` | [mapbox.com](https://mapbox.com) → Access tokens |
-| `STRIPE_SECRET_KEY` | [dashboard.stripe.com](https://dashboard.stripe.com) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe Dashboard |
-| `NEXT_PUBLIC_SERVER_URL` | URL деплоя (например, `https://yourdomain.ru`) |
+| `NEXT_PUBLIC_SERVER_URL` | URL деплоя (например, `https://irkportal.ru`) |
 
 ### 4. Создать базу данных
 

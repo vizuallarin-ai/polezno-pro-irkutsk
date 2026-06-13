@@ -10,6 +10,10 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { productSchema, breadcrumbSchema } from "@/lib/jsonld";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
+import {
+  PRODUCT_CATEGORY_LABELS,
+  PRODUCT_STOCK_LABELS,
+} from "@/lib/content-labels";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -62,21 +66,6 @@ export async function generateMetadata({
   );
 }
 
-const STOCK_LABELS: Record<string, string> = {
-  in_stock: "В наличии",
-  pre_order: "Предзаказ",
-  out_of_stock: "Нет в наличии",
-  soon: "Скоро",
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  clothing: "Одежда",
-  posters: "Постеры",
-  postcards: "Открытки",
-  art: "Арт-объекты",
-  books: "Книги",
-  souvenirs: "Сувениры",
-};
 
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
@@ -172,7 +161,7 @@ export default async function ProductPage({ params }: PageProps) {
 
           <div className="flex flex-col justify-start lg:sticky lg:top-24 lg:self-start">
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-              {CATEGORY_LABELS[String(product.category)] ||
+              {PRODUCT_CATEGORY_LABELS[String(product.category)] ||
                 String(product.category)}
             </p>
 
@@ -191,7 +180,7 @@ export default async function ProductPage({ params }: PageProps) {
             </p>
 
             <Badge variant="outline" className="mb-4 w-fit">
-              {STOCK_LABELS[stockStatus] || stockStatus}
+              {PRODUCT_STOCK_LABELS[stockStatus] || stockStatus}
             </Badge>
 
             {product.externalLink ? (
@@ -216,7 +205,7 @@ export default async function ProductPage({ params }: PageProps) {
             ) : (
               <div className="flex items-center gap-2 text-sm text-muted-foreground border border-border px-5 py-3 w-fit">
                 <ShoppingBag size={14} />
-                {STOCK_LABELS[stockStatus] || "Недоступно"}
+                {PRODUCT_STOCK_LABELS[stockStatus] || "Недоступно"}
               </div>
             )}
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, MapPin, Ticket } from "lucide-react";
+import { EVENT_CATEGORY_LABELS } from "@/lib/content-labels";
 
 export const metadata: Metadata = {
   title: "События в Иркутске — фестивали, концерты, выставки",
@@ -10,18 +11,6 @@ export const metadata: Metadata = {
     "Календарь событий Иркутска: фестивали, концерты, выставки, ледовые события и гастрономические мероприятия.",
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  festival: "Фестивали",
-  concert: "Концерты",
-  exhibition: "Выставки",
-  ice: "Лёд",
-  baikal: "Байкал",
-  gastronomy: "Гастрономия",
-  sport: "Спорт",
-  culture: "Культура",
-  forum: "Форумы",
-  other: "Другое",
-};
 
 async function getEvents() {
   try {
@@ -122,7 +111,7 @@ function EventRow({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <Badge variant="outline" className="text-xs">
-              {CATEGORY_LABELS[String(event.category)] || String(event.category)}
+              {EVENT_CATEGORY_LABELS[String(event.category)] || String(event.category)}
             </Badge>
             {event.isFeatured && (
               <Badge variant="baikal" className="text-xs">

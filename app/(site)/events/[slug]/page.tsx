@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Calendar, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { JsonLd } from "@/components/seo/json-ld";
 import { eventSchema, breadcrumbSchema } from "@/lib/jsonld";
+import { EVENT_CATEGORY_LABELS } from "@/lib/content-labels";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -42,18 +43,6 @@ export async function generateMetadata({
   };
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  festival: "Фестиваль",
-  concert: "Концерт",
-  exhibition: "Выставка",
-  ice: "Ледовое событие",
-  baikal: "Байкал",
-  gastronomy: "Гастрономия",
-  sport: "Спорт",
-  culture: "Культура",
-  forum: "Форум",
-  other: "Другое",
-};
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("ru-RU", {
@@ -107,7 +96,7 @@ export default async function EventPage({ params }: PageProps) {
         <header className="mb-10">
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             <Badge variant="outline">
-              {CATEGORY_LABELS[String(event.category)] || String(event.category)}
+              {EVENT_CATEGORY_LABELS[String(event.category)] || String(event.category)}
             </Badge>
             {event.isFeatured && (
               <Badge variant="baikal">Рекомендуем</Badge>

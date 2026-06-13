@@ -7,19 +7,11 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ArrowRight } from "lucide-react";
+import { ROUTE_CATEGORY_OPTIONS } from "@/lib/content-labels";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const routeCategories = [
-  "Архитектура",
-  "Гастрономия",
-  "История",
-  "Декабристы",
-  "Деревянное зодчество",
-  "Hidden Places",
-  "Советский Иркутск",
-  "Ночная прогулка",
-];
+const routeCategories = ROUTE_CATEGORY_OPTIONS.map((option) => option.label);
 
 export function MapTeaser() {
   const sectionRef = useRef<HTMLElement>(null);

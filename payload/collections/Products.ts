@@ -5,7 +5,12 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
-import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
+import {
+  ADMIN_GROUPS,
+  CONTENT_STATUS_OPTIONS,
+  PRODUCT_CATEGORY_OPTIONS,
+  PRODUCT_STOCK_OPTIONS,
+} from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -69,12 +74,7 @@ export const Products: CollectionConfig = {
       label: "Наличие",
       defaultValue: "in_stock",
       required: true,
-      options: [
-        { label: "В наличии", value: "in_stock" },
-        { label: "Предзаказ", value: "pre_order" },
-        { label: "Нет в наличии", value: "out_of_stock" },
-        { label: "Скоро", value: "soon" },
-      ],
+      options: [...PRODUCT_STOCK_OPTIONS],
       admin: { position: "sidebar" },
     },
     {
@@ -82,16 +82,7 @@ export const Products: CollectionConfig = {
       type: "select",
       label: "Категория",
       required: true,
-      options: [
-        { label: "Одежда", value: "clothing" },
-        { label: "Постеры", value: "posters" },
-        { label: "Открытки", value: "postcards" },
-        { label: "Арт-объекты", value: "art" },
-        { label: "Книги", value: "books" },
-        { label: "Сувениры", value: "souvenirs" },
-        { label: "Керамика", value: "ceramics" },
-        { label: "Еда и напитки", value: "food" },
-      ],
+      options: [...PRODUCT_CATEGORY_OPTIONS],
     },
     {
       name: "price",

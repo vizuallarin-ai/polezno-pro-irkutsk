@@ -5,6 +5,14 @@ import {
   publishedOrStaff,
 } from "../access";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import {
+  ADMIN_GROUPS,
+  CONTENT_STATUS_OPTIONS,
+  ROUTE_ACCESS_OPTIONS,
+  ROUTE_CATEGORY_OPTIONS,
+  ROUTE_DIFFICULTY_OPTIONS,
+  ROUTE_FORMAT_OPTIONS,
+} from "../constants";
 
 const routePointFields = [
   {
@@ -76,8 +84,8 @@ export const Routes: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "type", "status", "pointsCount", "updatedAt"],
-    group: "Маршруты",
+    defaultColumns: ["title", "category", "format", "type", "status", "updatedAt"],
+    group: ADMIN_GROUPS.routes,
     description: "Пешие и авторские маршруты для карты и страниц /map/[slug].",
   },
   access: {
@@ -140,12 +148,7 @@ export const Routes: CollectionConfig = {
       label: "Статус",
       required: true,
       defaultValue: "draft",
-      options: [
-        { label: "Черновик", value: "draft" },
-        { label: "Опубликован", value: "published" },
-        { label: "Скрыт", value: "hidden" },
-        { label: "В архиве", value: "archived" },
-      ],
+      options: [...CONTENT_STATUS_OPTIONS],
       admin: { position: "sidebar" },
     },
     {
@@ -153,38 +156,21 @@ export const Routes: CollectionConfig = {
       type: "select",
       label: "Категория",
       required: true,
-      options: [
-        { label: "Архитектура", value: "architecture" },
-        { label: "Гастрономия", value: "gastronomy" },
-        { label: "История", value: "history" },
-        { label: "Декабристы", value: "decembrists" },
-        { label: "Деревянное зодчество", value: "wooden" },
-        { label: "Hidden Places", value: "hidden" },
-        { label: "Советский Иркутск", value: "soviet" },
-        { label: "Ночная прогулка", value: "night" },
-      ],
+      options: [...ROUTE_CATEGORY_OPTIONS],
     },
     {
       name: "format",
       type: "select",
       label: "Формат",
       defaultValue: "walking",
-      options: [
-        { label: "Пеший", value: "walking" },
-        { label: "Гастро", value: "gastro" },
-        { label: "Авторский", value: "author" },
-        { label: "Байкал рядом", value: "baikal" },
-      ],
+      options: [...ROUTE_FORMAT_OPTIONS],
     },
     {
       name: "type",
       type: "select",
       label: "Тип доступа",
       required: true,
-      options: [
-        { label: "Бесплатный", value: "free" },
-        { label: "Платный", value: "paid" },
-      ],
+      options: [...ROUTE_ACCESS_OPTIONS],
       defaultValue: "free",
     },
     {
@@ -229,11 +215,7 @@ export const Routes: CollectionConfig = {
       type: "select",
       label: "Сложность",
       defaultValue: "medium",
-      options: [
-        { label: "Лёгкая", value: "easy" },
-        { label: "Средняя", value: "medium" },
-        { label: "Сложная", value: "hard" },
-      ],
+      options: [...ROUTE_DIFFICULTY_OPTIONS],
     },
     {
       name: "pointsCount",

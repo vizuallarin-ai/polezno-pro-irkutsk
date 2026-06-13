@@ -52,7 +52,7 @@ export const Guides: CollectionConfig = {
         { label: "Байкал", value: "baikal" },
         { label: "Ночные прогулки", value: "night" },
         { label: "Декабристы", value: "decembrists" },
-        { label: "Hidden Places", value: "hidden" },
+        { label: "Секретные места", value: "hidden" },
         { label: "Корпоративные программы", value: "corporate" },
       ],
     },

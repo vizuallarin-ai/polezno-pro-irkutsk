@@ -18,7 +18,7 @@ const SPEC_LABELS: Record<string, string> = {
   baikal: "Байкал",
   night: "Ночные прогулки",
   decembrists: "Декабристы",
-  hidden: "Hidden Places",
+  hidden: "Секретные места",
   corporate: "Корпоративные",
 };
 

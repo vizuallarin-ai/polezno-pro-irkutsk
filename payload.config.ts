@@ -54,7 +54,14 @@ export default buildConfig({
   ],
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || "super-secret-payload-key-change-me",
+  secret: (() => {
+    const secret = process.env.PAYLOAD_SECRET?.trim();
+    if (secret) return secret;
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("PAYLOAD_SECRET is required in production");
+    }
+    return "dev-only-payload-secret";
+  })(),
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },

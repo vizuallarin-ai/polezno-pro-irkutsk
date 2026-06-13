@@ -1,30 +1,9 @@
 import type { Article } from "@/components/sections/explore-preview";
 import type { Product } from "@/components/sections/shop-preview";
-
-const ARTICLE_CATEGORY_LABELS: Record<string, string> = {
-  sights: "Что посмотреть",
-  walks: "Где гулять",
-  food: "Где поесть",
-  stay: "Где остановиться",
-  history: "История города",
-  facts: "Интересные факты",
-  baikal: "Байкал",
-  hidden: "Hidden Places",
-  gastronomy: "Гастрономия",
-  architecture: "Архитектура",
-  excursions: "Экскурсии",
-};
-
-const PRODUCT_CATEGORY_LABELS: Record<string, string> = {
-  clothing: "Одежда",
-  posters: "Постеры",
-  postcards: "Открытки",
-  art: "Арт-объекты",
-  books: "Книги",
-  souvenirs: "Сувениры",
-  ceramics: "Керамика",
-  food: "Еда и напитки",
-};
+import {
+  ARTICLE_CATEGORY_LABELS,
+  PRODUCT_CATEGORY_LABELS,
+} from "@/lib/content-labels";
 
 function coverFromDoc(doc: {
   coverImage?: { url?: string } | null;
