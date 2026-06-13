@@ -2,12 +2,17 @@ import type { CollectionConfig } from "payload";
 import path from "path";
 import { fileURLToPath } from "url";
 import { adminPanelAccess, mediaReadAccess, mediaWriteAccess } from "../access";
+import { ADMIN_GROUPS } from "../constants";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 export const Media: CollectionConfig = {
   slug: "media",
+  labels: {
+    singular: "Файл",
+    plural: "Медиа",
+  },
   upload: {
     staticDir: path.resolve(dirname, "../../public/media"),
     imageSizes: [
@@ -30,7 +35,8 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: "filename",
-    hidden: true,
+    group: ADMIN_GROUPS.media,
+    description: "Изображения, видео и PDF для маршрутов, статей и товаров.",
   },
   access: {
     admin: adminPanelAccess,

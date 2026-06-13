@@ -5,7 +5,7 @@ import {
   adminPanelAccess,
   articleReadAccess,
 } from "../access";
-import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
+import { ADMIN_GROUPS, ARTICLE_CATEGORY_OPTIONS, CONTENT_STATUS_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -73,19 +73,7 @@ export const Articles: CollectionConfig = {
       type: "select",
       label: "Категория",
       required: true,
-      options: [
-        { label: "Что посмотреть", value: "sights" },
-        { label: "Где гулять", value: "walks" },
-        { label: "Где поесть", value: "food" },
-        { label: "Где остановиться", value: "stay" },
-        { label: "История города", value: "history" },
-        { label: "Интересные факты", value: "facts" },
-        { label: "Байкал", value: "baikal" },
-        { label: "Hidden Places", value: "hidden" },
-        { label: "Гастрономия", value: "gastronomy" },
-        { label: "Архитектура", value: "architecture" },
-        { label: "Экскурсии", value: "excursions" },
-      ],
+      options: [...ARTICLE_CATEGORY_OPTIONS],
     },
     {
       name: "tags",

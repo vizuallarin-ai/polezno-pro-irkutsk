@@ -4,7 +4,7 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
-import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
+import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS, EVENT_CATEGORY_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -88,18 +88,7 @@ export const Events: CollectionConfig = {
       type: "select",
       label: "Категория",
       required: true,
-      options: [
-        { label: "Фестиваль", value: "festival" },
-        { label: "Концерт", value: "concert" },
-        { label: "Выставка", value: "exhibition" },
-        { label: "Ледовое событие", value: "ice" },
-        { label: "Байкал", value: "baikal" },
-        { label: "Гастрономия", value: "gastronomy" },
-        { label: "Спорт", value: "sport" },
-        { label: "Культура", value: "culture" },
-        { label: "Форум", value: "forum" },
-        { label: "Другое", value: "other" },
-      ],
+      options: [...EVENT_CATEGORY_OPTIONS],
     },
     {
       name: "startDate",

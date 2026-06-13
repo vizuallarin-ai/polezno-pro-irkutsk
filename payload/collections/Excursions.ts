@@ -5,7 +5,7 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
-import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS } from "../constants";
+import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS, EXCURSION_FORMAT_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -68,15 +68,7 @@ export const Excursions: CollectionConfig = {
       type: "select",
       label: "Формат",
       required: true,
-      options: [
-        { label: "Пешая", value: "walking" },
-        { label: "Автобусная", value: "bus" },
-        { label: "Гастро", value: "gastro" },
-        { label: "Авторская", value: "author" },
-        { label: "Корпоративная", value: "corporate" },
-        { label: "Байкал", value: "baikal" },
-        { label: "Ночная", value: "night" },
-      ],
+      options: [...EXCURSION_FORMAT_OPTIONS],
     },
     {
       name: "shortDescription",

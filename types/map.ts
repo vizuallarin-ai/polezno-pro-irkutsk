@@ -8,16 +8,7 @@ export type RouteCategory =
   | "soviet"
   | "night";
 
-export const ROUTE_CATEGORY_LABELS: Record<RouteCategory, string> = {
-  architecture: "Архитектура",
-  gastronomy: "Гастрономия",
-  history: "История",
-  decembrists: "Декабристы",
-  wooden: "Деревянное зодчество",
-  hidden: "Hidden Places",
-  soviet: "Советский Иркутск",
-  night: "Ночная прогулка",
-};
+export { ROUTE_CATEGORY_LABELS } from "@/lib/content-labels";
 
 export const ROUTE_CATEGORY_COLORS: Record<RouteCategory, string> = {
   architecture: "#0B3D5C",

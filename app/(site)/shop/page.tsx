@@ -3,6 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { getSiteSettings } from "@/lib/site-settings";
+import {
+  PRODUCT_CATEGORY_LABELS,
+  PRODUCT_STOCK_LABELS,
+} from "@/lib/content-labels";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -14,23 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  clothing: "Одежда",
-  posters: "Постеры",
-  postcards: "Открытки",
-  art: "Арт-объекты",
-  books: "Книги",
-  souvenirs: "Сувениры",
-  ceramics: "Керамика",
-  food: "Еда и напитки",
-};
 
-const STOCK_LABELS: Record<string, string> = {
-  in_stock: "В наличии",
-  pre_order: "Предзаказ",
-  out_of_stock: "Нет в наличии",
-  soon: "Скоро",
-};
+const STOCK_LABELS = PRODUCT_STOCK_LABELS;
 
 async function getProducts() {
   try {
@@ -142,7 +131,7 @@ export default async function ShopPage() {
                     )}
                   </div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
-                    {CATEGORY_LABELS[String(product.category)] ||
+                    {PRODUCT_CATEGORY_LABELS[String(product.category)] ||
                       String(product.category)}
                   </p>
                   <p className="text-sm font-medium text-foreground leading-snug mb-2 group-hover:text-baikal transition-colors duration-200">

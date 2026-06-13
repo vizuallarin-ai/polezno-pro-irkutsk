@@ -14,6 +14,7 @@ import {
 import { articleSchema, breadcrumbSchema } from "@/lib/jsonld";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
+import { ARTICLE_CATEGORY_LABELS } from "@/lib/content-labels";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -66,10 +67,10 @@ const CATEGORY_META: Record<
       "Байкал из Иркутска: как добраться, что посмотреть, когда ехать.",
   },
   hidden: {
-    label: "Hidden Places",
+    label: ARTICLE_CATEGORY_LABELS.hidden,
     description: "Места, которые знают только местные",
     seoDescription:
-      "Hidden places Иркутска — скрытые места и локации вне путеводителей.",
+      "Секретные места Иркутска — локации вне путеводителей.",
   },
   gastronomy: {
     label: "Гастрономия",
@@ -89,20 +90,6 @@ const CATEGORY_META: Record<
     seoDescription:
       "Экскурсии по Иркутску: авторские маршруты, исторические и гастрономические туры.",
   },
-};
-
-const ARTICLE_CATEGORY_LABELS: Record<string, string> = {
-  sights: "Что посмотреть",
-  walks: "Где гулять",
-  food: "Где поесть",
-  stay: "Где остановиться",
-  history: "История города",
-  facts: "Интересные факты",
-  baikal: "Байкал",
-  hidden: "Hidden Places",
-  gastronomy: "Гастрономия",
-  architecture: "Архитектура",
-  excursions: "Экскурсии",
 };
 
 // ─── Data fetchers ────────────────────────────────────────────────────────────

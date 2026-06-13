@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
+import { ARTICLE_CATEGORY_LABELS } from "@/lib/content-labels";
 
 export const metadata: Metadata = {
   title: "Исследовать Иркутск — гид по городу и Байкалу",
@@ -49,7 +50,7 @@ const categories = [
   },
   {
     slug: "hidden",
-    label: "Hidden Places",
+    label: ARTICLE_CATEGORY_LABELS.hidden,
     description: "Места, которые знают только местные",
     image: "/images/explore-hidden.jpg",
   },

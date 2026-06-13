@@ -339,7 +339,7 @@ print_next_steps() {
   echo "4. Опционально демо-контент: npm run seed"
   echo ""
   echo "5. Обновление после push в GitHub:"
-  echo "   cd ${APP_DIR} && git pull origin ${GIT_BRANCH} && npm ci && npm run build && pm2 restart ${PM2_APP_NAME}"
+  echo "   cd ${APP_DIR} && git pull origin ${GIT_BRANCH} && npm ci --include=dev && npm run build && pm2 restart ${PM2_APP_NAME}"
   echo ""
   echo "Документация: docs/DEPLOY-BEGET.md"
   echo -e "${C_BOLD}====================================${C_RESET}"

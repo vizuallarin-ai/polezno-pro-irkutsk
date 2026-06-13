@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
 import { BOOSTY_URL } from "@/lib/site-links";
 import type { SiteSettingsData } from "@/lib/site-settings";
+import { ARTICLE_CATEGORY_LABELS } from "@/lib/content-labels";
 
 const footerLinks = {
   explore: [
@@ -11,7 +12,7 @@ const footerLinks = {
     { href: "/events", label: "События" },
     { href: "/explore/food", label: "Где поесть" },
     { href: "/explore/baikal", label: "Байкал рядом" },
-    { href: "/explore/hidden", label: "Hidden Places" },
+    { href: "/explore/hidden", label: ARTICLE_CATEGORY_LABELS.hidden },
   ],
   services: [
     { href: "/excursions", label: "Экскурсии" },

@@ -187,7 +187,7 @@ export default async function BeforeDashboard() {
   return (
     <div style={{ marginBottom: "2rem" }}>
       <h2 style={{ fontSize: "1.5rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-        CMS «Полезно про Иркутск» — фаза 3B
+        CMS «Полезно про Иркутск» — production
       </h2>
       <p
         style={{

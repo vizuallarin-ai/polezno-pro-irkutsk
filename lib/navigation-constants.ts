@@ -7,7 +7,6 @@ export const DEFAULT_NAV_LINKS: NavItem[] = [
   { href: "/program", label: "Для компаний" },
   { href: "/explore", label: "Исследовать" },
   { href: "/events", label: "События" },
-  { href: "/shop", label: "Магазин" },
   { href: BOOSTY_URL, label: "Клуб" },
   { href: "/about", label: "О проекте" },
   { href: "/contact", label: "Контакты" },
