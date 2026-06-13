@@ -1,4 +1,4 @@
-# Деплой на Beget VPS (Ubuntu 24.04) + irkportal.ru
+﻿# Деплой на Beget VPS (Ubuntu 24.04) + irkportal.ru
 
 Проект: **polezno-pro-irkutsk** (Next.js 16 + Payload CMS 3 + PostgreSQL).
 
@@ -8,6 +8,38 @@
 Админка: **https://irkportal.ru/admin**
 
 ---
+
+---
+
+## Автоматический bootstrap (один скрипт)
+
+На **чистом** VPS Ubuntu 24.04 можно развернуть стек и приложение скриптом из репозитория:
+
+```bash
+ssh root@90.156.170.182
+export DEPLOY_DB_PASSWORD='ваш_надёжный_пароль_postgres'
+apt update && apt install -y git
+git clone https://github.com/vizuallarin-ai/polezno-pro-irkutsk.git /var/www/polezno
+cd /var/www/polezno
+bash scripts/deploy-beget.sh
+```
+
+Скрипт `scripts/deploy-beget.sh` (идемпотентен насколько возможно):
+
+- ставит Node 20, PostgreSQL, Nginx, Certbot, Git, PM2, UFW;
+- создаёт пользователя и БД `polezno_irkutsk` (пароль из `DEPLOY_DB_PASSWORD` или интерактивный ввод);
+- клонирует/обновляет `/var/www/polezno` с ветки `master`;
+- требует заполненный `.env.production` (если файла нет — копирует из `.env.production.example` и **останавливается** с инструкцией);
+- выполняет `npm ci`, `npm run build`, `pm2 start`/`restart`;
+- пишет конфиг Nginx для `irkportal.ru` / `www`.
+
+Подсказка локально (без VPS):
+
+```bash
+npm run deploy:beget-help
+```
+
+После успешного скрипта вручную: **DNS A** на IP VPS, **certbot**, **`npm run create-admin`**.
 
 ## Что купить / заказать (день «завтра»)
 
