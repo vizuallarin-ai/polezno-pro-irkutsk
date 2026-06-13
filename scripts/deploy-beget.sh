@@ -234,10 +234,35 @@ ensure_env_production() {
   ln -sf .env.production "${APP_DIR}/.env.local"
 }
 
+ensure_swap_for_build() {
+  # Next.js 16 + Payload на VPS 1 GB часто падает с «Killed» (OOM) без swap
+  local swap_mb total_mb
+  swap_mb=$(awk '/SwapTotal/ {print $2}' /proc/meminfo 2>/dev/null || echo 0)
+  total_mb=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo 2>/dev/null || echo 0)
+
+  if [[ "${swap_mb:-0}" -lt 1048576 ]]; then
+    if [[ ! -f /swapfile ]]; then
+      log "Мало swap (${swap_mb} kB), RAM ~${total_mb} MB — создаём /swapfile 2G для сборки..."
+      fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress
+      chmod 600 /swapfile
+      mkswap /swapfile
+      swapon /swapfile
+      grep -q '/swapfile' /etc/fstab 2>/dev/null || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+    else
+      swapon /swapfile 2>/dev/null || true
+    fi
+    free -h || true
+  else
+    log "Swap достаточен для сборки."
+  fi
+}
+
 build_and_pm2() {
   log "Сборка и запуск приложения..."
   cd "${APP_DIR}"
+  ensure_swap_for_build
   export NODE_ENV=production
+  export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
   npm ci
   npm run build
 
