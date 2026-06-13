@@ -322,6 +322,23 @@ sudo -u postgres pg_restore -d polezno_irkutsk --clean /var/backups/polezno/ИМ
 
 ---
 
+## Сборка падает с «Killed»
+
+Next.js 16 + Payload на VPS **1 GB RAM** часто обрывает `npm run build` без текста ошибки — это OOM-killer.
+
+**Решение:** скрипт `deploy-beget.sh` (актуальный `master`) сам создаёт **swap 2 GB**. Вручную:
+
+```bash
+fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+free -h
+cd /var/www/polezno && NODE_OPTIONS='--max-old-space-size=1536' npm run build
+```
+
+Если снова `Killed` — увеличьте VPS до **2 GB RAM**.
+
+---
+
 ## Устранение неполадок: `/admin` отдаёт 502
 
 **502 Bad Gateway** — Nginx не получает ответ от Node на `:3000`.
