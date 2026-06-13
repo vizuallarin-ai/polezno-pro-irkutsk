@@ -99,12 +99,13 @@ env_is_ready() {
   [[ -f "$f" ]] || return 1
   env_has_placeholders "$f" && return 1
 
-  local url secret reval
+  local url secret reval actionsKey
   url=$(grep -E '^DATABASE_URL=' "$f" | head -1 | cut -d= -f2- || true)
   secret=$(grep -E '^PAYLOAD_SECRET=' "$f" | head -1 | cut -d= -f2- || true)
   reval=$(grep -E '^REVALIDATE_SECRET=' "$f" | head -1 | cut -d= -f2- || true)
+  actionsKey=$(grep -E '^NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=' "$f" | head -1 | cut -d= -f2- || true)
 
-  [[ -n "$url" && -n "$secret" && -n "$reval" ]] || return 1
+  [[ -n "$url" && -n "$secret" && -n "$reval" && -n "$actionsKey" ]] || return 1
   [[ ${#secret} -ge 32 ]] || return 1
   return 0
 }
@@ -116,13 +117,13 @@ print_env_instructions() {
   err ""
   err "Сделайте вручную:"
   err "  1. nano ${env_file}"
-  err "  2. Заполните DATABASE_URL (пароль = DEPLOY_DB_PASSWORD), PAYLOAD_SECRET (32+ символов), REVALIDATE_SECRET"
+  err "  2. Заполните DATABASE_URL, PAYLOAD_SECRET, REVALIDATE_SECRET, NEXT_SERVER_ACTIONS_ENCRYPTION_KEY"
   err "  3. Проверьте NEXT_PUBLIC_SERVER_URL=https://${DOMAIN}"
   err "  4. ln -sf .env.production .env.local"
   err "  5. Снова: bash scripts/deploy-beget.sh"
   err ""
-  err "Сгенерировать секреты локально:"
-  err "  openssl rand -base64 32   # PAYLOAD_SECRET"
+  err "Сгенерировать секреты:"
+  err "  openssl rand -base64 32   # PAYLOAD_SECRET или NEXT_SERVER_ACTIONS_ENCRYPTION_KEY"
   err "  openssl rand -hex 24      # REVALIDATE_SECRET"
   exit 1
 }
@@ -265,13 +266,14 @@ build_and_pm2() {
   export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
   # devDependencies (typescript и др.) нужны для next build на VPS
   npm ci --include=dev
+  log "Синхронизация схемы PostgreSQL (Payload)..."
+  npm run db:push
   npm run build
 
   if pm2 describe "${PM2_APP_NAME}" >/dev/null 2>&1; then
-    pm2 restart "${PM2_APP_NAME}" --update-env
-  else
-    pm2 start npm --name "${PM2_APP_NAME}" -- start
+    pm2 delete "${PM2_APP_NAME}" >/dev/null 2>&1 || true
   fi
+  pm2 start ecosystem.config.cjs --env production
   pm2 save
 
   if ! pm2 startup systemd -u root --hp /root 2>/dev/null | grep -q "already"; then
