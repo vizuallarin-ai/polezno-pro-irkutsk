@@ -263,7 +263,8 @@ build_and_pm2() {
   ensure_swap_for_build
   export NODE_ENV=production
   export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1536}"
-  npm ci
+  # devDependencies (typescript и др.) нужны для next build на VPS
+  npm ci --include=dev
   npm run build
 
   if pm2 describe "${PM2_APP_NAME}" >/dev/null 2>&1; then
