@@ -1,14 +1,12 @@
 import type { GlobalConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { adminCrud } from "../access";
-import { ADMIN_GROUPS } from "../constants";
 import { revalidateGlobalAfterChange } from "../hooks/revalidate";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: "Настройки сайта",
   admin: {
-    group: ADMIN_GROUPS.settings,
     description: "Глобальные настройки: контакты, hero, SEO, подвал.",
   },
   access: {

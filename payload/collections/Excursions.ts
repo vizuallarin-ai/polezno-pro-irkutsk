@@ -5,7 +5,7 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
-import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS, EXCURSION_FORMAT_OPTIONS } from "../constants";
+import { CONTENT_STATUS_OPTIONS, EXCURSION_FORMAT_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -18,7 +18,6 @@ export const Excursions: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "format", "price", "status", "updatedAt"],
-    group: ADMIN_GROUPS.excursions,
     listSearchableFields: ["title", "slug", "shortDescription"],
     description: "Экскурсии для /excursions. Публично — только опубликованные.",
     preview: (doc) => {

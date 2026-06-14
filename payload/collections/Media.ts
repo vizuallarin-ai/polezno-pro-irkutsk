@@ -2,7 +2,6 @@ import type { CollectionConfig } from "payload";
 import path from "path";
 import { fileURLToPath } from "url";
 import { adminPanelAccess, mediaReadAccess, mediaWriteAccess } from "../access";
-import { ADMIN_GROUPS } from "../constants";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -35,7 +34,6 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: "filename",
-    group: ADMIN_GROUPS.media,
     description: "Изображения, видео и PDF для маршрутов, статей и товаров.",
   },
   access: {
