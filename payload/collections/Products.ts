@@ -6,7 +6,6 @@ import {
   publishedOrStaff,
 } from "../access";
 import {
-  ADMIN_GROUPS,
   CONTENT_STATUS_OPTIONS,
   PRODUCT_CATEGORY_OPTIONS,
   PRODUCT_STOCK_OPTIONS,
@@ -23,7 +22,6 @@ export const Products: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "price", "stockStatus", "status", "updatedAt"],
-    group: ADMIN_GROUPS.products,
     listSearchableFields: ["title", "slug", "shortDescription"],
     description: "Каталог /shop. Публично — только опубликованные товары.",
     preview: (doc) => {

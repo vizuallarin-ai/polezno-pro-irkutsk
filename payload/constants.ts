@@ -1,16 +1,3 @@
-/** Группы бокового меню Payload. */
-export const ADMIN_GROUPS = {
-  routes: "Маршруты",
-  leads: "Заявки",
-  articles: "Статьи",
-  events: "События",
-  excursions: "Экскурсии",
-  products: "Магазин",
-  media: "Медиа",
-  settings: "Настройки",
-  later: "Позже",
-} as const;
-
 export {
   ARTICLE_CATEGORY_OPTIONS,
   CONTENT_STATUS_OPTIONS,

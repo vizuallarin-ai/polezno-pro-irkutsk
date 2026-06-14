@@ -6,7 +6,6 @@ import {
 } from "../access";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import {
-  ADMIN_GROUPS,
   CONTENT_STATUS_OPTIONS,
   ROUTE_ACCESS_OPTIONS,
   ROUTE_CATEGORY_OPTIONS,
@@ -85,7 +84,6 @@ export const Routes: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "format", "type", "status", "updatedAt"],
-    group: ADMIN_GROUPS.routes,
     description: "Пешие и авторские маршруты для карты и страниц /map/[slug].",
   },
   access: {

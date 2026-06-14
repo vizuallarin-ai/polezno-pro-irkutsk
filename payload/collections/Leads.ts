@@ -8,7 +8,7 @@ import {
   leadsReadAccess,
   leadsUpdateAccess,
 } from "../access";
-import { ADMIN_GROUPS, LEAD_SOURCE_OPTIONS } from "../constants";
+import { LEAD_SOURCE_OPTIONS } from "../constants";
 
 const afterChangeHook: CollectionAfterChangeHook = async ({ doc, previousDoc }) => {
   if (
@@ -46,7 +46,6 @@ export const Leads: CollectionConfig = {
       "articleSlug",
       "createdAt",
     ],
-    group: ADMIN_GROUPS.leads,
     listSearchableFields: [
       "name",
       "email",

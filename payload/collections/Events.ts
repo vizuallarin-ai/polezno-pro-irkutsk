@@ -4,7 +4,7 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
-import { ADMIN_GROUPS, CONTENT_STATUS_OPTIONS, EVENT_CATEGORY_OPTIONS } from "../constants";
+import { CONTENT_STATUS_OPTIONS, EVENT_CATEGORY_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -17,7 +17,6 @@ export const Events: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "startDate", "status", "isPast", "updatedAt"],
-    group: ADMIN_GROUPS.events,
     listSearchableFields: ["title", "venue", "slug"],
     description: "Календарь событий на /events. Публично — только опубликованные.",
     preview: (doc) => {

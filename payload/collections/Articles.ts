@@ -5,7 +5,7 @@ import {
   adminPanelAccess,
   articleReadAccess,
 } from "../access";
-import { ADMIN_GROUPS, ARTICLE_CATEGORY_OPTIONS, CONTENT_STATUS_OPTIONS } from "../constants";
+import { ARTICLE_CATEGORY_OPTIONS, CONTENT_STATUS_OPTIONS } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -18,7 +18,6 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "status", "publishedAt", "_status", "updatedAt"],
-    group: ADMIN_GROUPS.articles,
     listSearchableFields: ["title", "excerpt", "slug"],
     description: "Материалы для раздела /explore. Публично — только status «Опубликован» и версия published.",
     preview: (doc) => {
