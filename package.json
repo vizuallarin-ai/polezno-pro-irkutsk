@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node scripts/seed-cms.mjs",
+    "seed:explore": "npx tsx scripts/seed-explore-materials.mjs",
     "patch:telegram": "npx tsx scripts/patch-telegram-url.mjs",
     "placeholders": "node scripts/generate-placeholders.mjs",
     "create-admin": "npx tsx scripts/create-admin.mjs",

@@ -1,15 +1,94 @@
 /**
  * Seed Phase 7 explore materials (8 published articles).
- * Run after DB is up: node scripts/seed-explore-materials.mjs
+ * Run after DB is up: npm run seed:explore
  */
-import { getPayload } from "payload";
+import fs from "node:fs";
+import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import nextEnv from "@next/env";
+import { buildConfig, getPayload } from "payload";
+import { postgresAdapter } from "@payloadcms/db-postgres";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(__dirname, "..");
 
-const { default: config } = await import("../payload.config.js");
+nextEnv.loadEnvConfig(root);
+
+function loadEnvFile(relativePath) {
+  const full = path.join(root, relativePath);
+  if (!fs.existsSync(full)) return;
+  const text = fs.readFileSync(full, "utf8");
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+loadEnvFile(".env");
+loadEnvFile(".env.local");
+loadEnvFile(".env.production");
+
+if (!process.env.DATABASE_URL?.trim()) {
+  console.error("DATABASE_URL is missing");
+  process.exit(1);
+}
+if (!process.env.PAYLOAD_SECRET?.trim()) {
+  console.error("PAYLOAD_SECRET is missing");
+  process.exit(1);
+}
+
+const { Users } = await import("../payload/collections/Users.ts");
+const { Media } = await import("../payload/collections/Media.ts");
+const { Routes } = await import("../payload/collections/Routes.ts");
+const { Places } = await import("../payload/collections/Places.ts");
+const { Articles } = await import("../payload/collections/Articles.ts");
+const { Events } = await import("../payload/collections/Events.ts");
+const { Products } = await import("../payload/collections/Products.ts");
+const { Excursions } = await import("../payload/collections/Excursions.ts");
+const { Reviews } = await import("../payload/collections/Reviews.ts");
+const { Partners } = await import("../payload/collections/Partners.ts");
+const { Leads } = await import("../payload/collections/Leads.ts");
+const { Guides } = await import("../payload/collections/Guides.ts");
+const { SiteSettings } = await import("../payload/globals/SiteSettings.ts");
+const { Navigation } = await import("../payload/globals/Navigation.ts");
+
+const config = buildConfig({
+  secret: process.env.PAYLOAD_SECRET,
+  collections: [
+    Users,
+    Routes,
+    Leads,
+    Media,
+    Places,
+    Excursions,
+    Articles,
+    Events,
+    Products,
+    Guides,
+    Reviews,
+    Partners,
+  ],
+  globals: [SiteSettings, Navigation],
+  editor: lexicalEditor(),
+  db: postgresAdapter({
+    pool: { connectionString: process.env.DATABASE_URL },
+    push: false,
+  }),
+});
+
 const payload = await getPayload({ config });
 
 function textNode(text) {
@@ -68,8 +147,7 @@ function lexicalFromSections(sections) {
   };
 }
 
-/** Load section text from bundled JSON (generated from TS data). */
-const sectionsPath = join(__dirname, "explore-materials-sections.json");
+const sectionsPath = path.join(__dirname, "explore-materials-sections.json");
 const SECTIONS_BY_SLUG = JSON.parse(readFileSync(sectionsPath, "utf8"));
 
 const MATERIALS = [
