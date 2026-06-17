@@ -12,7 +12,7 @@ nextEnv.loadEnvConfig(root);
 const NEW_URL = "https://t.me/poleznoproirkutsk";
 const OLD_PATTERNS = ["polezno_irkutsk", "polezno-irkutsk"];
 
-const { default: config } = await import("../payload.config.js");
+const { default: config } = await import("../payload.config.ts");
 const { getPayload } = await import("payload");
 
 const payload = await getPayload({ config });
