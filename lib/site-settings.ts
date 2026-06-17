@@ -1,5 +1,6 @@
 import { getPayloadClient } from "@/lib/payload";
 import { BRAND, DEFAULT_SOCIAL_DISCLAIMER } from "@/lib/brand-constants";
+import { BOOSTY_URL, TELEGRAM_URL } from "@/lib/site-links";
 
 export type SiteContacts = {
   phone?: string;
@@ -57,9 +58,9 @@ const DEFAULTS: SiteSettingsData = {
   contact: {
     phone: "+7 (3952) 000-00-00",
     email: "info@irkportal.ru",
-    telegram: "https://t.me/polezno_irkutsk",
+    telegram: TELEGRAM_URL,
     instagram: "https://instagram.com/polezno.irkutsk",
-    boosty: "https://boosty.to/polezno_irkutsk",
+    boosty: BOOSTY_URL,
   },
   footerText:
     "Маршруты, экскурсии и материалы о городе — без туристических штампов.",

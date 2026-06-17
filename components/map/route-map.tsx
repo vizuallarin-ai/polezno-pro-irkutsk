@@ -13,14 +13,13 @@ interface RouteMapProps {
   className?: string;
 }
 
-const IRKUTSK_CENTER: [number, number] = [52.2978, 104.2964]; // Leaflet: [lat, lng]
-const IRKUTSK_ZOOM = 13;
-
-// CartoDB Positron — минималистичный серый стиль, бесплатно без ключа
-const TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+import {
+  IRKUTSK_CENTER,
+  IRKUTSK_ZOOM,
+  MAP_TILE_ATTRIBUTION,
+  MAP_TILE_URL,
+  applyMinimalMapAttribution,
+} from "@/lib/map-config";
 
 export function RouteMap({
   routes,
@@ -46,8 +45,10 @@ export function RouteMap({
       zoomControl: false,
     });
 
-    L.tileLayer(TILE_URL, {
-      attribution: TILE_ATTRIBUTION,
+    applyMinimalMapAttribution(map);
+
+    L.tileLayer(MAP_TILE_URL, {
+      attribution: MAP_TILE_ATTRIBUTION,
       maxZoom: 19,
     }).addTo(map);
 

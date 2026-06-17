@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Menu, X, ChevronDown, Mail } from "lucide-react";
+import { Menu, X, ChevronDown, Mail, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types/navigation";
 import {
@@ -292,11 +292,23 @@ export function Header({
               <MoreDropdown links={moreLinks} />
             </nav>
 
-            <div className="flex items-center gap-3 lg:gap-4 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
               <HeaderContacts
                 contact={contact}
                 className="hidden xl:flex"
               />
+
+              {contact?.telegram && (
+                <a
+                  href={contact.telegram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="xl:hidden flex items-center justify-center w-10 h-10 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Telegram — написать Алёне"
+                >
+                  <MessageCircle size={20} aria-hidden />
+                </a>
+              )}
 
               <Link
                 href={ctaHref}

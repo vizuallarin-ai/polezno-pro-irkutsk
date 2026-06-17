@@ -7,12 +7,13 @@ import { routeToMapRoute } from "@/lib/route-adapters";
 import { ROUTE_CATEGORY_COLORS } from "@/types/map";
 import { cn } from "@/lib/utils";
 
-const IRKUTSK_CENTER: [number, number] = [52.2978, 104.2964];
-const IRKUTSK_ZOOM = 13;
-const TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+import {
+  IRKUTSK_CENTER,
+  IRKUTSK_ZOOM,
+  MAP_TILE_ATTRIBUTION,
+  MAP_TILE_URL,
+  applyMinimalMapAttribution,
+} from "@/lib/map-config";
 
 interface RoutesOverviewMapProps {
   mode: "overview";
@@ -66,8 +67,10 @@ export function RouteMap(props: RouteMapProps) {
       zoomControl: false,
     });
 
-    L.tileLayer(TILE_URL, {
-      attribution: TILE_ATTRIBUTION,
+    applyMinimalMapAttribution(map);
+
+    L.tileLayer(MAP_TILE_URL, {
+      attribution: MAP_TILE_ATTRIBUTION,
       maxZoom: 19,
     }).addTo(map);
 
