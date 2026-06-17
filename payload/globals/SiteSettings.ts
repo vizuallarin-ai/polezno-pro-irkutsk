@@ -114,7 +114,7 @@ export const SiteSettings: GlobalConfig = {
       fields: [
         { name: "phone", type: "text", label: "Телефон" },
         { name: "email", type: "email", label: "Email" },
-        { name: "telegram", type: "text", label: "Telegram" },
+        { name: "telegram", type: "text", label: "Telegram", defaultValue: "https://t.me/poleznoproirkutsk" },
         { name: "max", type: "text", label: "MAX (мессенджер)" },
         { name: "whatsapp", type: "text", label: "WhatsApp" },
         { name: "vk", type: "text", label: "ВКонтакте" },
@@ -219,7 +219,7 @@ export const SiteSettings: GlobalConfig = {
       label: "Социальные сети (legacy)",
       admin: { description: "Дублирует contact — для обратной совместимости." },
       fields: [
-        { name: "telegram", type: "text", label: "Telegram" },
+        { name: "telegram", type: "text", label: "Telegram", defaultValue: "https://t.me/poleznoproirkutsk" },
         { name: "instagram", type: "text", label: "Instagram" },
         { name: "vk", type: "text", label: "ВКонтакте" },
       ],

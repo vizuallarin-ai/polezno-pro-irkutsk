@@ -1,4 +1,5 @@
 import { getSiteUrl } from "@/lib/site-url";
+import { TELEGRAM_URL } from "@/lib/site-links";
 
 const BASE_URL = getSiteUrl();
 
@@ -23,7 +24,7 @@ export function organizationSchema() {
       email: "info@polezno.irkutsk.ru",
     },
     sameAs: [
-      "https://t.me/polezno_irkutsk",
+      TELEGRAM_URL,
       "https://instagram.com/polezno.irkutsk",
     ],
   };

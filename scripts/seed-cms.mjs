@@ -652,7 +652,7 @@ if (!existingSettings?.contact?.email) {
       contact: {
         phone: "+7 (3952) 000-00-00",
         email: "info@irkportal.ru",
-        telegram: "https://t.me/polezno_irkutsk",
+        telegram: "https://t.me/poleznoproirkutsk",
         instagram: "https://instagram.com/polezno.irkutsk",
         boosty: "https://boosty.to/polezno_irkutsk",
       },

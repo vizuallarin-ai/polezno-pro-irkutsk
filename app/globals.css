@@ -205,8 +205,21 @@ html.lenis {
 
 .leaflet-map .leaflet-control-attribution {
   font-size: 9px !important;
-  background: rgba(250, 249, 247, 0.8) !important;
+  line-height: 1.2 !important;
+  max-width: min(9rem, 42vw);
+  white-space: normal;
+  background: rgba(250, 249, 247, 0.75) !important;
   backdrop-filter: blur(4px);
+  border-radius: 2px;
+  padding: 2px 4px !important;
+}
+
+@media (max-width: 640px) {
+  .leaflet-map .leaflet-control-attribution {
+    font-size: 8px !important;
+    max-width: 7rem;
+    opacity: 0.85;
+  }
 }
 
 /* ─── Reduced motion ────────────────────────────────────────────── */

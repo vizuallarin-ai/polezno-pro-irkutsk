@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, MessageCircle } from "lucide-react";
 import { ContactForm } from "@/components/forms/contact-form";
+import { TELEGRAM_URL } from "@/lib/site-links";
 
 export const metadata: Metadata = {
   title: "Контакты — Полезно про Иркутск",
@@ -40,7 +41,7 @@ export default function ContactPage() {
                 </span>
               </a>
               <a
-                href="https://t.me/polezno_irkutsk"
+                href={TELEGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 text-sm group"
