@@ -2,7 +2,12 @@
  * Одноразово обновляет Telegram URL в SiteSettings (production после смены канала).
  * node scripts/patch-telegram-url.mjs
  */
-import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+import nextEnv from "@next/env";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+nextEnv.loadEnvConfig(root);
 
 const NEW_URL = "https://t.me/poleznoproirkutsk";
 const OLD_PATTERNS = ["polezno_irkutsk", "polezno-irkutsk"];
