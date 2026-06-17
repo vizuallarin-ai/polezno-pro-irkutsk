@@ -11,7 +11,7 @@ import {
   IRKUTSK_ZOOM,
   boundsFromLngLatCoords,
 } from "@/lib/map-config";
-import { getYandexMapsApiKey, loadYandexMaps } from "@/lib/yandex-maps-loader";
+import { getYandexMapsApiKey, loadYandexMaps, yandexMapsErrorMessage } from "@/lib/yandex-maps-loader";
 
 interface RoutesOverviewMapProps {
   mode: "overview";
@@ -219,8 +219,8 @@ export function RouteMap(props: RouteMapProps) {
         const bounds = boundsFromLngLatCoords(allCoords);
         if (bounds) map.setLocation({ bounds, duration: 300 });
       }
-    } catch {
-      setMapError("Ошибка отрисовки маршрутов на карте.");
+    } catch (err) {
+      setMapError(yandexMapsErrorMessage(err));
     }
   }, [
     mode,
@@ -268,11 +268,9 @@ export function RouteMap(props: RouteMapProps) {
         mapRef.current = map;
         setMapError(null);
         setMapReady(true);
-      } catch {
+      } catch (err) {
         if (!cancelled) {
-          setMapError(
-            "Не удалось загрузить Яндекс Карты. Попробуйте обновить страницу."
-          );
+          setMapError(yandexMapsErrorMessage(err));
         }
       }
     }
