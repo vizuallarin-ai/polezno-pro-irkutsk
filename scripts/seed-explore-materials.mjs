@@ -269,12 +269,17 @@ const MATERIALS = [
 ];
 
 async function routeIdBySlug(slug) {
-  const res = await payload.find({
-    collection: "routes",
-    where: { slug: { equals: slug } },
-    limit: 1,
-  });
-  return res.docs[0]?.id ?? null;
+  try {
+    const res = await payload.find({
+      collection: "routes",
+      where: { slug: { equals: slug } },
+      limit: 1,
+    });
+    return res.docs[0]?.id ?? null;
+  } catch {
+    console.warn(`⚠ Не удалось найти маршрут ${slug} — связь пропущена`);
+    return null;
+  }
 }
 
 console.log("🌱 Seed explore materials (Phase 7)...\n");
