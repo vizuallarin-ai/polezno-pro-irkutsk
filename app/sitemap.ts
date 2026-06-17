@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import { DEMO_EXPLORE_MATERIALS } from "@/lib/data/explore-materials";
+import { EXPLORE_CATEGORIES } from "@/lib/explore-constants";
 import { getRoutesForMap } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import {
@@ -97,6 +99,13 @@ async function getCmsUrls() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const exploreCategoryUrls = EXPLORE_CATEGORIES.map((cat) => ({
+    url: `${BASE_URL}/explore/${cat.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
+
   const staticPages = [
     { url: BASE_URL, priority: 1.0, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/map`, priority: 0.9, changeFrequency: "weekly" as const },
@@ -112,8 +121,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const cmsUrls = await getCmsUrls();
 
   if (cmsUrls.length > 0) {
-    return [...staticPages, ...cmsUrls];
+    return [...staticPages, ...exploreCategoryUrls, ...cmsUrls];
   }
+
+  const demoArticleUrls = DEMO_EXPLORE_MATERIALS.map((m) => ({
+    url: `${BASE_URL}/explore/${m.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
 
   const { routes } = await getRoutesForMap();
   const demoRouteUrls = routes.map((r) => ({
@@ -123,5 +139,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  return [...staticPages, ...demoRouteUrls];
+  return [
+    ...staticPages,
+    ...exploreCategoryUrls,
+    ...demoArticleUrls,
+    ...demoRouteUrls,
+  ];
 }

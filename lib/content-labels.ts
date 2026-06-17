@@ -43,17 +43,23 @@ export const ROUTE_DIFFICULTY_OPTIONS = [
 ] as const satisfies readonly SelectOption[];
 
 export const ARTICLE_CATEGORY_OPTIONS = [
-  { label: "Что посмотреть", value: "sights" },
-  { label: "Где гулять", value: "walks" },
-  { label: "Где поесть", value: "food" },
-  { label: "Где остановиться", value: "stay" },
   { label: "История города", value: "history" },
-  { label: "Интересные факты", value: "facts" },
-  { label: "Байкал рядом", value: "baikal" },
-  { label: "Секретные места", value: "hidden" },
-  { label: "Гастрономия", value: "gastronomy" },
+  { label: "Что посмотреть", value: "what-to-see" },
+  { label: "Где гулять", value: "where-to-walk" },
   { label: "Архитектура", value: "architecture" },
-  { label: "Экскурсии", value: "excursions" },
+  { label: "Улицы и районы", value: "streets" },
+  { label: "Байкал рядом", value: "baikal" },
+  { label: "Зима", value: "winter" },
+  { label: "Неочевидные места", value: "hidden" },
+  { label: "Для местных", value: "locals" },
+  { label: "Для бизнеса", value: "business" },
+] as const satisfies readonly SelectOption[];
+
+export const MATERIAL_TYPE_OPTIONS = [
+  { label: "Статья", value: "article" },
+  { label: "История", value: "history" },
+  { label: "Место", value: "place" },
+  { label: "Гид", value: "guide" },
 ] as const satisfies readonly SelectOption[];
 
 export const EVENT_CATEGORY_OPTIONS = [

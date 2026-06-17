@@ -5,21 +5,26 @@ import {
   adminPanelAccess,
   articleReadAccess,
 } from "../access";
-import { ARTICLE_CATEGORY_OPTIONS, CONTENT_STATUS_OPTIONS } from "../constants";
+import {
+  ARTICLE_CATEGORY_OPTIONS,
+  CONTENT_STATUS_OPTIONS,
+  MATERIAL_TYPE_OPTIONS,
+} from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
   labels: {
-    singular: "Статья",
-    plural: "Статьи",
+    singular: "Материал",
+    plural: "Материалы",
   },
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "status", "publishedAt", "_status", "updatedAt"],
     listSearchableFields: ["title", "excerpt", "slug"],
-    description: "Материалы для раздела /explore. Публично — только status «Опубликован» и версия published.",
+    description:
+      "Материалы для раздела /explore. Публично — только status «Опубликован» и версия published.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/${doc.slug}`;
@@ -68,6 +73,14 @@ export const Articles: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "materialType",
+      type: "select",
+      label: "Тип материала",
+      options: [...MATERIAL_TYPE_OPTIONS],
+      defaultValue: "article",
+      admin: { position: "sidebar" },
+    },
+    {
       name: "category",
       type: "select",
       label: "Категория",
@@ -97,14 +110,14 @@ export const Articles: CollectionConfig = {
     {
       name: "isHiddenGem",
       type: "checkbox",
-      label: "Hidden Gem",
+      label: "Неочевидное место",
       defaultValue: false,
       admin: { position: "sidebar" },
     },
     {
       name: "isFeatured",
       type: "checkbox",
-      label: "На главной",
+      label: "Избранное",
       defaultValue: false,
       admin: { position: "sidebar" },
     },
@@ -124,6 +137,12 @@ export const Articles: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "videoUrl",
+      type: "text",
+      label: "Ссылка на видео",
+      admin: { position: "sidebar" },
+    },
+    {
       name: "excerpt",
       type: "textarea",
       label: "Краткое описание",
@@ -138,7 +157,55 @@ export const Articles: CollectionConfig = {
     {
       name: "author",
       type: "text",
+      label: "Автор (legacy)",
+      admin: { position: "sidebar", hidden: true },
+    },
+    {
+      name: "authorName",
+      type: "text",
       label: "Автор",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "source",
+      type: "text",
+      label: "Источник",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "photoCredit",
+      type: "text",
+      label: "Фото: автор / кредит",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "historicalPeriod",
+      type: "text",
+      label: "Исторический период",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "year",
+      type: "number",
+      label: "Год",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "street",
+      type: "text",
+      label: "Улица",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "place",
+      type: "text",
+      label: "Место",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "district",
+      type: "text",
+      label: "Район",
       admin: { position: "sidebar" },
     },
     {

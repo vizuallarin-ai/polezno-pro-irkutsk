@@ -1,9 +1,9 @@
 import type { Article } from "@/components/sections/explore-preview";
 import type { Product } from "@/components/sections/shop-preview";
 import {
-  ARTICLE_CATEGORY_LABELS,
   PRODUCT_CATEGORY_LABELS,
 } from "@/lib/content-labels";
+import { exploreCategoryLabel } from "@/lib/explore-constants";
 
 function coverFromDoc(doc: {
   coverImage?: { url?: string } | null;
@@ -33,7 +33,7 @@ export function mapArticleForPreview(doc: {
   return {
     id: String(doc.id),
     title: String(doc.title),
-    category: ARTICLE_CATEGORY_LABELS[String(doc.category)] || String(doc.category),
+    category: exploreCategoryLabel(String(doc.category)),
     excerpt: String(doc.excerpt || ""),
     slug: String(doc.slug),
     coverImage: coverFromDoc(doc),

@@ -13,7 +13,7 @@ export const BRAND = {
   legacyName: "Полезно про Иркутск",
 } as const;
 
-export const CITY_HISTORY_HREF = "/explore/history";
+export const CITY_HISTORY_HREF = "/explore/irkutsk-history";
 
 export const DEFAULT_SOCIAL_DISCLAIMER =
   "* Instagram принадлежит компании Meta, признанной экстремистской организацией и запрещённой в РФ.";

@@ -30,6 +30,22 @@ const DEFAULT_CTAS: HeroCta[] = [
 ];
 
 function renderTitle(title: string) {
+  if (title.includes("Иркутск")) {
+    const [before, ...rest] = title.split("Иркутск");
+    const after = rest.join("Иркутск");
+    return (
+      <>
+        {before}
+        <Link
+          href={CITY_HISTORY_HREF}
+          className="underline-offset-4 hover:underline"
+        >
+          Иркутск
+        </Link>
+        {after}
+      </>
+    );
+  }
   if (title.includes("без") && title.includes("штампов")) {
     const parts = title.split(/\s+штампов/);
     return (
