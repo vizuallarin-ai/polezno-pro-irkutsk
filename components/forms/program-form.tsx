@@ -59,9 +59,38 @@ const STEPS = [
 
 interface ProgramFormProps {
   initialRouteSlug?: string;
+  initialExcursionSlug?: string;
+  initialFormat?: string;
+  initialSourceTitle?: string;
 }
 
-export function ProgramForm({ initialRouteSlug }: ProgramFormProps) {
+const FORMAT_LABELS: Record<string, string> = {
+  "self-guided": "самостоятельно",
+  guided: "с гидом",
+  corporate: "корпоратив / программа",
+};
+
+function buildInitialMessage(props: ProgramFormProps): string {
+  const parts: string[] = [];
+  if (props.initialSourceTitle) {
+    parts.push(`Интересует: ${props.initialSourceTitle}`);
+  } else if (props.initialExcursionSlug) {
+    parts.push(`Интересует экскурсия: ${props.initialExcursionSlug}`);
+  } else if (props.initialRouteSlug) {
+    parts.push(`Интересует маршрут: ${props.initialRouteSlug}`);
+  }
+  if (props.initialFormat && FORMAT_LABELS[props.initialFormat]) {
+    parts.push(`Формат: ${FORMAT_LABELS[props.initialFormat]}`);
+  }
+  return parts.join(". ");
+}
+
+export function ProgramForm({
+  initialRouteSlug,
+  initialExcursionSlug,
+  initialFormat,
+  initialSourceTitle,
+}: ProgramFormProps) {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,14 +109,22 @@ export function ProgramForm({ initialRouteSlug }: ProgramFormProps) {
       dates: "",
       groupSize: 1,
       interests: [] as string[],
-      serviceType: "",
+      serviceType:
+        initialFormat === "corporate"
+          ? "corporate"
+          : initialExcursionSlug || initialFormat === "guided"
+            ? "excursion"
+            : "",
       budget: "",
       name: "",
       email: "",
       phone: "",
-      message: initialRouteSlug
-        ? `Интересует маршрут: ${initialRouteSlug}`
-        : "",
+      message: buildInitialMessage({
+        initialRouteSlug,
+        initialExcursionSlug,
+        initialFormat,
+        initialSourceTitle,
+      }),
     },
   });
 
@@ -122,6 +159,9 @@ export function ProgramForm({ initialRouteSlug }: ProgramFormProps) {
           ...data,
           source: "program",
           ...(initialRouteSlug && { routeSlug: initialRouteSlug }),
+          ...(initialExcursionSlug && { excursionSlug: initialExcursionSlug }),
+          ...(initialFormat && { selectedFormat: initialFormat }),
+          ...(initialSourceTitle && { sourceTitle: initialSourceTitle }),
         }),
       });
       setSubmitted(true);

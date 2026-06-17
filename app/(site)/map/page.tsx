@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { RoutesPageClient } from "@/components/routes/routes-page-client";
-import { getRoutesForMap } from "@/lib/routes";
+import { getExperienceCatalog } from "@/lib/experiences";
 
 export const metadata: Metadata = {
-  title: "Маршруты по Иркутску — интерактивная карта",
+  title: "Маршруты и экскурсии по Иркутску — интерактивная карта",
   description:
-    "Готовые прогулки по Иркутску: точки, истории, время и возможность пройти маршрут с гидом. Бесплатные и платные авторские маршруты.",
+    "Готовые маршруты по Иркутску на карте и авторские экскурсии с гидом. Самостоятельные прогулки, форматы с сопровождением и корпоративные программы.",
 };
 
 export default async function MapPage() {
-  const { routes, mapRoutes } = await getRoutesForMap();
+  const { experiences, mapRoutes } = await getExperienceCatalog();
 
-  return <RoutesPageClient routes={routes} mapRoutes={mapRoutes} />;
+  return (
+    <Suspense fallback={null}>
+      <RoutesPageClient experiences={experiences} mapRoutes={mapRoutes} />
+    </Suspense>
+  );
 }

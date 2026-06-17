@@ -31,7 +31,7 @@ const mainProducts = [
     subtitle: "С гидом",
     description:
       "Город, гастро и история — групповые и частные форматы. Запись через форму.",
-    href: "/excursions",
+    href: "/map?filter=guided",
     cta: "Смотреть экскурсии",
     image: "/images/direction-excursions.svg",
     tags: ["Город", "Гастро", "Private"],

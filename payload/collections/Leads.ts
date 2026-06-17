@@ -182,6 +182,24 @@ export const Leads: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "selectedFormat",
+      type: "text",
+      label: "Выбранный формат",
+      admin: {
+        position: "sidebar",
+        description: "self-guided, guided или corporate — из формы программы.",
+      },
+    },
+    {
+      name: "sourceTitle",
+      type: "text",
+      label: "Источник (название)",
+      admin: {
+        position: "sidebar",
+        description: "Название маршрута или экскурсии, с которой пришла заявка.",
+      },
+    },
+    {
       name: "productSlug",
       type: "text",
       label: "Товар (slug)",
