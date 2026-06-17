@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types/navigation";
-import { DEFAULT_NAV_LINKS, DEFAULT_CTA } from "@/lib/navigation-constants";
+import {
+  PRIMARY_NAV_LINKS,
+  MORE_NAV_LINKS,
+  DEFAULT_CTA,
+} from "@/lib/navigation-constants";
+import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
+import type { SiteContacts } from "@/lib/site-settings";
 
 function isExternalHref(href: string) {
   return href.startsWith("http://") || href.startsWith("https://");
@@ -42,26 +48,181 @@ const linkVariants: Variants = {
 };
 
 interface HeaderProps {
-  links?: NavItem[];
+  primaryLinks?: NavItem[];
+  moreLinks?: NavItem[];
   ctaLabel?: string;
   ctaHref?: string;
   projectName?: string;
+  projectDescriptor?: string;
+  contact?: SiteContacts;
 }
 
-function splitProjectName(name: string) {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length <= 1) return { prefix: name, accent: "" };
-  const accent = parts.pop() || "";
-  return { prefix: parts.join(" "), accent };
+function NavLink({
+  link,
+  className,
+  onClick,
+}: {
+  link: NavItem;
+  className: string;
+  onClick?: () => void;
+}) {
+  const label = (
+    <>
+      {link.label}
+      <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
+    </>
+  );
+
+  if (isExternalHref(link.href)) {
+    return (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        onClick={onClick}
+      >
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={link.href} className={className} onClick={onClick}>
+      {label}
+    </Link>
+  );
+}
+
+function HeaderContacts({
+  contact,
+  className,
+  onClick,
+}: {
+  contact?: SiteContacts;
+  className?: string;
+  onClick?: () => void;
+}) {
+  const items = [
+    contact?.telegram
+      ? { href: contact.telegram, label: "Telegram", external: true }
+      : null,
+    contact?.max ? { href: contact.max, label: "MAX", external: true } : null,
+    contact?.email
+      ? { href: `mailto:${contact.email}`, label: "Email", external: false }
+      : null,
+  ].filter(Boolean) as { href: string; label: string; external: boolean }[];
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className={cn("flex items-center gap-3", className)}>
+      {items.map((item) =>
+        item.external ? (
+          <a
+            key={item.label}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClick}
+            className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {item.label}
+          </a>
+        ) : (
+          <a
+            key={item.label}
+            href={item.href}
+            onClick={onClick}
+            className="inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Mail size={12} aria-hidden />
+            {item.label}
+          </a>
+        )
+      )}
+    </div>
+  );
+}
+
+function MoreDropdown({ links }: { links: NavItem[] }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="relative inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        Ещё
+        <ChevronDown
+          size={14}
+          className={cn("transition-transform", open && "rotate-180")}
+        />
+        <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 top-full z-50 mt-3 min-w-[11rem] border border-border bg-background py-2 shadow-lg"
+          >
+            {links.map((link) => (
+              <div key={`${link.href}-${link.label}`}>
+                {isExternalHref(link.href) ? (
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    onClick={() => setOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    onClick={() => setOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export function Header({
-  links = DEFAULT_NAV_LINKS,
+  primaryLinks = PRIMARY_NAV_LINKS,
+  moreLinks = MORE_NAV_LINKS,
   ctaLabel = DEFAULT_CTA.label,
   ctaHref = DEFAULT_CTA.href,
-  projectName = "Полезно про Иркутск",
+  projectName = "Иркпортал",
+  projectDescriptor = "Авторский навигатор по Иркутску от Алёны Ямщиковой",
+  contact,
 }: HeaderProps) {
-  const { prefix, accent } = splitProjectName(projectName);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -82,6 +243,9 @@ export function Header({
     };
   }, [isOpen]);
 
+  const navLinkClass =
+    "relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group";
+
   return (
     <>
       <header
@@ -93,68 +257,57 @@ export function Header({
         )}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 group"
-              aria-label="Полезно про Иркутск — домой"
-            >
-              <span className="text-sm font-medium tracking-widest uppercase">
-                {prefix}
-              </span>
-              {accent && (
-                <span className="text-sm font-medium tracking-widest uppercase text-baikal">
-                  {accent}
-                </span>
-              )}
-            </Link>
+          <div className="flex h-16 items-center justify-between gap-4">
+            <div className="flex min-w-0 flex-col">
+              <Link
+                href="/"
+                className="text-sm font-medium tracking-widest uppercase text-foreground hover:text-foreground/80 transition-colors"
+                aria-label={`${projectName} — на главную`}
+              >
+                {projectName}
+              </Link>
+              <p className="hidden sm:block text-[11px] text-muted-foreground leading-tight truncate max-w-[220px] lg:max-w-xs">
+                Авторский навигатор по{" "}
+                <Link
+                  href={CITY_HISTORY_HREF}
+                  className="text-foreground/80 hover:text-baikal underline-offset-2 hover:underline"
+                >
+                  Иркутску
+                </Link>{" "}
+                от Алёны Ямщиковой
+              </p>
+            </div>
 
             <nav
-              className="hidden md:flex items-center gap-8"
+              className="hidden lg:flex items-center gap-6 xl:gap-8"
               aria-label="Основная навигация"
             >
-              {links.map((link) => {
-                const className =
-                  "relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group";
-                const label = (
-                  <>
-                    {link.label}
-                    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
-                  </>
-                );
-                return isExternalHref(link.href) ? (
-                  <a
-                    key={`${link.href}-${link.label}`}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={className}
-                  >
-                    {label}
-                  </a>
-                ) : (
-                  <Link
-                    key={`${link.href}-${link.label}`}
-                    href={link.href}
-                    className={className}
-                  >
-                    {label}
-                  </Link>
-                );
-              })}
+              {primaryLinks.map((link) => (
+                <NavLink
+                  key={`${link.href}-${link.label}`}
+                  link={link}
+                  className={navLinkClass}
+                />
+              ))}
+              <MoreDropdown links={moreLinks} />
             </nav>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 lg:gap-4 shrink-0">
+              <HeaderContacts
+                contact={contact}
+                className="hidden xl:flex"
+              />
+
               <Link
                 href={ctaHref}
-                className="hidden md:inline-flex h-9 items-center px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
+                className="hidden md:inline-flex h-9 items-center px-4 lg:px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
               >
                 {ctaLabel}
               </Link>
 
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden flex items-center justify-center w-10 h-10 text-foreground hover:text-muted-foreground transition-colors"
+                className="lg:hidden flex items-center justify-center w-10 h-10 text-foreground hover:text-muted-foreground transition-colors"
                 aria-label={isOpen ? "Закрыть меню" : "Открыть меню"}
                 aria-expanded={isOpen}
               >
@@ -184,10 +337,10 @@ export function Header({
             </button>
 
             <nav
-              className="flex flex-col gap-6 mt-8"
+              className="flex flex-col gap-6 mt-4"
               aria-label="Мобильная навигация"
             >
-              {links.map((link, i) => (
+              {[...primaryLinks, ...moreLinks].map((link, i) => (
                 <motion.div
                   key={`${link.href}-${link.label}`}
                   custom={i}
@@ -195,40 +348,32 @@ export function Header({
                   initial="closed"
                   animate="open"
                 >
-                  {isExternalHref(link.href) ? (
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => setIsOpen(false)}
-                      className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+                  <NavLink
+                    link={link}
+                    className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200 block"
+                    onClick={() => setIsOpen(false)}
+                  />
                 </motion.div>
               ))}
             </nav>
 
             <motion.div
-              custom={links.length}
+              custom={primaryLinks.length + moreLinks.length}
               variants={linkVariants}
               initial="closed"
               animate="open"
-              className="mt-auto"
+              className="mt-8 flex flex-col gap-6"
             >
+              <HeaderContacts
+                contact={contact}
+                className="flex-col items-start gap-4"
+                onClick={() => setIsOpen(false)}
+              />
+
               <Link
                 href={ctaHref}
                 onClick={() => setIsOpen(false)}
-                className="inline-flex h-12 items-center px-8 text-base bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="inline-flex h-12 items-center px-8 text-base bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-fit"
               >
                 {ctaLabel}
               </Link>

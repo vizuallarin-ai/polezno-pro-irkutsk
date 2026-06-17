@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
 import { HeroCinematic } from "@/components/sections/hero-cinematic";
 import { ScenarioPicker } from "@/components/sections/scenario-picker";
-import { DirectionsEditorial } from "@/components/sections/directions-editorial";
-import { MapTeaser } from "@/components/sections/map-teaser";
-import { ExplorePreview } from "@/components/sections/explore-preview";
-import { BoostyTeaser } from "@/components/sections/boosty-teaser";
-import { ShopPreview } from "@/components/sections/shop-preview";
+import { AuthorBlock } from "@/components/sections/author-block";
 import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
 import { FinalCta } from "@/components/sections/final-cta";
-import { mapArticleForPreview, mapProductForPreview } from "@/lib/cms-mappers";
+import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
-    title: `${settings.projectName} — авторский навигатор по городу`,
+    title: `${settings.projectName} — ${settings.footerTagline}`,
     description: settings.metaDescription,
     openGraph: {
       title: settings.projectName,
@@ -28,44 +24,17 @@ async function getHomeData() {
   try {
     if (!process.env.DATABASE_URL) return null;
     const { getPayloadClient } = await import("@/lib/payload");
-    const { ARTICLE_PUBLISHED_WHERE, catalogProductsWhere } = await import(
-      "@/lib/cms-filters"
-    );
     const payload = await getPayloadClient();
 
-    const [articlesRes, productsRes, reviewsRes, settings] =
-      await Promise.all([
-        payload.find({
-          collection: "articles",
-          where: {
-            and: [
-              ARTICLE_PUBLISHED_WHERE,
-              { isFeatured: { equals: true } },
-            ],
-          },
-          limit: 4,
-          sort: "-publishedAt",
-          depth: 1,
-        }),
-        payload.find({
-          collection: "products",
-          where: {
-            and: [
-              catalogProductsWhere(),
-              { isFeatured: { equals: true } },
-            ],
-          },
-          limit: 4,
-          depth: 1,
-        }),
-        payload.find({
-          collection: "reviews",
-          where: { isFeatured: { equals: true } },
-          limit: 3,
-          depth: 1,
-        }),
-        payload.findGlobal({ slug: "site-settings" }),
-      ]);
+    const [reviewsRes, settings] = await Promise.all([
+      payload.find({
+        collection: "reviews",
+        where: { isFeatured: { equals: true } },
+        limit: 3,
+        depth: 1,
+      }),
+      payload.findGlobal({ slug: "site-settings" }),
+    ]);
 
     const stats: Stat[] = Array.isArray(settings?.stats)
       ? (settings.stats as Stat[])
@@ -82,42 +51,48 @@ async function getHomeData() {
           : undefined,
     }));
 
-    return {
-      articles: articlesRes.docs.map((doc) =>
-        mapArticleForPreview(doc as Parameters<typeof mapArticleForPreview>[0])
-      ),
-      products: productsRes.docs.map((doc) =>
-        mapProductForPreview(doc as Parameters<typeof mapProductForPreview>[0])
-      ),
-      stats,
-      reviews,
-    };
+    return { stats, reviews };
   } catch {
-    return {
-      articles: undefined,
-      products: undefined,
-      stats: undefined,
-      reviews: undefined,
-    };
+    return { stats: undefined, reviews: undefined };
   }
 }
 
 export default async function HomePage() {
-  const homeData = await getHomeData();
-  const articles = homeData?.articles;
-  const products = homeData?.products;
+  const [settings, homeData] = await Promise.all([
+    getSiteSettings(),
+    getHomeData(),
+  ]);
+
   const stats = homeData?.stats;
   const reviews = homeData?.reviews;
 
   return (
     <>
-      <HeroCinematic />
+      <HeroCinematic
+        badge={settings.heroBadge}
+        title={settings.heroTitle}
+        subtitle={settings.heroSubtitle}
+        ctas={[
+          { label: "Смотреть маршруты", href: "/map", variant: "primary" },
+          {
+            label: settings.mainCta.label,
+            href: settings.mainCta.href,
+            variant: "secondary",
+          },
+          {
+            label: "Узнать о городе",
+            href: CITY_HISTORY_HREF,
+            variant: "secondary",
+          },
+        ]}
+      />
       <ScenarioPicker />
-      <DirectionsEditorial />
-      <MapTeaser />
-      <ExplorePreview articles={articles} />
-      <BoostyTeaser />
-      <ShopPreview products={products} />
+      <AuthorBlock
+        name={settings.authorName}
+        role={settings.authorRole}
+        shortText={settings.authorShortText}
+        photoUrl={settings.authorPhotoUrl}
+      />
       <SocialProof stats={stats} reviews={reviews} />
       <FinalCta />
     </>

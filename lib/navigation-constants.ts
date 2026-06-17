@@ -1,15 +1,22 @@
 import type { NavItem } from "@/types/navigation";
 import { BOOSTY_URL } from "@/lib/site-links";
 
-export const DEFAULT_NAV_LINKS: NavItem[] = [
+export const PRIMARY_NAV_LINKS: NavItem[] = [
   { href: "/map", label: "Маршруты" },
-  { href: "/excursions", label: "Экскурсии" },
-  { href: "/program", label: "Для компаний" },
   { href: "/explore", label: "Исследовать" },
-  { href: "/events", label: "События" },
-  { href: BOOSTY_URL, label: "Клуб" },
+  { href: "/program", label: "Для бизнеса" },
   { href: "/about", label: "О проекте" },
   { href: "/contact", label: "Контакты" },
 ];
 
-export const DEFAULT_CTA = { label: "Спланировать", href: "/program" };
+export const MORE_NAV_LINKS: NavItem[] = [
+  { href: "/events", label: "События" },
+  { href: BOOSTY_URL, label: "Клуб" },
+  { href: "/shop", label: "Сувениры" },
+  { href: "/excursions", label: "Экскурсии" },
+];
+
+/** @deprecated Use PRIMARY_NAV_LINKS — kept for CMS fallback compatibility */
+export const DEFAULT_NAV_LINKS = PRIMARY_NAV_LINKS;
+
+export const DEFAULT_CTA = { label: "Спланировать визит", href: "/program" };

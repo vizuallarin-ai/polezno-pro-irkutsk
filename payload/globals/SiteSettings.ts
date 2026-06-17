@@ -21,6 +21,18 @@ export const SiteSettings: GlobalConfig = {
       name: "projectName",
       type: "text",
       label: "Название проекта",
+      defaultValue: "Иркпортал",
+    },
+    {
+      name: "projectDescriptor",
+      type: "text",
+      label: "Дескриптор бренда",
+      defaultValue: "Авторский навигатор по Иркутску от Алёны Ямщиковой",
+    },
+    {
+      name: "legacyProjectName",
+      type: "text",
+      label: "Прежнее название (подвал)",
       defaultValue: "Полезно про Иркутск",
     },
     {
@@ -35,16 +47,46 @@ export const SiteSettings: GlobalConfig = {
       defaultValue: "Иркутск",
     },
     {
+      name: "heroBadge",
+      type: "text",
+      label: "Hero — бейдж",
+      defaultValue: "Авторский навигатор",
+    },
+    {
       name: "heroTitle",
       type: "text",
       label: "Hero — заголовок",
-      defaultValue: "Иркутск",
+      defaultValue: "Иркутск без штампов",
     },
     {
       name: "heroSubtitle",
       type: "textarea",
       label: "Hero — подзаголовок",
-      defaultValue: "Авторский навигатор по городу и Байкалу",
+      defaultValue:
+        "Маршруты, экскурсии и подборка мест — от Алёны Ямщиковой, которая живёт в этом городе.",
+    },
+    {
+      name: "authorName",
+      type: "text",
+      label: "Имя автора",
+      defaultValue: "Алёна Ямщикова",
+    },
+    {
+      name: "authorRole",
+      type: "text",
+      label: "Роль автора",
+      defaultValue: "Автор навигатора и гид",
+    },
+    {
+      name: "authorShortText",
+      type: "textarea",
+      label: "Короткий текст об авторе",
+    },
+    {
+      name: "authorPhoto",
+      type: "upload",
+      relationTo: "media",
+      label: "Фото автора",
     },
     {
       name: "mainCta",
@@ -73,6 +115,7 @@ export const SiteSettings: GlobalConfig = {
         { name: "phone", type: "text", label: "Телефон" },
         { name: "email", type: "email", label: "Email" },
         { name: "telegram", type: "text", label: "Telegram" },
+        { name: "max", type: "text", label: "MAX (мессенджер)" },
         { name: "whatsapp", type: "text", label: "WhatsApp" },
         { name: "vk", type: "text", label: "ВКонтакте" },
         { name: "boosty", type: "text", label: "Boosty" },
@@ -90,6 +133,13 @@ export const SiteSettings: GlobalConfig = {
       type: "text",
       label: "Подзаголовок в подвале",
       defaultValue: "Авторский навигатор по Иркутску",
+    },
+    {
+      name: "socialDisclaimerText",
+      type: "textarea",
+      label: "Дисклеймер соцсетей (Meta/Instagram)",
+      defaultValue:
+        "* Instagram принадлежит компании Meta, признанной экстремистской организацией и запрещённой в РФ.",
     },
     {
       name: "defaultSeo",
@@ -124,7 +174,8 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "founderName",
       type: "text",
-      label: "Имя основателя",
+      label: "Имя основателя (legacy)",
+      admin: { description: "Используется, если authorName не задан." },
     },
     {
       name: "founderPhoto",

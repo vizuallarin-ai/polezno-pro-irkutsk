@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -18,31 +17,16 @@ export type Review = {
 };
 
 const DEFAULT_STATS: Stat[] = [
-  { value: "500+", label: "туристов в год" },
-  { value: "8", label: "авторских маршрутов" },
-  { value: "50+", label: "корпоративных программ" },
-  { value: "5", label: "лет в Иркутске" },
+  { value: "8+", label: "авторских маршрутов" },
+  { value: "5+", label: "лет в Иркутске" },
+  { value: "100+", label: "гостей в сезон" },
 ];
 
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    id: "1",
-    text: "Приехали на 3 дня — остались на неделю. Маршруты составлены с такой любовью к городу, что начинаешь видеть его другими глазами.",
-    author: "Мария К.",
-    city: "Москва",
-  },
-  {
-    id: "2",
-    text: "Корпоративная программа для 40 человек была организована безупречно. Все участники были в восторге от уровня подготовки и атмосферы.",
-    author: "Дмитрий В.",
-    city: "Новосибирск",
-  },
-  {
-    id: "3",
-    text: "Экскурсия по деревянному зодчеству — лучшее, что я делал в Иркутске. Гид знает каждый дом и каждую историю за ним.",
-    author: "Анна Л.",
-    city: "Санкт-Петербург",
-  },
+const GUEST_HIGHLIGHTS = [
+  "Маршруты без «топ-10» и сувенирных штампов",
+  "Живые истории за фасадами деревянных домов",
+  "Программы под даты, темп и состав группы",
+  "Материалы о городе, которые остаются после визита",
 ];
 
 interface SocialProofProps {
@@ -52,9 +36,11 @@ interface SocialProofProps {
 
 export function SocialProof({
   stats = DEFAULT_STATS,
-  reviews = DEFAULT_REVIEWS,
+  reviews,
 }: SocialProofProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const hasReviews = reviews && reviews.length > 0;
+  const displayStats = stats.length > 0 ? stats : DEFAULT_STATS;
 
   useGSAP(
     () => {
@@ -72,20 +58,17 @@ export function SocialProof({
         scrollTrigger: { trigger: ".stats-row", start: "top 85%" },
       });
 
-      gsap.from(".review-card", {
+      gsap.from(".highlight-item", {
         opacity: 0,
-        y: 40,
+        y: 24,
         duration: 0.7,
-        stagger: 0.12,
+        stagger: 0.1,
         ease: "power3.out",
-        scrollTrigger: { trigger: ".reviews-grid", start: "top 80%" },
+        scrollTrigger: { trigger: ".highlights-grid", start: "top 80%" },
       });
     },
     { scope: sectionRef }
   );
-
-  const displayStats = stats.length > 0 ? stats : DEFAULT_STATS;
-  const displayReviews = reviews.length > 0 ? reviews : DEFAULT_REVIEWS;
 
   return (
     <section
@@ -99,10 +82,10 @@ export function SocialProof({
           id="social-proof-heading"
           className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-12"
         >
-          Гости и команды
+          {hasReviews ? "Отзывы гостей" : "Что обычно отмечают гости"}
         </h2>
 
-        <div className="stats-row grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20 lg:mb-28">
+        <div className="stats-row grid grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-16 lg:mb-20">
           {displayStats.map((stat) => (
             <div key={stat.label} className="stat-item">
               <p className="text-4xl lg:text-5xl font-light tabular-nums tracking-tight text-foreground mb-2">
@@ -113,41 +96,40 @@ export function SocialProof({
           ))}
         </div>
 
-        <div className="reviews-grid grid grid-cols-1 md:grid-cols-3 gap-8">
-          {displayReviews.map((review) => (
-            <figure
-              key={review.id}
-              className="review-card flex flex-col gap-4 border border-border p-6"
-            >
-              <blockquote className="text-sm leading-relaxed text-foreground flex-1">
-                &ldquo;{review.text}&rdquo;
-              </blockquote>
-              <figcaption className="flex items-center gap-3 pt-4 border-t border-border">
-                {review.photo?.url ? (
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
-                    <Image
-                      src={review.photo.url}
-                      alt={review.author}
-                      fill
-                      className="object-cover"
-                      sizes="32px"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium shrink-0">
-                    {review.author[0]}
-                  </div>
-                )}
-                <div>
+        {hasReviews ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {reviews.map((review) => (
+              <figure
+                key={review.id}
+                className="flex flex-col gap-4 border border-border p-6"
+              >
+                <blockquote className="text-sm leading-relaxed text-foreground flex-1">
+                  &ldquo;{review.text}&rdquo;
+                </blockquote>
+                <figcaption className="pt-4 border-t border-border">
                   <p className="text-sm font-medium">{review.author}</p>
                   {review.city && (
                     <p className="text-xs text-muted-foreground">{review.city}</p>
                   )}
-                </div>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <ul className="highlights-grid grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+            {GUEST_HIGHLIGHTS.map((item) => (
+              <li
+                key={item}
+                className="highlight-item flex items-start gap-3 text-sm text-muted-foreground leading-relaxed border border-border p-4"
+              >
+                <span className="text-baikal mt-0.5" aria-hidden>
+                  —
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );
