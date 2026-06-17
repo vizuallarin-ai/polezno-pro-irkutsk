@@ -82,6 +82,10 @@ const statements = [
     (value) =>
       `ALTER TYPE enum_articles_category ADD VALUE IF NOT EXISTS '${value}';`
   ),
+  ...CATEGORY_VALUES.map(
+    (value) =>
+      `ALTER TYPE enum__articles_v_version_category ADD VALUE IF NOT EXISTS '${value}';`
+  ),
 ];
 
 const client = new pg.Client({ connectionString: databaseUrl });

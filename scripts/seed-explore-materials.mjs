@@ -307,14 +307,17 @@ for (const item of MATERIALS) {
     ...(relatedRoute ? { relatedRoute } : {}),
   };
 
+  const createOptions = { collection: "articles", data: payloadData, draft: false };
+
   if (existing.docs.length === 0) {
-    await payload.create({ collection: "articles", data: payloadData });
+    await payload.create(createOptions);
     console.log(`✓ [articles] ${item.title}`);
   } else {
     await payload.update({
       collection: "articles",
       id: existing.docs[0].id,
       data: payloadData,
+      draft: false,
     });
     console.log(`↻ обновлён: ${item.slug}`);
   }
