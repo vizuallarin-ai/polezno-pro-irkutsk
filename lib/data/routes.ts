@@ -28,6 +28,14 @@ export interface RoutePoint {
   image?: string;
 }
 
+export type RouteExperienceType =
+  | "walking"
+  | "gastro"
+  | "author"
+  | "baikal"
+  | "corporate"
+  | "first-visit";
+
 export interface Route {
   id: string;
   slug: string;
@@ -50,6 +58,13 @@ export interface Route {
   /** GeoJSON order: [lng, lat] */
   routeLine: [number, number][];
   points: RoutePoint[];
+  isSelfGuided?: boolean;
+  isGuidedAvailable?: boolean;
+  isCorporateAvailable?: boolean;
+  priceLabel?: string;
+  bookingCta?: string;
+  bookingDescription?: string;
+  experienceType?: RouteExperienceType;
 }
 
 export const ROUTE_DIFFICULTY_LABELS: Record<RouteDifficulty, string> = {

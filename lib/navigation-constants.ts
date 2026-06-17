@@ -13,7 +13,6 @@ export const MORE_NAV_LINKS: NavItem[] = [
   { href: "/events", label: "События" },
   { href: BOOSTY_URL, label: "Клуб" },
   { href: "/shop", label: "Сувениры" },
-  { href: "/excursions", label: "Экскурсии" },
 ];
 
 /** @deprecated Use PRIMARY_NAV_LINKS — kept for CMS fallback compatibility */

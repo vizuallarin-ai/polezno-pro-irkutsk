@@ -30,6 +30,7 @@ export type ExcursionDoc = {
     title: string;
     description?: string | null;
   }> | null;
+  showInRoutesPage?: boolean | null;
 };
 
 export async function getPublishedExcursions(): Promise<ExcursionDoc[]> {
@@ -44,19 +45,7 @@ export async function getPublishedExcursions(): Promise<ExcursionDoc[]> {
       sort: "-updatedAt",
       depth: 1,
     });
-    return result.docs.map((doc) => ({
-      id: doc.id,
-      slug: String(doc.slug),
-      title: String(doc.title),
-      shortDescription: String(doc.shortDescription),
-      fullDescription: doc.fullDescription ? String(doc.fullDescription) : null,
-      format: String(doc.format),
-      price: doc.price != null ? Number(doc.price) : null,
-      duration: doc.duration != null ? Number(doc.duration) : null,
-      groupSize: doc.groupSize ? String(doc.groupSize) : null,
-      coverUrl: doc.coverUrl ? String(doc.coverUrl) : null,
-      cover: doc.cover as ExcursionDoc["cover"],
-    }));
+    return result.docs.map((doc) => mapExcursionDoc(doc as Record<string, unknown>));
   } catch {
     return [];
   }
@@ -114,6 +103,7 @@ function mapExcursionDoc(doc: Record<string, unknown>): ExcursionDoc {
     includes: doc.includes as ExcursionDoc["includes"],
     excludes: doc.excludes as ExcursionDoc["excludes"],
     relatedRoutes,
+    showInRoutesPage: doc.showInRoutesPage !== false,
   };
 }
 

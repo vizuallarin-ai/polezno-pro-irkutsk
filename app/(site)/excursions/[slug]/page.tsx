@@ -53,11 +53,11 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
     <article className="pt-24">
       <div className="mx-auto max-w-3xl px-6 lg:px-8 py-12">
         <Link
-          href="/excursions"
+          href="/map?filter=guided"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft size={14} />
-          Все экскурсии
+          Маршруты и экскурсии
         </Link>
 
         <div className="flex flex-wrap gap-2 mb-4">
@@ -152,7 +152,7 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
         ))}
 
         <Link
-          href={`/program?excursion=${excursion.slug}`}
+          href={`/program?excursion=${excursion.slug}&format=guided&sourceTitle=${encodeURIComponent(excursion.title)}`}
           className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 mt-8"
         >
           Обсудить дату

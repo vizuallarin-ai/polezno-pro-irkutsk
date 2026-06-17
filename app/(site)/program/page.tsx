@@ -8,11 +8,21 @@ export const metadata: Metadata = {
 };
 
 interface ProgramPageProps {
-  searchParams: Promise<{ route?: string }>;
+  searchParams: Promise<{
+    route?: string;
+    excursion?: string;
+    format?: string;
+    sourceTitle?: string;
+  }>;
 }
 
 export default async function ProgramPage({ searchParams }: ProgramPageProps) {
-  const { route: routeSlug } = await searchParams;
+  const {
+    route: routeSlug,
+    excursion: excursionSlug,
+    format: selectedFormat,
+    sourceTitle,
+  } = await searchParams;
 
   return (
     <main className="pt-24 min-h-screen">
@@ -48,7 +58,12 @@ export default async function ProgramPage({ searchParams }: ProgramPageProps) {
           </div>
 
           <div>
-            <ProgramForm initialRouteSlug={routeSlug} />
+            <ProgramForm
+              initialRouteSlug={routeSlug}
+              initialExcursionSlug={excursionSlug}
+              initialFormat={selectedFormat}
+              initialSourceTitle={sourceTitle}
+            />
           </div>
         </div>
       </div>

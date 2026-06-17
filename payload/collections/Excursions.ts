@@ -161,6 +161,16 @@ export const Excursions: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "showInRoutesPage",
+      type: "checkbox",
+      label: "Показывать на странице маршрутов",
+      defaultValue: true,
+      admin: {
+        position: "sidebar",
+        description: "Если выключено — экскурсия доступна только по прямой ссылке /excursions/[slug].",
+      },
+    },
+    {
       name: "seo",
       type: "group",
       label: "SEO",

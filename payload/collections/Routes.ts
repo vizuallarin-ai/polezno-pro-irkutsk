@@ -216,6 +216,64 @@ export const Routes: CollectionConfig = {
       options: [...ROUTE_DIFFICULTY_OPTIONS],
     },
     {
+      type: "collapsible",
+      label: "Формат прохождения",
+      admin: { initCollapsed: false },
+      fields: [
+        {
+          name: "isSelfGuided",
+          type: "checkbox",
+          label: "Можно пройти самостоятельно",
+          defaultValue: true,
+        },
+        {
+          name: "isGuidedAvailable",
+          type: "checkbox",
+          label: "Доступно с гидом",
+          defaultValue: true,
+        },
+        {
+          name: "isCorporateAvailable",
+          type: "checkbox",
+          label: "Подходит для корпоратива",
+          defaultValue: false,
+        },
+        {
+          name: "experienceType",
+          type: "select",
+          label: "Тип опыта (для фильтров)",
+          options: [
+            { label: "— не задан —", value: "" },
+            { label: "Пеший", value: "walking" },
+            { label: "Гастро", value: "gastro" },
+            { label: "Авторский", value: "author" },
+            { label: "Байкал рядом", value: "baikal" },
+            { label: "Корпоратив", value: "corporate" },
+            { label: "Первое знакомство", value: "first-visit" },
+          ],
+        },
+        {
+          name: "priceLabel",
+          type: "text",
+          label: "Подпись цены",
+          admin: {
+            description: "Например: «Бесплатно» или «от 490 ₽». Если пусто — выводится автоматически.",
+          },
+        },
+        {
+          name: "bookingCta",
+          type: "text",
+          label: "Текст кнопки записи",
+          admin: { description: "Например: «Пройти с гидом»" },
+        },
+        {
+          name: "bookingDescription",
+          type: "textarea",
+          label: "Описание для записи",
+        },
+      ],
+    },
+    {
       name: "pointsCount",
       type: "number",
       label: "Количество точек",

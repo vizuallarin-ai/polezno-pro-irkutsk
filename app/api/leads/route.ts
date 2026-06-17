@@ -63,6 +63,10 @@ export async function POST(request: NextRequest) {
         eventSlug: body.eventSlug ? String(body.eventSlug) : undefined,
         excursionSlug: body.excursionSlug ? String(body.excursionSlug) : undefined,
         productSlug: body.productSlug ? String(body.productSlug) : undefined,
+        selectedFormat: body.selectedFormat
+          ? String(body.selectedFormat)
+          : undefined,
+        sourceTitle: body.sourceTitle ? String(body.sourceTitle) : undefined,
       },
     });
 
