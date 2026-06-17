@@ -5,13 +5,13 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ArrowRight, Building2, Compass, MapPin, Users } from "lucide-react";
+import { ArrowRight, Building2, BookOpen, Compass, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BOOSTY_URL } from "@/lib/site-links";
+import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 
 const scenarios = [
   {
-    id: "visit",
+    id: "guest",
     title: "Приехать в гости",
     description: "Маршруты и программа на 2–5 дней без штампов.",
     href: "/map",
@@ -21,13 +21,13 @@ const scenarios = [
   {
     id: "local",
     title: "Живу в Иркутске",
-    description: "Гиды, дворы и места, которые пропускают в путеводителях.",
+    description: "Дворы, гиды и места, которые пропускают в путеводителях.",
     href: "/explore",
     cta: "Исследовать",
     icon: MapPin,
   },
   {
-    id: "corporate",
+    id: "team",
     title: "Для команды",
     description: "Корпоративы, делегации и программы под вашу задачу.",
     href: "/program",
@@ -35,13 +35,12 @@ const scenarios = [
     icon: Building2,
   },
   {
-    id: "club",
-    title: "В клуб автора",
-    description: "Закрытые маршруты, эфиры и материалы на Boosty.",
-    href: BOOSTY_URL,
-    cta: "В клуб",
-    icon: Users,
-    external: true,
+    id: "learn",
+    title: "Узнать город",
+    description: "История, контекст и неочевидные факты об Иркутске.",
+    href: CITY_HISTORY_HREF,
+    cta: "Читать",
+    icon: BookOpen,
   },
 ] as const;
 

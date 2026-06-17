@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { LenisProvider } from "@/components/layout/lenis-provider";
 import { getNavigation } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -33,30 +34,30 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Полезно про Иркутск — туристический гид и культурная платформа",
-    template: "%s | Полезно про Иркутск",
+    default: "Иркпортал — авторский навигатор по Иркутску",
+    template: "%s | Иркпортал",
   },
   description:
-    "Иркутск и Байкал: авторские маршруты, экскурсии, событийный туризм и культурные проекты. Организация путешествий под ключ.",
+    "Иркпортал: авторские маршруты, экскурсии и материалы об Иркутске без туристических штампов.",
   keywords: [
     "Иркутск",
-    "Байкал",
-    "туризм",
+    "Иркпортал",
     "маршруты",
     "экскурсии",
     "путешествия",
+    "Байкал",
   ],
   openGraph: {
     type: "website",
     locale: "ru_RU",
     url: siteUrl,
-    siteName: "Полезно про Иркутск",
+    siteName: "Иркпортал",
     images: [
       {
         url: "/og-default.jpg",
         width: 1200,
         height: 630,
-        alt: "Полезно про Иркутск",
+        alt: "Иркпортал",
       },
     ],
   },
@@ -79,10 +80,9 @@ export default async function SiteLayout({
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
-    name: "Полезно про Иркутск",
+    name: settings.projectName,
     url: siteUrl,
-    description:
-      "Организация путешествий, авторских маршрутов и культурных проектов в Иркутске и на Байкале.",
+    description: settings.description,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Иркутск",
@@ -105,13 +105,17 @@ export default async function SiteLayout({
       <body className="min-h-screen bg-background text-foreground antialiased">
         <LenisProvider>
           <Header
-            links={nav.links}
+            primaryLinks={nav.primaryLinks}
+            moreLinks={nav.moreLinks}
             ctaLabel={settings.mainCta.label}
             ctaHref={settings.mainCta.href}
             projectName={settings.projectName}
+            projectDescriptor={settings.projectDescriptor}
+            contact={settings.contact}
           />
           <main>{children}</main>
           <Footer settings={settings} />
+          <ScrollToTop />
         </LenisProvider>
       </body>
     </html>

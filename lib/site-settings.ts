@@ -1,9 +1,11 @@
 import { getPayloadClient } from "@/lib/payload";
+import { BRAND, DEFAULT_SOCIAL_DISCLAIMER } from "@/lib/brand-constants";
 
 export type SiteContacts = {
   phone?: string;
   email?: string;
   telegram?: string;
+  max?: string;
   whatsapp?: string;
   vk?: string;
   boosty?: string;
@@ -13,28 +15,41 @@ export type SiteContacts = {
 
 export type SiteSettingsData = {
   projectName: string;
+  projectDescriptor: string;
   description: string;
   city: string;
   heroTitle: string;
   heroSubtitle: string;
+  heroBadge: string;
+  authorName: string;
+  authorRole: string;
+  authorShortText: string;
+  authorPhotoUrl?: string;
   mainCta: { label: string; href: string; description?: string };
   secondaryCta?: { label: string; href: string };
   contact: SiteContacts;
   footerText: string;
   footerTagline: string;
+  socialDisclaimerText: string;
+  legacyProjectName: string;
   metaDescription: string;
   ogImageUrl?: string;
 };
 
 const DEFAULTS: SiteSettingsData = {
-  projectName: "Полезно про Иркутск",
+  projectName: BRAND.projectName,
+  projectDescriptor: BRAND.projectDescriptor,
   description:
-    "Авторский навигатор по Иркутску: маршруты, экскурсии, медиа и клуб на Boosty.",
+    "Авторский навигатор по Иркутску: маршруты, экскурсии и материалы о городе без штампов.",
   city: "Иркутск",
-  heroTitle: "Иркутск",
-  heroSubtitle: "Авторский навигатор по городу и Байкалу",
+  heroTitle: BRAND.slogan,
+  heroSubtitle: BRAND.heroSubtitle,
+  heroBadge: BRAND.heroBadge,
+  authorName: BRAND.authorName,
+  authorRole: BRAND.authorRole,
+  authorShortText: BRAND.authorShortText,
   mainCta: {
-    label: "Спланировать",
+    label: "Спланировать визит",
     href: "/program",
     description: "Экскурсии и программы под ваш визит",
   },
@@ -49,8 +64,10 @@ const DEFAULTS: SiteSettingsData = {
   footerText:
     "Маршруты, экскурсии и материалы о городе — без туристических штампов.",
   footerTagline: "Авторский навигатор по Иркутску",
+  socialDisclaimerText: DEFAULT_SOCIAL_DISCLAIMER,
+  legacyProjectName: BRAND.legacyName,
   metaDescription:
-    "Иркутск и Байкал: маршруты, экскурсии, события и программы под ключ.",
+    "Иркпортал — авторский навигатор по Иркутску: маршруты, экскурсии и материалы о городе без штампов.",
 };
 
 function mediaUrl(field: unknown): string | undefined {
@@ -76,12 +93,25 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
       string | undefined
     >;
 
+    const authorName = String(
+      raw.authorName || raw.founderName || DEFAULTS.authorName
+    );
+
     return {
       projectName: String(raw.projectName || DEFAULTS.projectName),
+      projectDescriptor: String(
+        raw.projectDescriptor || DEFAULTS.projectDescriptor
+      ),
       description: String(raw.description || DEFAULTS.description),
       city: String(raw.city || DEFAULTS.city),
       heroTitle: String(raw.heroTitle || DEFAULTS.heroTitle),
       heroSubtitle: String(raw.heroSubtitle || DEFAULTS.heroSubtitle),
+      heroBadge: String(raw.heroBadge || DEFAULTS.heroBadge),
+      authorName,
+      authorRole: String(raw.authorRole || DEFAULTS.authorRole),
+      authorShortText: String(raw.authorShortText || DEFAULTS.authorShortText),
+      authorPhotoUrl:
+        mediaUrl(raw.authorPhoto) || mediaUrl(raw.founderPhoto),
       mainCta: {
         label: String(mainCtaRaw.label || DEFAULTS.mainCta.label),
         href: String(mainCtaRaw.href || DEFAULTS.mainCta.href),
@@ -98,6 +128,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
         email: contactRaw.email || DEFAULTS.contact.email,
         telegram:
           contactRaw.telegram || socialRaw.telegram || DEFAULTS.contact.telegram,
+        max: contactRaw.max || contactRaw.maxUrl,
         whatsapp: contactRaw.whatsapp,
         vk: contactRaw.vk || socialRaw.vk,
         boosty: contactRaw.boosty || DEFAULTS.contact.boosty,
@@ -109,6 +140,12 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
       },
       footerText: String(raw.footerText || DEFAULTS.footerText),
       footerTagline: String(raw.footerTagline || DEFAULTS.footerTagline),
+      socialDisclaimerText: String(
+        raw.socialDisclaimerText || DEFAULTS.socialDisclaimerText
+      ),
+      legacyProjectName: String(
+        raw.legacyProjectName || DEFAULTS.legacyProjectName
+      ),
       metaDescription: String(
         raw.defaultSeo?.metaDescription ||
           raw.metaDescription ||
