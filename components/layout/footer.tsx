@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { YANDEX_MAPS_TERMS_URL } from "@/lib/map-config";
 import { Separator } from "@/components/ui/separator";
 import { BOOSTY_URL } from "@/lib/site-links";
 import type { SiteSettingsData } from "@/lib/site-settings";
@@ -180,6 +181,14 @@ export function Footer({ settings }: FooterProps) {
             >
               Контакты
             </Link>
+            <a
+              href={YANDEX_MAPS_TERMS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-primary-foreground/40 hover:text-primary-foreground/70 transition-colors duration-200"
+            >
+              Яндекс Карты API
+            </a>
             {email && (
               <a
                 href={`mailto:${email}`}

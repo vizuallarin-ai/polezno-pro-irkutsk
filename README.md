@@ -11,7 +11,7 @@
 | Framework | Next.js 16 App Router, TypeScript strict |
 | Стили | Tailwind CSS v4, shadcn/ui |
 | CMS | Payload CMS 3 + PostgreSQL |
-| Карта | Leaflet + OpenStreetMap |
+| Карта | Яндекс Maps JavaScript API 3.0 |
 | Деплой | Beget VPS, PM2, Nginx |
 | Анимации | Lenis, GSAP + ScrollTrigger, Framer Motion |
 | Оплата | Stripe Checkout (опционально) |
@@ -135,11 +135,13 @@ lib/
 
 ## Карта маршрутов
 
-Для работы карты нужен Mapbox токен в `.env.local`:
+Для работы карты нужен ключ Яндекс Карт в `.env.local`:
 
 ```
-NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1...
+NEXT_PUBLIC_YANDEX_MAPS_API_KEY=ваш-ключ
 ```
+
+Ключ: [developer.tech.yandex.ru](https://developer.tech.yandex.ru/) — ограничьте доменом `irkportal.ru`.
 
 GeoJSON маршрутов создаётся в [Mapbox Studio](https://studio.mapbox.com) или любом GeoJSON-редакторе. Формат — `LineString`:
 

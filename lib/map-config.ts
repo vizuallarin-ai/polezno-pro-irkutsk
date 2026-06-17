@@ -1,21 +1,32 @@
-/** Общие настройки Leaflet-карт (маршруты, /map). */
+/** Общие настройки карт маршрутов (Яндекс Maps JS API 3.0). */
 
+/** Центр Иркутска: [долгота, широта] — формат Yandex / GeoJSON. */
+export const IRKUTSK_CENTER_LNG_LAT: [number, number] = [104.2964, 52.2978];
+
+/** @deprecated Используйте IRKUTSK_CENTER_LNG_LAT — оставлено для совместимости [lat, lng]. */
 export const IRKUTSK_CENTER: [number, number] = [52.2978, 104.2964];
+
 export const IRKUTSK_ZOOM = 13;
 
-/** Carto Positron — светлая подложка без API-ключа. */
-export const MAP_TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+export const YANDEX_MAPS_TERMS_URL =
+  "https://yandex.ru/legal/maps_api/";
 
-/** Короткая подпись вместо длинной строки с leafletjs.com. */
-export const MAP_TILE_ATTRIBUTION =
-  '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-
-type LeafletMap = {
-  attributionControl?: { setPrefix: (prefix: string | false) => void };
-};
-
-/** Убирает префикс «Leaflet» со ссылкой на leafletjs.com; тайлы OSM остаются в подписи. */
-export function applyMinimalMapAttribution(map: LeafletMap) {
-  map.attributionControl?.setPrefix(false);
+export function boundsFromLngLatCoords(
+  coords: [number, number][]
+): [[number, number], [number, number]] | null {
+  if (coords.length === 0) return null;
+  let minLng = coords[0][0];
+  let maxLng = coords[0][0];
+  let minLat = coords[0][1];
+  let maxLat = coords[0][1];
+  for (const [lng, lat] of coords) {
+    minLng = Math.min(minLng, lng);
+    maxLng = Math.max(maxLng, lng);
+    minLat = Math.min(minLat, lat);
+    maxLat = Math.max(maxLat, lat);
+  }
+  return [
+    [minLng, minLat],
+    [maxLng, maxLat],
+  ];
 }

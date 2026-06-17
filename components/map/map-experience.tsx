@@ -65,7 +65,8 @@ export function MapExperience({ initialRoutes }: MapExperienceProps) {
 
       <div className="flex-1 relative h-full">
         <RouteMap
-          routes={routes}
+          mode="overview"
+          mapRoutes={routes}
           activeRouteId={activeRoute?.id ?? null}
           onRouteSelect={handleRouteSelect}
           className="w-full h-full"
