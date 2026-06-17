@@ -16,11 +16,18 @@ export class YandexMapsLoadError extends Error {
 
 let loadPromise: Promise<Ymaps3Api> | null = null;
 
+const REFERER_HELP =
+  "В кабинете Яндекса откройте ключ IrkPortal → Изменить → «Ограничение по HTTP Referer» и укажите: irkportal.ru, www.irkportal.ru, localhost (по одному в строке). Сохраните и подождите 15 минут.";
+
 export function getYandexMapsApiKey(): string | undefined {
   return process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY?.trim() || undefined;
 }
 
-function waitForGlobalYmaps3(timeoutMs = 20_000): Promise<Ymaps3Api> {
+function ymapsScriptUrl(apiKey: string): string {
+  return `https://api-maps.yandex.ru/v3/?apikey=${encodeURIComponent(apiKey)}&lang=ru_RU`;
+}
+
+function waitForGlobalYmaps3(timeoutMs = 12_000): Promise<Ymaps3Api> {
   return new Promise((resolve, reject) => {
     if (window.ymaps3) {
       window.ymaps3.ready.then(() => resolve(window.ymaps3)).catch(reject);
@@ -38,12 +45,12 @@ function waitForGlobalYmaps3(timeoutMs = 20_000): Promise<Ymaps3Api> {
         window.clearInterval(timer);
         reject(
           new YandexMapsLoadError(
-            "Превышено время ожидания загрузки Яндекс Карт.",
+            `Яндекс Карты не загрузились. ${REFERER_HELP}`,
             "timeout"
           )
         );
       }
-    }, 50);
+    }, 100);
   });
 }
 
@@ -57,16 +64,16 @@ function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
 
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.id = "yandex-maps-api-v3-fallback";
-    script.src = `https://api-maps.yandex.ru/v3/?apikey=${encodeURIComponent(apiKey)}&lang=ru_RU`;
-    script.async = true;
+    script.id = "yandex-maps-api-v3";
+    script.src = ymapsScriptUrl(apiKey);
+    script.async = false;
     script.referrerPolicy = "strict-origin-when-cross-origin";
 
     script.onerror = () => {
       loadPromise = null;
       reject(
         new YandexMapsLoadError(
-          "Скрипт Яндекс Карт заблокирован. Проверьте ключ и домен irkportal.ru в кабинете разработчика.",
+          `Скрипт Яндекс Карт заблокирован. ${REFERER_HELP}`,
           "script"
         )
       );
@@ -77,7 +84,7 @@ function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
         loadPromise = null;
         reject(
           new YandexMapsLoadError(
-            "Ключ Яндекс Карт отклонён. В developer.tech.yandex.ru разрешите домены irkportal.ru и www.irkportal.ru для JavaScript API 3.0.",
+            `Ключ отклонён Яндексом. ${REFERER_HELP}`,
             "script"
           )
         );
@@ -90,7 +97,7 @@ function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
           loadPromise = null;
           reject(
             new YandexMapsLoadError(
-              "Ключ Яндекс Карт не активирован для JavaScript API. Создайте ключ с типом «JavaScript API и HTTP Геокодер».",
+              `Ключ JavaScript API не активирован. ${REFERER_HELP}`,
               "ready"
             )
           );
@@ -123,15 +130,10 @@ export function loadYandexMaps(): Promise<Ymaps3Api> {
   }
 
   if (!loadPromise) {
-    const hasScript = document.querySelector(
-      'script[src*="api-maps.yandex.ru/v3"]'
-    );
-    loadPromise = (hasScript ? waitForGlobalYmaps3() : injectYandexMapsScript(apiKey)).catch(
-      (err) => {
-        loadPromise = null;
-        throw err;
-      }
-    );
+    loadPromise = injectYandexMapsScript(apiKey).catch((err) => {
+      loadPromise = null;
+      throw err;
+    });
   }
 
   return loadPromise;
