@@ -30,6 +30,11 @@ export async function POST(request: NextRequest) {
       if (slug) revalidatePath(`/map/${slug}`);
     } else if (collection === "excursions") {
       revalidatePath("/program");
+    } else if (collection === "photos" && slug) {
+      revalidatePath(`/explore/photos/${slug}`);
+      revalidatePath("/explore/photos");
+    } else if (collection === "photos") {
+      revalidatePath("/explore/photos");
     } else if (collection === "site-settings") {
       revalidatePath("/");
       revalidatePath("/about");

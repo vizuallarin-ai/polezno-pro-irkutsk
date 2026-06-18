@@ -5,6 +5,7 @@ import {
   publishedOrStaff,
 } from "../access";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { syncRouteGeometryBeforeChange } from "../hooks/sync-route-geometry";
 import {
   CONTENT_STATUS_OPTIONS,
   ROUTE_ACCESS_OPTIONS,
@@ -94,35 +95,7 @@ export const Routes: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
-    beforeChange: [
-      ({ data }) => {
-        const points = data?.routePoints ?? [];
-        const published = points.filter(
-          (p: { published?: boolean }) => p?.published !== false
-        );
-        data.pointsCount = published.length;
-
-        if (!data.geoLine && published.length > 0) {
-          data.geoLine = {
-            type: "LineString",
-            coordinates: published
-              .sort(
-                (a: { order?: number }, b: { order?: number }) =>
-                  (a.order ?? 0) - (b.order ?? 0)
-              )
-              .map((p: { lng?: number; lat?: number }) => [p.lng ?? 0, p.lat ?? 0]),
-          };
-        }
-
-        if (data?.type === "paid") {
-          data.isPaid = true;
-        } else if (data?.type === "free") {
-          data.isPaid = false;
-        }
-
-        return data;
-      },
-    ],
+    beforeChange: [syncRouteGeometryBeforeChange],
     afterChange: [revalidateAfterChange],
   },
   fields: [
@@ -314,12 +287,156 @@ export const Routes: CollectionConfig = {
       fields: routePointFields,
     },
     {
+      type: "collapsible",
+      label: "Геометрия маршрута",
+      admin: { initCollapsed: false },
+      fields: [
+        {
+          name: "routeGeometryPanel",
+          type: "ui",
+          admin: {
+            components: {
+              Field: "./payload/components/RouteGeometryPanel#RouteGeometryPanel",
+            },
+          },
+        },
+        {
+          name: "routeGeometry",
+          type: "group",
+          label: "Данные геометрии",
+          admin: {
+            description:
+              "Активная линия для сайта выбирается по источнику: ручная → API → fallback.",
+          },
+          fields: [
+            {
+              name: "activeSource",
+              type: "select",
+              label: "Активный источник",
+              defaultValue: "fallback",
+              options: [
+                { label: "Ручная линия", value: "manual" },
+                { label: "Яндекс API", value: "yandex_api" },
+                { label: "По точкам (прямые)", value: "fallback" },
+                { label: "Только точки", value: "none" },
+              ],
+            },
+            {
+              name: "status",
+              type: "select",
+              label: "Статус линии",
+              defaultValue: "active",
+              options: [
+                { label: "Черновик", value: "draft" },
+                { label: "Активна", value: "active" },
+                { label: "Требует проверки", value: "needs_review" },
+                { label: "Ошибка", value: "error" },
+                { label: "В архиве", value: "archived" },
+              ],
+            },
+            {
+              name: "showRouteLine",
+              type: "checkbox",
+              label: "Показывать линию на карте",
+              defaultValue: true,
+            },
+            {
+              name: "routeLineColor",
+              type: "text",
+              label: "Цвет линии (hex)",
+              admin: { description: "Необязательно. Например: #0B3D5C" },
+            },
+            {
+              name: "manualGeometry",
+              type: "json",
+              label: "Ручная линия (GeoJSON LineString)",
+            },
+            {
+              name: "apiGeometry",
+              type: "json",
+              label: "Линия из API (GeoJSON LineString)",
+              admin: { readOnly: true },
+            },
+            {
+              name: "fallbackGeometry",
+              type: "json",
+              label: "Fallback по точкам",
+              admin: { readOnly: true },
+            },
+            {
+              name: "distanceMeters",
+              type: "number",
+              label: "Дистанция (м)",
+              admin: { readOnly: true },
+            },
+            {
+              name: "durationMinutesMin",
+              type: "number",
+              label: "Время мин (мин)",
+              admin: { readOnly: true },
+            },
+            {
+              name: "durationMinutesMax",
+              type: "number",
+              label: "Время макс (мин)",
+              admin: { readOnly: true },
+            },
+            {
+              name: "provider",
+              type: "text",
+              label: "Провайдер",
+              admin: { readOnly: true },
+            },
+            {
+              name: "providerRequestHash",
+              type: "text",
+              label: "Хэш запроса",
+              admin: { readOnly: true },
+            },
+            {
+              name: "providerRawResponse",
+              type: "json",
+              label: "Ответ API (служебное)",
+              admin: {
+                readOnly: true,
+                condition: () => false,
+              },
+            },
+            {
+              name: "pointsFingerprint",
+              type: "text",
+              label: "Отпечаток точек",
+              admin: { readOnly: true },
+            },
+            {
+              name: "geometryUpdatedAt",
+              type: "date",
+              label: "Геометрия обновлена",
+              admin: { readOnly: true },
+            },
+            {
+              name: "geometryReviewedAt",
+              type: "date",
+              label: "Проверено",
+              admin: { readOnly: true },
+            },
+            {
+              name: "lastError",
+              type: "textarea",
+              label: "Последняя ошибка",
+              admin: { readOnly: true },
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: "geoLine",
       type: "json",
-      label: "GeoJSON маршрута (LineString)",
+      label: "Активная линия для сайта (GeoJSON)",
       admin: {
         readOnly: true,
-        description: "Заполняется автоматически из точек, если пусто.",
+        description: "Синхронизируется автоматически из активного источника геометрии.",
       },
     },
     {

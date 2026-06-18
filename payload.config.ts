@@ -15,9 +15,10 @@ import { Events } from "./payload/collections/Events";
 import { Products } from "./payload/collections/Products";
 import { Excursions } from "./payload/collections/Excursions";
 import { Reviews } from "./payload/collections/Reviews";
-import { Partners } from "./payload/collections/Partners";
+import { Photos } from "./payload/collections/Photos";
 import { Leads } from "./payload/collections/Leads";
 import { Guides } from "./payload/collections/Guides";
+import { Partners } from "./payload/collections/Partners";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 import { Navigation } from "./payload/globals/Navigation";
 
@@ -42,6 +43,7 @@ export default buildConfig({
     Routes,
     Leads,
     Articles,
+    Photos,
     Events,
     Excursions,
     Products,

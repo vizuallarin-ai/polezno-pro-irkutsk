@@ -116,8 +116,46 @@ export const LEAD_SOURCE_OPTIONS = [
   { label: "Раздел «Экскурсии»", value: "excursions" },
   { label: "Раздел «Магазин»", value: "shop" },
   { label: "Раздел «Карта»", value: "map" },
+  { label: "Фотоархив", value: "photos" },
   { label: "Прямой заход", value: "direct" },
   { label: "Другое", value: "other" },
+] as const satisfies readonly SelectOption[];
+
+export const PHOTO_CATEGORY_OPTIONS = [
+  { label: "Старый Иркутск", value: "old-irkutsk" },
+  { label: "Современный Иркутск", value: "modern-irkutsk" },
+  { label: "Улицы", value: "streets" },
+  { label: "Деревянная архитектура", value: "wooden" },
+  { label: "Дворы", value: "yards" },
+  { label: "Люди и город", value: "people" },
+  { label: "Детали", value: "details" },
+  { label: "Байкал рядом", value: "baikal" },
+  { label: "Зима", value: "winter" },
+  { label: "Другое", value: "other" },
+] as const satisfies readonly SelectOption[];
+
+export const PHOTO_TYPE_OPTIONS = [
+  { label: "Старое фото", value: "old" },
+  { label: "Современное фото", value: "modern" },
+  { label: "Пара «было / стало»", value: "before_after_pair" },
+  { label: "Деталь", value: "detail" },
+  { label: "Архивное", value: "archive" },
+  { label: "От пользователя", value: "user_submitted" },
+] as const satisfies readonly SelectOption[];
+
+export const PHOTO_MODERATION_OPTIONS = [
+  { label: "На модерации", value: "pending" },
+  { label: "Одобрено", value: "approved" },
+  { label: "Отклонено", value: "rejected" },
+  { label: "Требует проверки", value: "needs_review" },
+] as const satisfies readonly SelectOption[];
+
+export const PHOTO_RIGHTS_OPTIONS = [
+  { label: "Собственное фото", value: "own_photo" },
+  { label: "Разрешение правообладателя", value: "user_permission" },
+  { label: "Общественное достояние", value: "public_domain" },
+  { label: "Лицензия", value: "licensed" },
+  { label: "Неизвестно", value: "unknown" },
 ] as const satisfies readonly SelectOption[];
 
 export const ROUTE_CATEGORY_LABELS = labelsFromOptions(ROUTE_CATEGORY_OPTIONS);
@@ -129,6 +167,10 @@ export const ROUTE_FORMAT_LABELS = labelsFromOptions(ROUTE_FORMAT_OPTIONS);
 export const ROUTE_ACCESS_LABELS = labelsFromOptions(ROUTE_ACCESS_OPTIONS);
 export const ROUTE_DIFFICULTY_LABELS = labelsFromOptions(ROUTE_DIFFICULTY_OPTIONS);
 export const LEAD_SOURCE_LABELS = labelsFromOptions(LEAD_SOURCE_OPTIONS);
+export const PHOTO_CATEGORY_LABELS = labelsFromOptions(PHOTO_CATEGORY_OPTIONS);
+export const PHOTO_TYPE_LABELS = labelsFromOptions(PHOTO_TYPE_OPTIONS);
+export const PHOTO_MODERATION_LABELS = labelsFromOptions(PHOTO_MODERATION_OPTIONS);
+export const PHOTO_RIGHTS_LABELS = labelsFromOptions(PHOTO_RIGHTS_OPTIONS);
 
 export function labelFor(
   map: Record<string, string>,

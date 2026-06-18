@@ -1,4 +1,8 @@
 import type { RouteCategory } from "@/types/map";
+import type {
+  GeometrySource,
+  GeometryStatus,
+} from "@/lib/route-geometry/types";
 
 export type RouteDifficulty = "easy" | "medium" | "hard";
 export type RouteFormat = "walking" | "gastro" | "author" | "baikal";
@@ -36,6 +40,18 @@ export type RouteExperienceType =
   | "corporate"
   | "first-visit";
 
+export interface RouteGeometryMeta {
+  source: GeometrySource;
+  status: GeometryStatus;
+  distanceMeters: number | null;
+  durationMinutesMin: number | null;
+  durationMinutesMax: number | null;
+  showRouteLine: boolean;
+  lineColor: string | null;
+  vertexCount: number;
+  markersOnly: boolean;
+}
+
 export interface Route {
   id: string;
   slug: string;
@@ -57,6 +73,7 @@ export interface Route {
   coverImage?: string;
   /** GeoJSON order: [lng, lat] */
   routeLine: [number, number][];
+  geometry?: RouteGeometryMeta;
   points: RoutePoint[];
   isSelfGuided?: boolean;
   isGuidedAvailable?: boolean;

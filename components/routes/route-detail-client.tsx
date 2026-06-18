@@ -15,6 +15,10 @@ import {
   ROUTE_DIFFICULTY_LABELS,
   ROUTE_FORMAT_LABELS,
 } from "@/lib/data/routes";
+import {
+  formatRouteDistance,
+  formatWalkingDuration,
+} from "@/lib/route-geometry/format";
 import { ROUTE_CATEGORY_LABELS } from "@/types/map";
 import { Badge } from "@/components/ui/badge";
 import { RoutePointsList } from "@/components/routes/route-points-list";
@@ -207,11 +211,22 @@ export function RouteDetailClient({
           <dl className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted-foreground mb-8">
             <div className="flex items-center gap-2">
               <Clock size={14} />
-              <span>{formatDuration(route.duration)}</span>
+              <span>
+                {route.geometry?.durationMinutesMin
+                  ? formatWalkingDuration(
+                      route.geometry.durationMinutesMin,
+                      route.geometry.durationMinutesMax
+                    )
+                  : formatDuration(route.duration)}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin size={14} />
-              <span>{route.distance} км</span>
+              <span>
+                {route.geometry?.distanceMeters
+                  ? formatRouteDistance(route.geometry.distanceMeters)
+                  : `${route.distance} км`}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Footprints size={14} />

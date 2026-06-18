@@ -1,5 +1,11 @@
 import type { Route, RouteDifficulty, RouteFormat, RouteFilterId } from "@/lib/data/routes";
 import type { RouteCategory } from "@/types/map";
+import {
+  getPublicRouteGeometry,
+  publicDistanceKm,
+} from "@/lib/route-geometry/service";
+import { normalizeLineString } from "@/lib/route-geometry/coordinates";
+import type { RouteGeometryFields, RoutePointInput } from "@/lib/route-geometry/types";
 
 type MediaRef = { url?: string; alt?: string } | string | null | undefined;
 
@@ -35,6 +41,7 @@ type RouteDoc = {
   pointsCount?: number;
   routePoints?: RoutePointDoc[];
   geoLine?: { type?: string; coordinates?: [number, number][] };
+  routeGeometry?: RouteGeometryFields | null;
   seo?: { title?: string; description?: string };
   status?: string;
   isSelfGuided?: boolean;
@@ -123,12 +130,36 @@ export function payloadRouteToRoute(doc: RouteDoc): Route {
     .filter((p) => p.published !== false)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
+  const pointInputs: RoutePointInput[] = publishedPoints.map((p) => ({
+    lat: p.lat ?? 0,
+    lng: p.lng ?? 0,
+    order: p.order,
+    title: p.title,
+    published: p.published,
+  }));
+
+  const publicGeo = getPublicRouteGeometry({
+    routeGeometry: doc.routeGeometry,
+    routePoints: pointInputs,
+    legacyGeoLine: normalizeLineString(doc.geoLine),
+  });
+
   const routeLine =
-    doc.geoLine?.coordinates ??
+    (publicGeo.geometry?.coordinates as [number, number][] | undefined) ??
     publishedPoints.map((p) => [p.lng ?? 0, p.lat ?? 0] as [number, number]);
 
   const mapCategory = doc.category ?? "history";
   const routeType = doc.type ?? "free";
+
+  const distanceKm =
+    publicGeo.distanceMeters && publicGeo.distanceMeters > 0
+      ? publicDistanceKm(publicGeo)
+      : (doc.distance ?? 3);
+
+  const durationMinutes =
+    publicGeo.durationMinutesMax && publicGeo.durationMinutesMax > 0
+      ? publicGeo.durationMinutesMax
+      : (doc.duration ?? 90);
 
   return {
     id: String(doc.id),
@@ -140,14 +171,25 @@ export function payloadRouteToRoute(doc: RouteDoc): Route {
     mapCategory,
     type: routeType,
     price: doc.price,
-    duration: doc.duration ?? 90,
-    distance: doc.distance ?? 3,
+    duration: durationMinutes,
+    distance: distanceKm,
     pointsCount: doc.pointsCount ?? publishedPoints.length,
     difficulty: doc.difficulty ?? "medium",
     tags: normalizeTags(doc.tags),
     filters: computeRouteFilters(doc),
     coverImage: mediaUrl(doc.cover) ?? doc.coverUrl,
     routeLine,
+    geometry: {
+      source: publicGeo.source,
+      status: publicGeo.status,
+      distanceMeters: publicGeo.distanceMeters,
+      durationMinutesMin: publicGeo.durationMinutesMin,
+      durationMinutesMax: publicGeo.durationMinutesMax,
+      showRouteLine: publicGeo.showRouteLine,
+      lineColor: publicGeo.lineColor,
+      vertexCount: publicGeo.vertexCount,
+      markersOnly: publicGeo.markersOnly,
+    },
     points: publishedPoints.map((p, i) => ({
       id: p.id ?? `point-${i}`,
       order: p.order ?? i + 1,

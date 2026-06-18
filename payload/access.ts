@@ -1,4 +1,5 @@
 import type { Access, AccessArgs, FieldAccess, Where } from "payload";
+import { PHOTO_PUBLISHED_WHERE } from "@/lib/cms-filters";
 
 type UserWithRole = { role?: "admin" | "editor" | null };
 
@@ -48,3 +49,9 @@ export const leadsCreateAccess: Access = () => true;
 
 export const mediaReadAccess: Access = () => true;
 export const mediaWriteAccess: Access = isAdmin;
+
+/** Публично — только опубликованные и одобренные фото. */
+export const photoReadAccess: Access = ({ req: { user } }) => {
+  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  return PHOTO_PUBLISHED_WHERE;
+};

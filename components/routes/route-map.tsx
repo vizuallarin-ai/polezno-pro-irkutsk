@@ -104,10 +104,35 @@ export function RouteMap(props: RouteMapProps) {
         if (!route.geoLine?.coordinates?.length) continue;
 
         const isActive = route.id === activeRouteId;
-        const color = ROUTE_CATEGORY_COLORS[route.category] || "#0B3D5C";
+        const color =
+          route.lineColor || ROUTE_CATEGORY_COLORS[route.category] || "#0B3D5C";
         const isDetail = mode === "detail";
         const coordinates = route.geoLine.coordinates as [number, number][];
         const highlighted = isActive || isDetail;
+
+        if (coordinates.length >= 2 && mode === "detail") {
+          const start = coordinates[0];
+          const end = coordinates[coordinates.length - 1];
+          const endpoints = [
+            { coord: start, letter: "A", title: "Начало маршрута", fill: "#2C5F4A" },
+            { coord: end, letter: "B", title: "Конец маршрута", fill: "#7A2E2E" },
+          ];
+          for (const point of endpoints) {
+            const el = document.createElement("div");
+            el.title = point.title;
+            el.style.cssText = `
+              min-width:18px;height:18px;border-radius:999px;padding:0 5px;
+              background:${point.fill};
+              border:2px solid #FAF9F7;color:#FAF9F7;font-size:8px;font-weight:700;
+              display:flex;align-items:center;justify-content:center;
+              box-shadow:0 1px 3px rgba(0,0,0,0.25);
+            `;
+            el.textContent = point.letter;
+            const endpointMarker = new YMapMarker({ coordinates: point.coord }, el);
+            map.addChild(endpointMarker);
+            layersRef.current.push(endpointMarker);
+          }
+        }
 
         const routeClick =
           mode === "overview" && onRouteSelect
@@ -300,7 +325,7 @@ export function RouteMap(props: RouteMapProps) {
         )}
         role="alert"
       >
-        <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+        <p className="text-sm text-muted-foreground max-w-md leading-relaxed whitespace-pre-line">
           {mapError}
         </p>
       </div>

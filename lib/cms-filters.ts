@@ -45,3 +45,14 @@ export function catalogProductsWhere(): Where {
 export function newLeadsWhere(): Where {
   return { status: { equals: "new" } };
 }
+
+export const PHOTO_PUBLISHED_WHERE: Where = {
+  and: [
+    { status: { equals: "published" } },
+    { moderationStatus: { equals: "approved" } },
+  ],
+};
+
+export function pendingPhotosWhere(): Where {
+  return { moderationStatus: { equals: "pending" } };
+}

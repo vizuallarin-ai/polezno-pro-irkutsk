@@ -5,6 +5,7 @@ import { getRoutesForMap } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import {
   ARTICLE_PUBLISHED_WHERE,
+  PHOTO_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
 
@@ -17,7 +18,7 @@ async function getCmsUrls() {
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const [articles, events, products, routesRes, excursionsRes] =
+    const [articles, events, products, routesRes, excursionsRes, photosRes] =
       await Promise.all([
       payload.find({
         collection: "articles",
@@ -46,6 +47,12 @@ async function getCmsUrls() {
       payload.find({
         collection: "excursions",
         where: PUBLISHED_STATUS_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
+      payload.find({
+        collection: "photos",
+        where: PHOTO_PUBLISHED_WHERE,
         limit: 1000,
         depth: 0,
       }),
@@ -86,12 +93,20 @@ async function getCmsUrls() {
       priority: 0.75,
     }));
 
+    const photoUrls = photosRes.docs.map((p) => ({
+      url: `${BASE_URL}/explore/photos/${p.slug}`,
+      lastModified: new Date(String(p.updatedAt)),
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
+    }));
+
     return [
       ...articleUrls,
       ...eventUrls,
       ...productUrls,
       ...cmsRouteUrls,
       ...excursionUrls,
+      ...photoUrls,
     ];
   } catch {
     return [];
@@ -110,6 +125,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE_URL, priority: 1.0, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/map`, priority: 0.9, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/explore`, priority: 0.9, changeFrequency: "daily" as const },
+    { url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/shop`, priority: 0.8, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },

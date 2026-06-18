@@ -51,6 +51,8 @@ export interface MapRoute {
   description: string;
   cover?: { url: string; alt?: string };
   geoLine?: GeoJSON.LineString;
+  lineColor?: string;
+  geometrySource?: string;
   places?: MapPlace[];
   audioGuide?: { url: string };
   pdfGuide?: { url: string };

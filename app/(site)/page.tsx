@@ -4,6 +4,7 @@ import { ScenarioPicker } from "@/components/sections/scenario-picker";
 import { AuthorBlock } from "@/components/sections/author-block";
 import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
 import { FinalCta } from "@/components/sections/final-cta";
+import { PhotosPreviewSection } from "@/components/sections/photos-preview";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 import { getSiteSettings } from "@/lib/site-settings";
 
@@ -94,6 +95,7 @@ export default async function HomePage() {
         photoUrl={settings.authorPhotoUrl}
       />
       <SocialProof stats={stats} reviews={reviews} />
+      <PhotosPreviewSection />
       <FinalCta />
     </>
   );

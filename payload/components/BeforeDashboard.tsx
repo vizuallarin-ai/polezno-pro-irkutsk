@@ -11,6 +11,7 @@ type DashboardCounts = {
   excursionsPublished: number;
   productsPublished: number;
   leadsNew: number;
+  photosPending: number;
   draftsTotal: number;
 };
 
@@ -27,6 +28,7 @@ async function fetchCounts(): Promise<DashboardCounts> {
       excursionsPublished,
       productsPublished,
       leadsNew,
+      photosPending,
     ] = await Promise.all([
       payload.count({ collection: "routes" }),
       payload.count({
@@ -61,6 +63,10 @@ async function fetchCounts(): Promise<DashboardCounts> {
         collection: "leads",
         where: { status: { equals: "new" } },
       }),
+      payload.count({
+        collection: "photos",
+        where: { moderationStatus: { equals: "pending" } },
+      }),
     ]);
 
     return {
@@ -72,6 +78,7 @@ async function fetchCounts(): Promise<DashboardCounts> {
       excursionsPublished: excursionsPublished.totalDocs,
       productsPublished: productsPublished.totalDocs,
       leadsNew: leadsNew.totalDocs,
+      photosPending: photosPending.totalDocs,
       draftsTotal:
         routesDraft.totalDocs +
         articlesDraft.totalDocs,
@@ -86,6 +93,7 @@ async function fetchCounts(): Promise<DashboardCounts> {
       excursionsPublished: 0,
       productsPublished: 0,
       leadsNew: 0,
+      photosPending: 0,
       draftsTotal: 0,
     };
   }
@@ -162,6 +170,12 @@ export default async function BeforeDashboard() {
       href: "/admin/collections/products?where[status][equals]=published",
     },
     {
+      label: "Фото на модерации",
+      value: counts.photosPending,
+      href: "/admin/collections/photos?where[moderationStatus][equals]=pending",
+      highlight: counts.photosPending > 0,
+    },
+    {
       label: "Новые заявки",
       value: counts.leadsNew,
       href: "/admin/collections/leads?where[status][equals]=new",
@@ -180,6 +194,7 @@ export default async function BeforeDashboard() {
     { label: "+ Событие", href: "/admin/collections/events/create" },
     { label: "+ Экскурсия", href: "/admin/collections/excursions/create" },
     { label: "+ Товар", href: "/admin/collections/products/create" },
+    { label: "Фото", href: "/admin/collections/photos" },
     { label: "Заявки", href: "/admin/collections/leads" },
     { label: "Настройки", href: "/admin/globals/site-settings" },
   ];

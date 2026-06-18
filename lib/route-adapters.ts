@@ -2,6 +2,7 @@ import type { Route } from "@/lib/data/routes";
 import type { MapRoute } from "@/types/map";
 
 export function routeToMapRoute(route: Route): MapRoute {
+  const showLine = route.geometry?.showRouteLine !== false;
   return {
     id: route.id,
     slug: route.slug,
@@ -15,10 +16,14 @@ export function routeToMapRoute(route: Route): MapRoute {
     cover: route.coverImage
       ? { url: route.coverImage, alt: route.title }
       : undefined,
-    geoLine: {
-      type: "LineString",
-      coordinates: route.routeLine,
-    },
+    geoLine: showLine
+      ? {
+          type: "LineString",
+          coordinates: route.routeLine,
+        }
+      : undefined,
+    lineColor: route.geometry?.lineColor ?? undefined,
+    geometrySource: route.geometry?.source,
     places: route.points.map((p) => ({
       id: p.id,
       title: p.title,

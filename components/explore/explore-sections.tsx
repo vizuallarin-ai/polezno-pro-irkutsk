@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 export function ExplorePhotoPlaceholder() {
   return (
     <section
-      className="mb-24 border border-dashed border-border bg-muted/30 p-10 lg:p-14"
+      className="mb-24 border border-border bg-card p-10 lg:p-14"
       aria-labelledby="explore-photos-heading"
     >
       <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
-        Скоро
+        Фотоархив
       </p>
       <h2
         id="explore-photos-heading"
@@ -17,13 +17,16 @@ export function ExplorePhotoPlaceholder() {
         Фото Иркутска
       </h2>
       <p className="text-muted-foreground max-w-lg leading-relaxed mb-6">
-        Архив городских кадров и сезонных серий — в разработке. Пока смотрите
-        материалы и маршруты ниже.
+        Старые и современные снимки улиц, дворов и деталей города — с фильтрами
+        по периоду и месту. Можно предложить своё фото.
       </p>
-      <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-        Раздел в подготовке
+      <Link
+        href="/explore/photos"
+        className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:opacity-80 transition-opacity"
+      >
+        Смотреть фото
         <ArrowRight size={14} />
-      </span>
+      </Link>
     </section>
   );
 }

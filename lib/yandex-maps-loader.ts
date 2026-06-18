@@ -4,10 +4,20 @@ import type * as Ymaps3 from "@yandex/ymaps3-types";
 
 export type Ymaps3Api = typeof Ymaps3;
 
+export type YandexMapsErrorCode =
+  | "missing_key"
+  | "script"
+  | "ready"
+  | "timeout"
+  | "browser"
+  | "forbidden"
+  | "rate_limit"
+  | "network";
+
 export class YandexMapsLoadError extends Error {
   constructor(
     message: string,
-    readonly code: "missing_key" | "script" | "ready" | "timeout" | "browser"
+    readonly code: YandexMapsErrorCode
   ) {
     super(message);
     this.name = "YandexMapsLoadError";
@@ -17,7 +27,10 @@ export class YandexMapsLoadError extends Error {
 let loadPromise: Promise<Ymaps3Api> | null = null;
 
 const REFERER_HELP =
-  "В кабинете Яндекса откройте ключ IrkPortal → Изменить → «Ограничение по HTTP Referer» и укажите: irkportal.ru, www.irkportal.ru, localhost (по одному в строке). Сохраните и подождите 15 минут.";
+  "В кабинете developer.tech.yandex.ru откройте ключ IrkPortal → Изменить → «Ограничение по HTTP Referer». " +
+  "Каждый домен — отдельная строка (формат «irkportal.ru, www.irkportal.ru, localhost» через запятую в одной строке не работает). " +
+  "Нужны три строки: irkportal.ru, www.irkportal.ru и localhost — без https:// и без путей. " +
+  "Сохраните и подождите до 15 минут.";
 
 export function getYandexMapsApiKey(): string | undefined {
   return process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY?.trim() || undefined;
@@ -25,6 +38,75 @@ export function getYandexMapsApiKey(): string | undefined {
 
 function ymapsScriptUrl(apiKey: string): string {
   return `https://api-maps.yandex.ru/v3/?apikey=${encodeURIComponent(apiKey)}&lang=ru_RU`;
+}
+
+async function readYandexErrorBody(response: Response): Promise<string> {
+  try {
+    const data = (await response.json()) as { message?: string };
+    return data.message?.trim() ?? "";
+  } catch {
+    try {
+      return (await response.text()).trim().slice(0, 200);
+    } catch {
+      return "";
+    }
+  }
+}
+
+function forbiddenMessage(status: number, detail: string): string {
+  const suffix = detail ? `: «${detail}»` : "";
+  const invalidKey = /invalid\s*api\s*key/i.test(detail);
+
+  if (invalidKey) {
+    return (
+      `Яндекс отклонил ключ (HTTP ${status}${suffix}). ` +
+      "Ответ «Invalid api key» часто означает не сам ключ, а неверный Referer: домены через запятую в одной строке не принимаются. " +
+      REFERER_HELP
+    );
+  }
+
+  return `Доступ к Яндекс Картам запрещён (HTTP ${status}${suffix}). ${REFERER_HELP}`;
+}
+
+/** Проверяет URL скрипта до вставки <script>, чтобы отличить 403/429 от сетевого сбоя. */
+async function probeYandexMapsAccess(apiKey: string): Promise<void> {
+  let response: Response;
+
+  try {
+    response = await fetch(ymapsScriptUrl(apiKey), {
+      method: "GET",
+      credentials: "omit",
+      referrerPolicy: "strict-origin-when-cross-origin",
+      cache: "no-store",
+    });
+  } catch {
+    // CORS или сеть — пробуем загрузку через <script>, как раньше.
+    return;
+  }
+
+  if (response.type === "opaque" || response.status === 0) {
+    return;
+  }
+
+  if (response.status === 429) {
+    throw new YandexMapsLoadError(
+      "Превышен лимит запросов к Яндекс Картам. Подождите несколько минут и обновите страницу.",
+      "rate_limit"
+    );
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    const detail = await readYandexErrorBody(response);
+    throw new YandexMapsLoadError(forbiddenMessage(response.status, detail), "forbidden");
+  }
+
+  if (!response.ok) {
+    const detail = await readYandexErrorBody(response);
+    throw new YandexMapsLoadError(
+      `Яндекс Карты вернули ошибку HTTP ${response.status}${detail ? `: «${detail}»` : ""}. Попробуйте обновить страницу.`,
+      "script"
+    );
+  }
 }
 
 function waitForGlobalYmaps3(timeoutMs = 12_000): Promise<Ymaps3Api> {
@@ -45,7 +127,7 @@ function waitForGlobalYmaps3(timeoutMs = 12_000): Promise<Ymaps3Api> {
         window.clearInterval(timer);
         reject(
           new YandexMapsLoadError(
-            `Яндекс Карты не загрузились. ${REFERER_HELP}`,
+            `Яндекс Карты не инициализировались за ${timeoutMs / 1000} с. ${REFERER_HELP}`,
             "timeout"
           )
         );
@@ -54,13 +136,15 @@ function waitForGlobalYmaps3(timeoutMs = 12_000): Promise<Ymaps3Api> {
   });
 }
 
-function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
+async function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
   const existing = document.querySelector<HTMLScriptElement>(
     'script[src*="api-maps.yandex.ru/v3"]'
   );
   if (existing) {
     return waitForGlobalYmaps3();
   }
+
+  await probeYandexMapsAccess(apiKey);
 
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -73,7 +157,7 @@ function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
       loadPromise = null;
       reject(
         new YandexMapsLoadError(
-          `Скрипт Яндекс Карт заблокирован. ${REFERER_HELP}`,
+          `Скрипт Яндекс Карт не загрузился (сеть или блокировка). ${REFERER_HELP}`,
           "script"
         )
       );
@@ -84,7 +168,7 @@ function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
         loadPromise = null;
         reject(
           new YandexMapsLoadError(
-            `Ключ отклонён Яндексом. ${REFERER_HELP}`,
+            `Скрипт загрузился, но API не активирован. ${REFERER_HELP}`,
             "script"
           )
         );
@@ -97,7 +181,7 @@ function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
           loadPromise = null;
           reject(
             new YandexMapsLoadError(
-              `Ключ JavaScript API не активирован. ${REFERER_HELP}`,
+              `Ключ JavaScript API не активирован для этого домена. ${REFERER_HELP}`,
               "ready"
             )
           );
