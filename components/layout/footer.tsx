@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { YANDEX_MAPS_TERMS_URL } from "@/lib/map-config";
 import { Separator } from "@/components/ui/separator";
-import { BOOSTY_URL } from "@/lib/site-links";
+import { BOOSTY_URL, YANDEX_IKS_COUNTER_URL, YANDEX_WEBMASTER_INFO_URL } from "@/lib/site-links";
 import type { SiteSettingsData } from "@/lib/site-settings";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 
@@ -171,9 +171,27 @@ export function Footer({ settings }: FooterProps) {
         <Separator className="mt-16 mb-8 bg-primary-foreground/10" />
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <p className="text-xs text-primary-foreground/40">
-            © {new Date().getFullYear()} {projectName}. Все права защищены.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <p className="text-xs text-primary-foreground/40">
+              © {new Date().getFullYear()} {projectName}. Все права защищены.
+            </p>
+            <a
+              href={YANDEX_WEBMASTER_INFO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block shrink-0 opacity-80 hover:opacity-100 transition-opacity duration-200"
+              aria-label="Индекс качества сайта (ИКС) в Яндекс Вебмастере"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={YANDEX_IKS_COUNTER_URL}
+                width={88}
+                height={31}
+                alt="ИКС — индекс качества сайта в Яндексе"
+                className="rounded-lg"
+              />
+            </a>
+          </div>
           <div className="flex items-center gap-6 flex-wrap">
             <Link
               href="/contact"
