@@ -58,6 +58,8 @@ async function main() {
   const { Articles } = await import("../payload/collections/Articles.ts");
   const { Events } = await import("../payload/collections/Events.ts");
   const { Products } = await import("../payload/collections/Products.ts");
+  const { Makers } = await import("../payload/collections/Makers.ts");
+  const { Photos } = await import("../payload/collections/Photos.ts");
   const { Excursions } = await import("../payload/collections/Excursions.ts");
   const { Reviews } = await import("../payload/collections/Reviews.ts");
   const { Partners } = await import("../payload/collections/Partners.ts");
@@ -72,11 +74,13 @@ async function main() {
       Users,
       Routes,
       Leads,
+      Articles,
+      Photos,
+      Events,
       Media,
       Places,
       Excursions,
-      Articles,
-      Events,
+      Makers,
       Products,
       Guides,
       Reviews,

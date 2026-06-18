@@ -16,7 +16,7 @@ const footerNav = {
   more: [
     { href: "/events", label: "События" },
     { href: BOOSTY_URL, label: "Клуб на Boosty", external: true },
-    { href: "/shop", label: "Сувениры" },
+    { href: "/souvenirs", label: "Сувениры" },
     { href: CITY_HISTORY_HREF, label: "История Иркутска" },
   ],
 };

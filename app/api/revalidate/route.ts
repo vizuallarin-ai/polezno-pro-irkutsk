@@ -23,8 +23,13 @@ export async function POST(request: NextRequest) {
       revalidatePath(`/events/${slug}`);
       revalidatePath("/events");
     } else if (collection === "products" && slug) {
+      revalidatePath(`/souvenirs/${slug}`);
+      revalidatePath("/souvenirs");
       revalidatePath(`/shop/${slug}`);
       revalidatePath("/shop");
+    } else if (collection === "makers" && slug) {
+      revalidatePath(`/souvenirs/makers/${slug}`);
+      revalidatePath("/souvenirs");
     } else if (collection === "routes") {
       revalidatePath("/map");
       if (slug) revalidatePath(`/map/${slug}`);

@@ -9,6 +9,7 @@ import {
   CONTENT_STATUS_OPTIONS,
   PRODUCT_CATEGORY_OPTIONS,
   PRODUCT_STOCK_OPTIONS,
+  PRODUCT_TYPE_OPTIONS,
 } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
@@ -16,17 +17,26 @@ import { validateRequiredSlug } from "../validators";
 export const Products: CollectionConfig = {
   slug: "products",
   labels: {
-    singular: "Товар",
-    plural: "Товары",
+    singular: "Сувенир",
+    plural: "Сувениры",
   },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "price", "stockStatus", "status", "updatedAt"],
+    defaultColumns: [
+      "title",
+      "productType",
+      "category",
+      "price",
+      "stockStatus",
+      "isOwnMerch",
+      "status",
+      "updatedAt",
+    ],
     listSearchableFields: ["title", "slug", "shortDescription"],
-    description: "Каталог /shop. Публично — только опубликованные товары.",
+    description: "Каталог /souvenirs. Публично — только опубликованные товары.",
     preview: (doc) => {
       if (doc?.slug) {
-        return `${process.env.NEXT_PUBLIC_SERVER_URL}/shop/${doc.slug}`;
+        return `${process.env.NEXT_PUBLIC_SERVER_URL}/souvenirs/${doc.slug}`;
       }
       return null;
     },
@@ -67,10 +77,26 @@ export const Products: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "productType",
+      type: "select",
+      label: "Тип товара",
+      defaultValue: "own_merch",
+      required: true,
+      options: [...PRODUCT_TYPE_OPTIONS],
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "isOwnMerch",
+      type: "checkbox",
+      label: "Мерч Иркпортала",
+      defaultValue: true,
+      admin: { position: "sidebar" },
+    },
+    {
       name: "stockStatus",
       type: "select",
-      label: "Наличие",
-      defaultValue: "in_stock",
+      label: "Наличие / статус",
+      defaultValue: "soon",
       required: true,
       options: [...PRODUCT_STOCK_OPTIONS],
       admin: { position: "sidebar" },
@@ -86,17 +112,32 @@ export const Products: CollectionConfig = {
       name: "price",
       type: "number",
       label: "Цена (₽)",
-      required: true,
       min: 0,
+      admin: {
+        description: "Ориентир для заявки. Оплата на сайте не подключена.",
+      },
+    },
+    {
+      name: "priceLabel",
+      type: "text",
+      label: "Подпись к цене",
+      admin: {
+        description: 'Например: «от 350 ₽» или «цена по запросу».',
+      },
     },
     {
       name: "gallery",
       type: "array",
       label: "Галерея",
-      minRows: 1,
+      minRows: 0,
       fields: [
         { name: "image", type: "upload", relationTo: "media", required: true },
       ],
+    },
+    {
+      name: "shortDescription",
+      type: "textarea",
+      label: "Краткое описание",
     },
     {
       name: "story",
@@ -107,15 +148,64 @@ export const Products: CollectionConfig = {
       }),
     },
     {
-      name: "shortDescription",
+      name: "cityConnectionText",
       type: "textarea",
-      label: "Краткое описание",
+      label: "Связь с Иркутском",
+    },
+    {
+      name: "orderCtaLabel",
+      type: "text",
+      label: "Текст кнопки заказа",
+      defaultValue: "Оставить заявку",
+    },
+    {
+      name: "maker",
+      type: "relationship",
+      relationTo: "makers",
+      label: "Мастер",
+      admin: {
+        condition: (_, siblingData) => !siblingData?.isOwnMerch,
+      },
+    },
+    {
+      name: "relatedRoute",
+      type: "relationship",
+      relationTo: "routes",
+      label: "Связанный маршрут (legacy)",
+      admin: { description: "Один маршрут — для обратной совместимости." },
+    },
+    {
+      name: "relatedRoutes",
+      type: "relationship",
+      relationTo: "routes",
+      label: "Связанные маршруты",
+      hasMany: true,
+    },
+    {
+      name: "relatedArticles",
+      type: "relationship",
+      relationTo: "articles",
+      label: "Связанные материалы",
+      hasMany: true,
+    },
+    {
+      name: "relatedPhotos",
+      type: "relationship",
+      relationTo: "photos",
+      label: "Связанные фото",
+      hasMany: true,
+    },
+    {
+      name: "externalLink",
+      type: "text",
+      label: "Внешняя ссылка",
+      admin: { description: "Если товар продаётся на внешней площадке." },
     },
     {
       name: "inStock",
       type: "checkbox",
       label: "В наличии (legacy)",
-      defaultValue: true,
+      defaultValue: false,
       admin: {
         position: "sidebar",
         description: "Дублирует stockStatus — для обратной совместимости.",
@@ -128,28 +218,19 @@ export const Products: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
-      name: "externalLink",
+      name: "stripePriceId",
       type: "text",
-      label: "Внешняя ссылка на покупку",
-      admin: { description: "Если товар продаётся на внешней площадке." },
-    },
-    {
-      name: "relatedRoute",
-      type: "relationship",
-      relationTo: "routes",
-      label: "Связанный маршрут",
+      label: "Stripe Price ID (legacy)",
+      admin: {
+        position: "sidebar",
+        description: "Не используется в разделе сувениров.",
+      },
     },
     {
       name: "relatedArticle",
       type: "relationship",
       relationTo: "articles",
-      label: "Связанная статья",
-    },
-    {
-      name: "stripePriceId",
-      type: "text",
-      label: "Stripe Price ID",
-      admin: { position: "sidebar" },
+      label: "Связанная статья (legacy)",
     },
     {
       name: "isFeatured",

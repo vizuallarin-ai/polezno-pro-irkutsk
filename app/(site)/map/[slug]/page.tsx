@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { RouteDetailClient } from "@/components/routes/route-detail-client";
 import { getExcursionForRoute } from "@/lib/excursions";
 import { getRoutePageData } from "@/lib/routes";
+import { getProductsForRoute } from "@/lib/souvenirs";
 import { DEMO_ROUTES } from "@/lib/data/routes";
 
 interface PageProps {
@@ -26,9 +27,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function RouteDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const [{ route, similar }, relatedExcursion] = await Promise.all([
+  const [{ route, similar }, relatedExcursion, relatedSouvenirs] = await Promise.all([
     getRoutePageData(slug),
     getExcursionForRoute(slug),
+    getProductsForRoute(slug),
   ]);
 
   if (!route) notFound();
@@ -38,6 +40,7 @@ export default async function RouteDetailPage({ params }: PageProps) {
       route={route}
       similar={similar}
       relatedExcursionSlug={relatedExcursion?.slug ?? null}
+      relatedSouvenirs={relatedSouvenirs}
     />
   );
 }

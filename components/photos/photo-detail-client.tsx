@@ -13,6 +13,7 @@ import { PHOTO_TYPE_BADGE } from "@/lib/photo-constants";
 import type { PublicPhoto } from "@/types/photos";
 import { BeforeAfterPhotoBlock } from "./before-after-photo-block";
 import { PhotoCard } from "./photo-card";
+import { SouvenirsCtaLink } from "@/components/souvenirs/related-souvenirs-block";
 
 interface PhotoDetailClientProps {
   photo: PublicPhoto;
@@ -143,6 +144,12 @@ export function PhotoDetailClient({ photo, similar }: PhotoDetailClientProps) {
           </div>
         </section>
       ) : null}
+
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10">
+          <SouvenirsCtaLink />
+        </div>
+      </section>
 
       {similar.length > 0 ? (
         <section>

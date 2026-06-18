@@ -9,6 +9,14 @@ const FILTERS = [
     href: "/admin/collections/leads?where[source][equals]=business",
   },
   {
+    label: "Товары",
+    href: "/admin/collections/leads?where[or][0][source][equals]=product_order&where[or][1][source][equals]=product_question",
+  },
+  {
+    label: "Размещение мастеров",
+    href: "/admin/collections/leads?where[source][equals]=maker_placement",
+  },
+  {
     label: "Новые",
     href: "/admin/collections/leads?where[status][equals]=new",
   },

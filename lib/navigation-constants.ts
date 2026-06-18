@@ -13,7 +13,7 @@ export const MORE_NAV_LINKS: NavItem[] = [
   { href: "/events", label: "События" },
   { href: "/explore/photos", label: "Фото Иркутска" },
   { href: BOOSTY_URL, label: "Клуб" },
-  { href: "/shop", label: "Сувениры" },
+  { href: "/souvenirs", label: "Сувениры" },
 ];
 
 /** @deprecated Use PRIMARY_NAV_LINKS — kept for CMS fallback compatibility */

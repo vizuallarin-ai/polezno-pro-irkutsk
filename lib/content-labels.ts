@@ -76,9 +76,13 @@ export const EVENT_CATEGORY_OPTIONS = [
 ] as const satisfies readonly SelectOption[];
 
 export const PRODUCT_CATEGORY_OPTIONS = [
-  { label: "Одежда", value: "clothing" },
-  { label: "Постеры", value: "posters" },
   { label: "Открытки", value: "postcards" },
+  { label: "Постеры", value: "posters" },
+  { label: "Карты и маршруты", value: "maps_routes" },
+  { label: "Мини-гиды", value: "mini_guides" },
+  { label: "Наборы", value: "sets" },
+  { label: "Коллаборации", value: "collaborations" },
+  { label: "Одежда", value: "clothing" },
   { label: "Арт-объекты", value: "art" },
   { label: "Книги", value: "books" },
   { label: "Сувениры", value: "souvenirs" },
@@ -86,11 +90,46 @@ export const PRODUCT_CATEGORY_OPTIONS = [
   { label: "Еда и напитки", value: "food" },
 ] as const satisfies readonly SelectOption[];
 
+export const PRODUCT_TYPE_OPTIONS = [
+  { label: "Мерч Иркпортала", value: "own_merch" },
+  { label: "Товар местного мастера", value: "local_maker_product" },
+  { label: "Цифровой гид", value: "digital_guide" },
+  { label: "Печатная карта", value: "printed_map" },
+  { label: "Открытка", value: "postcard" },
+  { label: "Постер", value: "poster" },
+  { label: "Набор", value: "set" },
+  { label: "Коллаборация", value: "collaboration" },
+] as const satisfies readonly SelectOption[];
+
 export const PRODUCT_STOCK_OPTIONS = [
   { label: "В наличии", value: "in_stock" },
   { label: "Предзаказ", value: "pre_order" },
   { label: "Нет в наличии", value: "out_of_stock" },
   { label: "Скоро", value: "soon" },
+  { label: "По запросу", value: "by_request" },
+] as const satisfies readonly SelectOption[];
+
+export const MAKER_CRAFT_OPTIONS = [
+  { label: "Керамика", value: "ceramics" },
+  { label: "Текстиль", value: "textile" },
+  { label: "Печать и графика", value: "print" },
+  { label: "Дерево", value: "wood" },
+  { label: "Украшения", value: "jewelry" },
+  { label: "Еда и напитки", value: "food" },
+  { label: "Иллюстрация", value: "illustration" },
+  { label: "Другое", value: "other" },
+] as const satisfies readonly SelectOption[];
+
+export const MAKER_PLACEMENT_TYPE_OPTIONS = [
+  { label: "Каталог мастеров", value: "catalog" },
+  { label: "Витрина с товарами", value: "showcase" },
+  { label: "Упоминание без продаж", value: "mention" },
+] as const satisfies readonly SelectOption[];
+
+export const MAKER_PLACEMENT_STATUS_OPTIONS = [
+  { label: "Активно", value: "active" },
+  { label: "На паузе", value: "paused" },
+  { label: "Архив", value: "archived" },
 ] as const satisfies readonly SelectOption[];
 
 export const EXCURSION_FORMAT_OPTIONS = [
@@ -116,6 +155,11 @@ export const LEAD_SOURCE_OPTIONS = [
   { label: "Страница товара", value: "product" },
   { label: "Раздел «Экскурсии»", value: "excursions" },
   { label: "Раздел «Магазин»", value: "shop" },
+  { label: "Раздел «Сувениры»", value: "souvenirs" },
+  { label: "Заказ товара", value: "product_order" },
+  { label: "Вопрос о товаре", value: "product_question" },
+  { label: "Размещение мастера", value: "maker_placement" },
+  { label: "Общий запрос (сувениры)", value: "souvenir_general" },
   { label: "Раздел «Карта»", value: "map" },
   { label: "Фотоархив", value: "photos" },
   { label: "Прямой заход", value: "direct" },
@@ -163,7 +207,11 @@ export const ROUTE_CATEGORY_LABELS = labelsFromOptions(ROUTE_CATEGORY_OPTIONS);
 export const ARTICLE_CATEGORY_LABELS = labelsFromOptions(ARTICLE_CATEGORY_OPTIONS);
 export const EVENT_CATEGORY_LABELS = labelsFromOptions(EVENT_CATEGORY_OPTIONS);
 export const PRODUCT_CATEGORY_LABELS = labelsFromOptions(PRODUCT_CATEGORY_OPTIONS);
+export const PRODUCT_TYPE_LABELS = labelsFromOptions(PRODUCT_TYPE_OPTIONS);
 export const PRODUCT_STOCK_LABELS = labelsFromOptions(PRODUCT_STOCK_OPTIONS);
+export const MAKER_CRAFT_LABELS = labelsFromOptions(MAKER_CRAFT_OPTIONS);
+export const MAKER_PLACEMENT_TYPE_LABELS = labelsFromOptions(MAKER_PLACEMENT_TYPE_OPTIONS);
+export const MAKER_PLACEMENT_STATUS_LABELS = labelsFromOptions(MAKER_PLACEMENT_STATUS_OPTIONS);
 export const ROUTE_FORMAT_LABELS = labelsFromOptions(ROUTE_FORMAT_OPTIONS);
 export const ROUTE_ACCESS_LABELS = labelsFromOptions(ROUTE_ACCESS_OPTIONS);
 export const ROUTE_DIFFICULTY_LABELS = labelsFromOptions(ROUTE_DIFFICULTY_OPTIONS);

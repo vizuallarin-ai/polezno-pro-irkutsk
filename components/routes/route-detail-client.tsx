@@ -48,10 +48,14 @@ function formatDuration(minutes: number): string {
   return `${h} ч ${m} мин`;
 }
 
+import type { SouvenirProduct } from "@/lib/souvenirs-types";
+import { RelatedSouvenirsBlock } from "@/components/souvenirs/related-souvenirs-block";
+
 interface RouteDetailClientProps {
   route: Route;
   similar: Route[];
   relatedExcursionSlug?: string | null;
+  relatedSouvenirs?: SouvenirProduct[];
 }
 
 function programHref(
@@ -155,6 +159,7 @@ export function RouteDetailClient({
   route,
   similar,
   relatedExcursionSlug,
+  relatedSouvenirs = [],
 }: RouteDetailClientProps) {
   const guideHref = relatedExcursionSlug
     ? `/excursions/${relatedExcursionSlug}`
@@ -301,6 +306,14 @@ export function RouteDetailClient({
           <RouteSalesBlock route={route} />
         </div>
       </section>
+
+      {relatedSouvenirs.length > 0 && (
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
+            <RelatedSouvenirsBlock products={relatedSouvenirs} />
+          </div>
+        </section>
+      )}
 
       {similar.length > 0 && (
         <section className="border-t border-border">

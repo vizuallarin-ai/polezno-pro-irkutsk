@@ -9,6 +9,7 @@ import {
   ArticleCtaBlock,
   RelatedRouteBlock,
 } from "@/components/cms/related-blocks";
+import { RelatedSouvenirsBlock } from "@/components/souvenirs/related-souvenirs-block";
 import {
   ExploreBreadcrumbs,
   ExploreSimilarMaterials,
@@ -30,6 +31,7 @@ import { articleSchema, breadcrumbSchema } from "@/lib/jsonld";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
+import { getProductsForArticle } from "@/lib/souvenirs";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -133,6 +135,7 @@ export default async function ExploreSlugPage({ params }: PageProps) {
     article.category,
     3
   );
+  const relatedSouvenirs = await getProductsForArticle(slug);
 
   const BASE_URL = getSiteUrl();
   const articleJsonLd = articleSchema({
@@ -232,6 +235,8 @@ export default async function ExploreSlugPage({ params }: PageProps) {
         {article.relatedRoute && (
           <RelatedRouteBlock route={article.relatedRoute} />
         )}
+
+        <RelatedSouvenirsBlock products={relatedSouvenirs} />
 
         <ExploreSimilarMaterials
           materials={similar}

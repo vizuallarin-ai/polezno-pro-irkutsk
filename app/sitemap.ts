@@ -5,6 +5,7 @@ import { getRoutesForMap } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import {
   ARTICLE_PUBLISHED_WHERE,
+  MAKER_PUBLISHED_WHERE,
   PHOTO_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
@@ -18,7 +19,7 @@ async function getCmsUrls() {
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const [articles, events, products, routesRes, excursionsRes, photosRes] =
+    const [articles, events, products, makersRes, routesRes, excursionsRes, photosRes] =
       await Promise.all([
       payload.find({
         collection: "articles",
@@ -35,6 +36,12 @@ async function getCmsUrls() {
       payload.find({
         collection: "products",
         where: PUBLISHED_STATUS_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
+      payload.find({
+        collection: "makers",
+        where: MAKER_PUBLISHED_WHERE,
         limit: 1000,
         depth: 0,
       }),
@@ -73,10 +80,17 @@ async function getCmsUrls() {
     }));
 
     const productUrls = products.docs.map((p) => ({
-      url: `${BASE_URL}/shop/${p.slug}`,
+      url: `${BASE_URL}/souvenirs/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    }));
+
+    const makerUrls = makersRes.docs.map((m) => ({
+      url: `${BASE_URL}/souvenirs/makers/${m.slug}`,
+      lastModified: new Date(String(m.updatedAt)),
+      changeFrequency: "monthly" as const,
+      priority: 0.55,
     }));
 
     const cmsRouteUrls = routesRes.docs.map((r) => ({
@@ -104,6 +118,7 @@ async function getCmsUrls() {
       ...articleUrls,
       ...eventUrls,
       ...productUrls,
+      ...makerUrls,
       ...cmsRouteUrls,
       ...excursionUrls,
       ...photoUrls,
@@ -127,7 +142,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/explore`, priority: 0.9, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const },
-    { url: `${BASE_URL}/shop`, priority: 0.8, changeFrequency: "weekly" as const },
+    { url: `${BASE_URL}/souvenirs`, priority: 0.8, changeFrequency: "weekly" as const },
+    { url: `${BASE_URL}/souvenirs/submit-maker`, priority: 0.5, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/excursions`, priority: 0.85, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/business`, priority: 0.9, changeFrequency: "monthly" as const },

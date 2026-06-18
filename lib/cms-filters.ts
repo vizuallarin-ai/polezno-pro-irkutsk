@@ -56,3 +56,10 @@ export const PHOTO_PUBLISHED_WHERE: Where = {
 export function pendingPhotosWhere(): Where {
   return { moderationStatus: { equals: "pending" } };
 }
+
+export const MAKER_PUBLISHED_WHERE: Where = {
+  and: [
+    PUBLISHED_STATUS_WHERE,
+    { placementStatus: { equals: "active" } },
+  ],
+};

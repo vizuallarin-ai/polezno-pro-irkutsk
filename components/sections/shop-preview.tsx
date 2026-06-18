@@ -75,7 +75,7 @@ export function ShopPreview({ products }: { products?: Product[] }) {
             </h2>
           </div>
           <Link
-            href="/shop"
+            href="/souvenirs"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group shrink-0"
           >
             В каталог
@@ -104,7 +104,7 @@ export function ShopPreview({ products }: { products?: Product[] }) {
               {items.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/shop/${product.slug}`}
+                  href={`/souvenirs/${product.slug}`}
                   className="product-card group flex flex-col"
                   aria-label={product.title}
                 >
