@@ -115,7 +115,7 @@ export function ArticleCtaBlock({
   ctaLink?: string | null;
 }) {
   const text = ctaText?.trim() || "Хотите увидеть это вживую?";
-  const href = ctaLink?.trim() || "/program";
+  const href = ctaLink?.trim() || "/business";
 
   return (
     <div className="mt-16 bg-card p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">

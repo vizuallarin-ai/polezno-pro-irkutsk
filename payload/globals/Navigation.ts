@@ -33,7 +33,7 @@ export const Navigation: GlobalConfig = {
       name: "ctaHref",
       type: "text",
       label: "Ссылка CTA-кнопки",
-      defaultValue: "/program",
+        defaultValue: "/business",
     },
   ],
 };

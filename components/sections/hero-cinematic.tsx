@@ -25,7 +25,7 @@ export type HeroCinematicProps = {
 
 const DEFAULT_CTAS: HeroCta[] = [
   { label: "Смотреть маршруты", href: "/map", variant: "primary" },
-  { label: "Спланировать визит", href: "/program", variant: "secondary" },
+  { label: "Спланировать визит", href: "/business", variant: "secondary" },
   { label: "Узнать о городе", href: CITY_HISTORY_HREF, variant: "secondary" },
 ];
 

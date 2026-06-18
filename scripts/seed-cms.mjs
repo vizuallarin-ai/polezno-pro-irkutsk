@@ -658,7 +658,7 @@ if (!existingSettings?.contact?.email) {
       },
       mainCta: {
         label: "Спланировать",
-        href: "/program",
+        href: "/business",
         description: "Экскурсии и программы под ваш визит",
       },
       secondaryCta: {

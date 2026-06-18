@@ -94,7 +94,7 @@ export const SiteSettings: GlobalConfig = {
       label: "Главный CTA",
       fields: [
         { name: "label", type: "text", label: "Текст кнопки", defaultValue: "Спланировать" },
-        { name: "href", type: "text", label: "Ссылка", defaultValue: "/program" },
+        { name: "href", type: "text", label: "Ссылка", defaultValue: "/business" },
         { name: "description", type: "textarea", label: "Подзаголовок" },
       ],
     },

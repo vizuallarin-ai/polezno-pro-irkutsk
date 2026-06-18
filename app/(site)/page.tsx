@@ -3,6 +3,7 @@ import { HeroCinematic } from "@/components/sections/hero-cinematic";
 import { ScenarioPicker } from "@/components/sections/scenario-picker";
 import { AuthorBlock } from "@/components/sections/author-block";
 import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
+import { BusinessPreviewSection } from "@/components/sections/business-preview";
 import { FinalCta } from "@/components/sections/final-cta";
 import { PhotosPreviewSection } from "@/components/sections/photos-preview";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
@@ -96,6 +97,7 @@ export default async function HomePage() {
       />
       <SocialProof stats={stats} reviews={reviews} />
       <PhotosPreviewSection />
+      <BusinessPreviewSection />
       <FinalCta />
     </>
   );

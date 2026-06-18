@@ -115,7 +115,7 @@ export function PhotoDetailClient({ photo, similar }: PhotoDetailClientProps) {
               Предложить фото
             </Link>
             <Link
-              href="/program"
+              href="/business"
               className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
             >
               Спланировать прогулку

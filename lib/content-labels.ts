@@ -105,6 +105,7 @@ export const EXCURSION_FORMAT_OPTIONS = [
 
 export const LEAD_SOURCE_OPTIONS = [
   { label: "Главная страница", value: "home" },
+  { label: "Для бизнеса (B2B)", value: "business" },
   { label: "Конструктор программы", value: "program" },
   { label: "Страница контактов", value: "contacts" },
   { label: "Boosty", value: "boosty" },

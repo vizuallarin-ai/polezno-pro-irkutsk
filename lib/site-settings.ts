@@ -51,7 +51,7 @@ const DEFAULTS: SiteSettingsData = {
   authorShortText: BRAND.authorShortText,
   mainCta: {
     label: "Спланировать визит",
-    href: "/program",
+    href: "/business",
     description: "Экскурсии и программы под ваш визит",
   },
   secondaryCta: { label: "Маршруты", href: "/map" },

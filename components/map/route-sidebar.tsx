@@ -250,7 +250,7 @@ export function RouteSidebar({
                   </a>
                 )}
                 <Link
-                  href="/program"
+                  href="/business"
                   className="inline-flex h-10 items-center justify-center gap-2 bg-foreground text-primary-foreground px-5 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
                 >
                   Забронировать экскурсию

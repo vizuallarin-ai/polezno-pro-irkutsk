@@ -43,7 +43,7 @@ const mainProducts = [
     subtitle: "Команды и делегации",
     description:
       "Тимбилдинги, приёмы гостей и программы под задачу — от идеи до сопровождения.",
-    href: "/program",
+    href: "/business",
     cta: "Обсудить программу",
     image: "/images/direction-tours.svg",
     tags: ["Корпоратив", "Делегации", "Под ключ"],

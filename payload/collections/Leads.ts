@@ -8,6 +8,11 @@ import {
   leadsReadAccess,
   leadsUpdateAccess,
 } from "../access";
+import {
+  BUSINESS_BUDGET_OPTIONS,
+  BUSINESS_FORMAT_OPTIONS,
+  BUSINESS_TASK_TYPE_OPTIONS,
+} from "@/lib/leads-business";
 import { LEAD_SOURCE_OPTIONS } from "../constants";
 
 const afterChangeHook: CollectionAfterChangeHook = async ({ doc, previousDoc }) => {
@@ -39,26 +44,33 @@ export const Leads: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: [
       "name",
-      "email",
+      "company",
+      "taskType",
       "status",
       "source",
-      "routeSlug",
-      "articleSlug",
+      "businessFormat",
       "createdAt",
     ],
     listSearchableFields: [
       "name",
       "email",
       "phone",
+      "contact",
+      "company",
       "message",
       "routeSlug",
       "articleSlug",
       "eventSlug",
       "excursionSlug",
       "productSlug",
+      "taskType",
+      "sourceBlock",
     ],
     description:
-      "Фильтруйте по колонке «Статус» в списке. Новые заявки — status «Новый».",
+      "Фильтруйте по колонке «Статус» или «Источник». B2B-заявки: источник «Для бизнеса (B2B)» — /admin/collections/leads?where[source][equals]=business",
+    components: {
+      beforeListTable: ["./payload/components/LeadsListFilters#default"],
+    },
   },
   access: {
     admin: adminPanelAccess,
@@ -76,15 +88,60 @@ export const Leads: CollectionConfig = {
       required: true,
     },
     {
+      name: "company",
+      type: "text",
+      label: "Компания / проект",
+      admin: {
+        description: "B2B: название компании или проекта.",
+      },
+    },
+    {
+      name: "contact",
+      type: "text",
+      label: "Контакт для связи",
+      admin: {
+        description: "Основной контакт из B2B-формы (телефон, email, @username).",
+      },
+    },
+    {
       name: "email",
       type: "email",
       label: "Email",
-      required: true,
     },
     {
       name: "phone",
       type: "text",
       label: "Телефон",
+    },
+    {
+      name: "telegram",
+      type: "text",
+      label: "Telegram",
+    },
+    {
+      name: "max",
+      type: "text",
+      label: "MAX",
+    },
+    {
+      name: "websiteUrl",
+      type: "text",
+      label: "Сайт компании",
+    },
+    {
+      name: "taskType",
+      type: "select",
+      label: "Тип задачи (B2B)",
+      options: [...BUSINESS_TASK_TYPE_OPTIONS],
+      admin: {
+        description: "Заполняется из формы «Для бизнеса».",
+      },
+    },
+    {
+      name: "businessFormat",
+      type: "select",
+      label: "Формат (B2B)",
+      options: [...BUSINESS_FORMAT_OPTIONS],
     },
     {
       name: "serviceType",
@@ -123,6 +180,7 @@ export const Leads: CollectionConfig = {
         { label: "10 000 — 30 000 ₽", value: "budget_30k" },
         { label: "30 000 — 100 000 ₽", value: "budget_100k" },
         { label: "От 100 000 ₽", value: "budget_100k_plus" },
+        ...BUSINESS_BUDGET_OPTIONS,
       ],
     },
     {
@@ -156,6 +214,24 @@ export const Leads: CollectionConfig = {
       label: "Источник",
       options: [...LEAD_SOURCE_OPTIONS],
       admin: { position: "sidebar" },
+    },
+    {
+      name: "sourceType",
+      type: "text",
+      label: "Тип источника",
+      admin: {
+        position: "sidebar",
+        description: "business — заявка с раздела «Для бизнеса».",
+      },
+    },
+    {
+      name: "sourceBlock",
+      type: "text",
+      label: "Блок CTA",
+      admin: {
+        position: "sidebar",
+        description: "Откуда на странице нажали (hero, direction-*, routes, form).",
+      },
     },
     {
       name: "routeSlug",

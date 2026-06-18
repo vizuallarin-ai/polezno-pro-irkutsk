@@ -156,7 +156,7 @@ export default async function AboutPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/program"
+                  href="/business"
                   className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 group"
                 >
                   Создать тур с нами

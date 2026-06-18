@@ -152,7 +152,7 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
         ))}
 
         <Link
-          href={`/program?excursion=${excursion.slug}&format=guided&sourceTitle=${encodeURIComponent(excursion.title)}`}
+          href={`/business?excursion=${excursion.slug}&format=guided&sourceTitle=${encodeURIComponent(excursion.title)}&taskType=city_program&sourceBlock=excursion`}
           className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 mt-8"
         >
           Обсудить дату

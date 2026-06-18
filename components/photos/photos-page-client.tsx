@@ -94,7 +94,7 @@ export function PhotosPageClient({ photos }: PhotosPageClientProps) {
               К маршрутам
             </Link>
             <Link
-              href="/program"
+              href="/business"
               className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
             >
               Спланировать визит

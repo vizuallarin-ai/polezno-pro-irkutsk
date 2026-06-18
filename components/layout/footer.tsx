@@ -9,7 +9,7 @@ const footerNav = {
   main: [
     { href: "/map", label: "Маршруты и экскурсии" },
     { href: "/explore", label: "Исследовать" },
-    { href: "/program", label: "Для бизнеса" },
+    { href: "/business", label: "Для бизнеса" },
     { href: "/about", label: "О проекте" },
     { href: "/contact", label: "Контакты" },
   ],

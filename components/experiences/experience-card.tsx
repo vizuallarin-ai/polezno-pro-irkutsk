@@ -19,8 +19,10 @@ function programHref(item: ExperienceItem, format?: string): string {
   if (item.routeSlug) params.set("route", item.routeSlug);
   if (item.excursionSlug) params.set("excursion", item.excursionSlug);
   if (format) params.set("format", format);
+  if (format === "corporate") params.set("taskType", "route_program");
+  params.set("sourceBlock", "experience-card");
   const qs = params.toString();
-  return qs ? `/program?${qs}` : "/program";
+  return qs ? `/business?${qs}#business-form` : "/business";
 }
 
 interface ExperienceCardProps {

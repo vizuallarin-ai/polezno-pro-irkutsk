@@ -4,7 +4,7 @@ import { BOOSTY_URL } from "@/lib/site-links";
 export const PRIMARY_NAV_LINKS: NavItem[] = [
   { href: "/map", label: "Маршруты" },
   { href: "/explore", label: "Исследовать" },
-  { href: "/program", label: "Для бизнеса" },
+  { href: "/business", label: "Для бизнеса" },
   { href: "/about", label: "О проекте" },
   { href: "/contact", label: "Контакты" },
 ];
@@ -19,4 +19,4 @@ export const MORE_NAV_LINKS: NavItem[] = [
 /** @deprecated Use PRIMARY_NAV_LINKS — kept for CMS fallback compatibility */
 export const DEFAULT_NAV_LINKS = PRIMARY_NAV_LINKS;
 
-export const DEFAULT_CTA = { label: "Спланировать визит", href: "/program" };
+export const DEFAULT_CTA = { label: "Спланировать визит", href: "/business" };

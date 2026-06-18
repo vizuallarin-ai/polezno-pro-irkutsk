@@ -30,7 +30,7 @@ const scenarios = [
     id: "team",
     title: "Для команды",
     description: "Корпоративы, делегации и программы под вашу задачу.",
-    href: "/program",
+    href: "/business",
     cta: "Обсудить",
     icon: Building2,
   },

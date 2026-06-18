@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       revalidatePath("/map");
       if (slug) revalidatePath(`/map/${slug}`);
     } else if (collection === "excursions") {
-      revalidatePath("/program");
+      revalidatePath("/business");
     } else if (collection === "photos" && slug) {
       revalidatePath(`/explore/photos/${slug}`);
       revalidatePath("/explore/photos");

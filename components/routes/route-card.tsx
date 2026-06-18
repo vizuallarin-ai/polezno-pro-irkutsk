@@ -103,7 +103,7 @@ export function RouteCard({ route, className }: RouteCardProps) {
             <ArrowRight size={13} />
           </Link>
           <Link
-            href={`/program?route=${encodeURIComponent(route.slug)}`}
+            href={`/business?route=${encodeURIComponent(route.slug)}&taskType=route_program&sourceBlock=route-card`}
             className="inline-flex h-10 items-center justify-center border border-border px-4 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
           >
             Пройти с гидом

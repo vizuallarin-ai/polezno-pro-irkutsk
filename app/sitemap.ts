@@ -130,7 +130,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/shop`, priority: 0.8, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/excursions`, priority: 0.85, changeFrequency: "weekly" as const },
-    { url: `${BASE_URL}/program`, priority: 0.9, changeFrequency: "monthly" as const },
+    { url: `${BASE_URL}/business`, priority: 0.9, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/contact`, priority: 0.7, changeFrequency: "monthly" as const },
   ].map((p) => ({ ...p, lastModified: new Date() }));
 
