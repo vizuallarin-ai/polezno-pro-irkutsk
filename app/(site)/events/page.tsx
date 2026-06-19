@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { VisualEmptyState } from "@/components/visual/visual-empty-state";
+import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, MapPin, Ticket } from "lucide-react";
@@ -171,14 +173,11 @@ export default async function EventsPage() {
         </div>
 
         {!hasAny ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <p className="text-lg text-muted-foreground mb-4">
-              Скоро здесь появятся ближайшие события
-            </p>
-            <Link href="/contact" className="text-sm text-baikal hover:underline">
-              Хотите анонсировать событие?
-            </Link>
-          </div>
+          <VisualEmptyState
+            message={VISUAL_EMPTY_COPY.events}
+            actionLabel="Хотите анонсировать событие?"
+            actionHref="/contact"
+          />
         ) : (
           <>
             {upcoming.length > 0 && (

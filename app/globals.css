@@ -33,6 +33,22 @@
 
   /* Radius */
   --radius: 0.25rem;
+  --radius-card: 0.25rem;
+
+  /* City visual system */
+  --color-city-paper: #FAF9F7;
+  --color-city-ink: #1C1C1E;
+  --color-city-stone: #E8E6E3;
+  --color-city-wood: #8B6F47;
+  --color-city-muted: #6B6B6B;
+  --color-city-accent: #0B3D5C;
+  --shadow-soft: 0 4px 24px -4px rgb(28 28 30 / 0.08);
+  --image-overlay-soft: linear-gradient(
+    to top,
+    rgb(28 28 30 / 0.78) 0%,
+    rgb(28 28 30 / 0.25) 45%,
+    transparent 100%
+  );
 
   /* Typography */
   --font-sans: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
@@ -65,6 +81,14 @@
   --color-baikal-light: var(--baikal-light);
   --color-ice: var(--ice);
   --color-amber: var(--amber);
+  --color-city-paper: var(--color-city-paper);
+  --color-city-ink: var(--color-city-ink);
+  --color-city-stone: var(--color-city-stone);
+  --color-city-wood: var(--color-city-wood);
+  --color-city-muted: var(--color-city-muted);
+  --color-city-accent: var(--color-city-accent);
+  --radius-card: var(--radius-card);
+  --shadow-soft: var(--shadow-soft);
 
   /* Fonts */
   --font-sans: var(--font-sans);
@@ -116,6 +140,29 @@ html.lenis {
 
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
+}
+
+/* ─── City visual utilities ─────────────────────────────────────── */
+.city-card {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.city-texture-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231C1C1E' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.city-texture-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-city-stone) 20%,
+    var(--color-city-wood) 50%,
+    var(--color-city-stone) 80%,
+    transparent 100%
+  );
+  opacity: 0.5;
 }
 
 /* ─── Grain overlay utility ─────────────────────────────────────── */

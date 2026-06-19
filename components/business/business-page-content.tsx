@@ -1,6 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { CityImage } from "@/components/visual/city-image";
+import { CURATED_FALLBACKS, resolveVisualImage } from "@/lib/visual-assets";
 import type { Route } from "@/lib/data/routes";
 import type { ExploreMaterialView } from "@/lib/explore";
 import {
@@ -46,7 +47,7 @@ export function BusinessPageContent({
       {/* Hero */}
       <section className="py-16 lg:py-24 border-b border-border">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-end">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
                 B2B-направление Иркпортала
@@ -60,7 +61,18 @@ export function BusinessPageContent({
                 маршрутов Иркпортала.
               </p>
             </div>
-            <div className="flex flex-col gap-4 lg:pb-2">
+            <div className="flex flex-col gap-6">
+              <CityImage
+                src={CURATED_FALLBACKS.business}
+                alt="Иркутск — деталь города для деловых программ"
+                aspectRatio="16/10"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="border border-border city-card"
+                rounded
+                caption="Иркутск для делегаций и команд"
+                place="Иркутск"
+              />
+              <div className="flex flex-col gap-4">
               {[
                 "Делегации и корпоративные гости",
                 "Сопровождение турпроектов",
@@ -78,6 +90,7 @@ export function BusinessPageContent({
                 Обсудить задачу
                 <ArrowRight size={14} />
               </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -398,15 +411,13 @@ export function BusinessPageContent({
                   href={`/explore/${article.slug}`}
                   className="group flex flex-col border border-border bg-background hover:border-foreground/20 transition-colors"
                 >
-                  <div className="relative aspect-[16/10] bg-muted overflow-hidden">
-                    <Image
-                      src={article.coverUrl}
-                      alt=""
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  </div>
+                  <CityImage
+                    src={article.coverUrl}
+                    alt={article.title}
+                    aspectRatio="16/10"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    imageClassName="transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
                   <div className="p-5 flex flex-col gap-2 flex-1">
                     <h3 className="text-base font-medium leading-snug group-hover:text-baikal transition-colors">
                       {article.title}
@@ -477,19 +488,20 @@ function CorporateRouteCard({ route }: { route: Route }) {
     sourceTitle: route.title,
   });
 
+  const visual = resolveVisualImage({
+    coverUrl: route.coverImage,
+    fallback: "route",
+    alt: route.title,
+  });
+
   return (
-    <article className="flex flex-col border border-border bg-background hover:border-foreground/30 transition-colors">
-      <div className="relative aspect-[16/10] bg-muted overflow-hidden">
-        {route.coverImage ? (
-          <Image
-            src={route.coverImage}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="(max-width: 1200px) 50vw, 25vw"
-          />
-        ) : null}
-      </div>
+    <article className="flex flex-col border border-border bg-background hover:border-foreground/30 transition-colors city-card overflow-hidden">
+      <CityImage
+        src={visual.src}
+        alt={visual.alt}
+        aspectRatio="16/10"
+        sizes="(max-width: 1200px) 50vw, 25vw"
+      />
       <div className="flex flex-col flex-1 p-5 gap-3">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">
           {ROUTE_CATEGORY_LABELS[route.mapCategory]} ·{" "}

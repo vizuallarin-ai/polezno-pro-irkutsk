@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { PHOTO_TYPE_BADGE } from "@/lib/photo-constants";
 import { formatPhotoPlaceLabel, formatPhotoYearLabel } from "@/lib/photo-adapter";
 import { PHOTO_CATEGORY_LABELS } from "@/lib/content-labels";
 import type { PublicPhoto } from "@/types/photos";
+import { CityImage } from "@/components/visual/city-image";
 import { cn } from "@/lib/utils";
 
 interface PhotoCardProps {
@@ -21,7 +21,7 @@ export function PhotoCard({ photo, className, priority }: PhotoCardProps) {
   return (
     <article
       className={cn(
-        "group border border-border bg-card overflow-hidden transition-shadow duration-200 hover:shadow-sm",
+        "group overflow-hidden transition-shadow duration-200 hover:shadow-soft",
         className
       )}
     >
@@ -29,16 +29,18 @@ export function PhotoCard({ photo, className, priority }: PhotoCardProps) {
         href={`/explore/photos/${photo.slug}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-          <Image
+        <div className="relative">
+          <CityImage
             src={photo.thumbnailUrl}
             alt={photo.imageAlt}
-            fill
+            aspectRatio="4/3"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             priority={priority}
+            rounded
+            className="border border-border city-card"
+            imageClassName="transition-transform duration-300 group-hover:scale-[1.02]"
           />
-          <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+          <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
             <span className="bg-background/90 backdrop-blur px-2 py-1 text-[10px] uppercase tracking-wide">
               {PHOTO_TYPE_BADGE[photo.photoType] ?? "Фото"}
             </span>

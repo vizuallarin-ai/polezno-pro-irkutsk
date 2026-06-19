@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getFeaturedPhotos } from "@/lib/photos";
+import { EditorialPhotoGrid } from "@/components/visual/editorial-photo-grid";
 
 export async function PhotosPreviewSection() {
   const photos = await getFeaturedPhotos(4);
@@ -31,23 +31,7 @@ export async function PhotosPreviewSection() {
             <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {photos.map((photo) => (
-            <Link
-              key={photo.id}
-              href={`/explore/photos/${photo.slug}`}
-              className="group relative aspect-[4/3] overflow-hidden bg-muted border border-border"
-            >
-              <Image
-                src={photo.thumbnailUrl}
-                alt={photo.imageAlt}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                sizes="(max-width: 1024px) 50vw, 25vw"
-              />
-            </Link>
-          ))}
-        </div>
+        <EditorialPhotoGrid photos={photos} columns={4} />
       </div>
     </section>
   );

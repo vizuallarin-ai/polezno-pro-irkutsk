@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { VisualEmptyState } from "@/components/visual/visual-empty-state";
+import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
 import { ArrowRight, MapPin, Package, Users } from "lucide-react";
 import { ProductCard } from "@/components/souvenirs/product-card";
 import { MakerCard } from "@/components/souvenirs/maker-card";
@@ -77,7 +79,7 @@ export default async function SouvenirsPage() {
               <p className="text-xs text-muted-foreground">
                 {ownMerch.length > 0
                   ? `${ownMerch.length} позиций в каталоге`
-                  : "Скоро — первые издания уже в работе"}
+                  : "Первые издания уже в работе"}
               </p>
             </div>
             <div className="border border-border bg-background p-6 lg:p-8">
@@ -119,14 +121,11 @@ export default async function SouvenirsPage() {
           </div>
 
           {products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-border">
-              <p className="text-muted-foreground mb-4">
-                Каталог наполняется — скоро здесь появятся первые издания
-              </p>
-              <Link href="/contact" className="text-sm text-baikal hover:underline">
-                Написать нам
-              </Link>
-            </div>
+            <VisualEmptyState
+              message={VISUAL_EMPTY_COPY.souvenirs}
+              actionLabel="Написать нам"
+              actionHref="/contact"
+            />
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {products.map((product) => (

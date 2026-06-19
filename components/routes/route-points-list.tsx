@@ -1,8 +1,8 @@
 "use client";
 
-import { MapPin } from "lucide-react";
-import type { RoutePoint } from "@/lib/data/routes";
+import { CityImage } from "@/components/visual/city-image";
 import { cn } from "@/lib/utils";
+import type { RoutePoint } from "@/lib/data/routes";
 
 interface RoutePointsListProps {
   points: RoutePoint[];
@@ -59,21 +59,23 @@ export function RoutePointsList({
                   )}
                 </div>
 
-                <div className="relative aspect-[16/9] max-w-sm bg-muted overflow-hidden">
+                <div className="relative aspect-[16/9] max-w-sm overflow-hidden border border-border">
                   {point.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <CityImage
                       src={point.image}
-                      alt=""
-                      className="object-cover w-full h-full"
+                      alt={point.title}
+                      aspectRatio="16/9"
+                      sizes="(max-width: 640px) 100vw, 320px"
+                      place={point.title}
                     />
                   ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-muted-foreground">
-                      <MapPin size={18} />
-                      <span className="text-[10px] uppercase tracking-widest">
-                        Фото скоро
-                      </span>
-                    </div>
+                    <CityImage
+                      src={null}
+                      alt=""
+                      aspectRatio="16/9"
+                      showPlaceholder
+                      place={point.title}
+                    />
                   )}
                 </div>
 

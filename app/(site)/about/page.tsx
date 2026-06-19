@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { CityImage } from "@/components/visual/city-image";
+import { CityDetailCard } from "@/components/visual/city-detail-card";
+import { VisualQuoteBlock } from "@/components/visual/visual-quote-block";
 import { Separator } from "@/components/ui/separator";
+import { resolveVisualImage } from "@/lib/visual-assets";
+import { BRAND } from "@/lib/brand-constants";
 
 export const metadata: Metadata = {
   title: "О проекте — манифест «Полезно про Иркутск»",
@@ -49,6 +53,23 @@ export default async function AboutPage() {
   const founderPhoto = settings?.founderPhoto as
     | { url?: string; alt?: string }
     | undefined;
+  const authorPhoto = settings?.authorPhoto as
+    | { url?: string; alt?: string }
+    | undefined;
+
+  const portrait = resolveVisualImage({
+    coverUrl: authorPhoto?.url || founderPhoto?.url,
+    fallback: "author",
+    alt:
+      authorPhoto?.alt ||
+      founderPhoto?.alt ||
+      `${settings?.authorName || settings?.founderName || BRAND.authorName}`,
+    place: "Иркутск",
+  });
+
+  const authorName = String(
+    settings?.authorName || settings?.founderName || BRAND.authorName
+  );
 
   return (
     <main className="pt-24">
@@ -56,27 +77,21 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
             <div className="lg:sticky lg:top-32">
-              <div className="relative aspect-[3/4] overflow-hidden bg-muted">
-                <Image
-                  src={founderPhoto?.url || "/images/founder-portrait.svg"}
-                  alt={
-                    founderPhoto?.alt ||
-                    `${settings?.founderName || "Основатель"}, «Полезно про Иркутск»`
-                  }
-                  fill
-                  className="object-cover grayscale"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
+              <CityImage
+                src={portrait.src}
+                alt={portrait.alt}
+                aspectRatio="3/4"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+                className="border border-border city-card"
+                rounded
+                caption={authorName}
+                place="Иркутск"
+              />
               <div className="mt-6">
-                <p className="font-medium">
-                  {settings?.founderName
-                    ? String(settings.founderName)
-                    : "Основатель проекта"}
-                </p>
+                <p className="font-medium">{authorName}</p>
                 <p className="text-sm text-muted-foreground">
-                  Основатель, «Полезно про Иркутск»
+                  {settings?.authorRole || BRAND.authorRole}
                 </p>
               </div>
             </div>
@@ -86,10 +101,10 @@ export default async function AboutPage() {
                 <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
                   Манифест
                 </p>
-                <h1 className="text-4xl lg:text-5xl font-serif font-light italic leading-[1.2] tracking-tight text-foreground mb-8">
-                  «Иркутск — это город, который меняет тех, кто в нём
-                  остаётся»
-                </h1>
+                <h1 className="sr-only">О проекте — манифест Иркпортала</h1>
+                <VisualQuoteBlock
+                  quote="Иркутск — это город, который меняет тех, кто в нём остаётся"
+                />
 
                 <div className="flex flex-col gap-6 text-foreground/80 leading-relaxed">
                   <p>
@@ -135,6 +150,21 @@ export default async function AboutPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <Separator />
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <CityDetailCard
+                  meta="Деталь города"
+                  title="Деревянный Иркутск"
+                  description="Резные наличники, трамваи и дворы-проходняки — то, что редко попадает в открытки."
+                />
+                <CityDetailCard
+                  meta="Деталь города"
+                  title="Слои истории"
+                  description="Декабристы, советский авангард и современная жизнь — в одном городе, без упрощений."
+                />
               </div>
 
               <Separator />

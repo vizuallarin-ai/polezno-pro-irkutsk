@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { YANDEX_MAPS_TERMS_URL } from "@/lib/map-config";
-import { Separator } from "@/components/ui/separator";
 import { BOOSTY_URL, YANDEX_IKS_COUNTER_URL, YANDEX_WEBMASTER_INFO_URL } from "@/lib/site-links";
+import { CityTextureDivider } from "@/components/visual/city-texture-divider";
 import type { SiteSettingsData } from "@/lib/site-settings";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 
@@ -41,8 +41,9 @@ export function Footer({ settings }: FooterProps) {
     "* Instagram принадлежит компании Meta, признанной экстремистской организацией и запрещённой в РФ.";
 
   return (
-    <footer className="bg-foreground text-primary-foreground" role="contentinfo">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-20">
+    <footer className="relative bg-foreground text-primary-foreground city-texture-pattern" role="contentinfo">
+      <div className="absolute inset-0 bg-foreground/95" aria-hidden />
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-16 lg:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div>
@@ -168,7 +169,7 @@ export function Footer({ settings }: FooterProps) {
           </div>
         </div>
 
-        <Separator className="mt-16 mb-8 bg-primary-foreground/10" />
+        <CityTextureDivider className="mt-16 mb-8 opacity-30" />
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">

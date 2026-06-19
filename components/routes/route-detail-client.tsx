@@ -23,7 +23,9 @@ import { ROUTE_CATEGORY_LABELS } from "@/types/map";
 import { Badge } from "@/components/ui/badge";
 import { RoutePointsList } from "@/components/routes/route-points-list";
 import { RouteSalesBlock } from "@/components/routes/route-cta-block";
-import { RouteCard } from "@/components/routes/route-card";
+import { RouteVisualCard } from "@/components/visual/route-visual-card";
+import { CityImage } from "@/components/visual/city-image";
+import { resolveVisualImage } from "@/lib/visual-assets";
 
 const RouteMap = dynamic(
   () => import("@/components/routes/route-map").then((m) => m.RouteMap),
@@ -183,6 +185,29 @@ export function RouteDetailClient({
   return (
     <>
       <section className="border-b border-border bg-background pt-24 lg:pt-28">
+        {(() => {
+          const heroVisual = resolveVisualImage({
+            coverUrl: route.coverImage,
+            fallback: "route",
+            alt: route.title,
+          });
+          return (
+            <div className="relative mx-auto max-w-7xl px-6 lg:px-8 -mb-4">
+              <CityImage
+                src={heroVisual.src}
+                alt={heroVisual.alt}
+                aspectRatio="16/10"
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                priority
+                className="border border-border city-card max-h-[420px]"
+                rounded
+                overlay
+                caption={route.title}
+                place={route.tags[0]}
+              />
+            </div>
+          );
+        })()}
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
           <Link
             href="/map"
@@ -321,7 +346,7 @@ export function RouteDetailClient({
             <h2 className="text-xl font-medium mb-8">Похожие маршруты</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {similar.map((r) => (
-                <RouteCard key={r.id} route={r} />
+                <RouteVisualCard key={r.id} route={r} />
               ))}
             </div>
           </div>

@@ -9,6 +9,9 @@ import { PhotosPreviewSection } from "@/components/sections/photos-preview";
 import { SouvenirsPreviewSection } from "@/components/sections/souvenirs-preview";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getFeaturedPhotos } from "@/lib/photos";
+import { CURATED_FALLBACKS } from "@/lib/visual-assets";
+import { formatPhotoPlaceLabel, formatPhotoYearLabel } from "@/lib/photo-adapter";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -61,13 +64,15 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const [settings, homeData] = await Promise.all([
+  const [settings, homeData, featuredPhotos] = await Promise.all([
     getSiteSettings(),
     getHomeData(),
+    getFeaturedPhotos(1),
   ]);
 
   const stats = homeData?.stats;
   const reviews = homeData?.reviews;
+  const heroPhoto = featuredPhotos[0];
 
   return (
     <>
@@ -75,6 +80,12 @@ export default async function HomePage() {
         badge={settings.heroBadge}
         title={settings.heroTitle}
         subtitle={settings.heroSubtitle}
+        imageSrc={heroPhoto?.imageUrl || CURATED_FALLBACKS.hero}
+        imageAlt={heroPhoto?.imageAlt || "Иркутск — вид города"}
+        caption={heroPhoto?.title}
+        credit={heroPhoto?.authorName}
+        year={heroPhoto ? formatPhotoYearLabel(heroPhoto) : undefined}
+        place={heroPhoto ? formatPhotoPlaceLabel(heroPhoto) : undefined}
         ctas={[
           { label: "Смотреть маршруты", href: "/map", variant: "primary" },
           {

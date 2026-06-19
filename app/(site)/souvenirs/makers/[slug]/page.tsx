@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LexicalContent } from "@/components/cms/lexical-content";
 import { ProductCard } from "@/components/souvenirs/product-card";
+import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import {
@@ -150,7 +151,7 @@ export default async function MakerDetailPage({ params }: PageProps) {
 
         {products.length === 0 && (
           <p className="text-muted-foreground text-sm border border-dashed border-border p-8 text-center">
-            Товары мастера скоро появятся в каталоге.{" "}
+            {VISUAL_EMPTY_COPY.souvenirsMaker}{" "}
             <Link href="/contact" className="text-baikal hover:underline">
               Напишите нам
             </Link>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { VisualEmptyState } from "@/components/visual/visual-empty-state";
+import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -86,11 +88,7 @@ export default async function ShopPage() {
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         {products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <p className="text-lg text-muted-foreground mb-4">
-              Магазин открывается — скоро здесь будут коллекции
-            </p>
-          </div>
+          <VisualEmptyState message={VISUAL_EMPTY_COPY.shop} />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {products.map((product) => {

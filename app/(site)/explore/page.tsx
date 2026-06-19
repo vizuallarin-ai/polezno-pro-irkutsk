@@ -5,7 +5,7 @@ import { ExploreMaterialCard } from "@/components/explore/explore-material-card"
 import { ExploreRoutesPreview } from "@/components/explore/explore-routes-preview";
 import {
   ExploreBottomCta,
-  ExplorePhotoPlaceholder,
+  ExplorePhotoSection,
 } from "@/components/explore/explore-sections";
 import {
   EXPLORE_CATEGORIES,
@@ -101,7 +101,7 @@ export default async function ExplorePage() {
         )}
 
         <ExploreRoutesPreview routes={routePreview} />
-        <ExplorePhotoPlaceholder />
+        <ExplorePhotoSection />
         <ExploreBottomCta />
       </div>
     </main>

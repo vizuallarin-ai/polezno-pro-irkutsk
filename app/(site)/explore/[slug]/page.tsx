@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Clock } from "lucide-react";
+import { CityImage } from "@/components/visual/city-image";
+import { VisualEmptyState } from "@/components/visual/visual-empty-state";
+import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
 import { Badge } from "@/components/ui/badge";
 import { LexicalContent } from "@/components/cms/lexical-content";
 import {
@@ -104,17 +106,11 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           </header>
 
           {materials.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center gap-4 border border-dashed border-border">
-              <p className="text-lg text-muted-foreground">
-                Материалы в этом разделе появятся совсем скоро
-              </p>
-              <Link
-                href="/explore"
-                className="text-sm text-baikal hover:underline"
-              >
-                Смотреть все материалы
-              </Link>
-            </div>
+            <VisualEmptyState
+              message={VISUAL_EMPTY_COPY.materials}
+              actionLabel="Смотреть все материалы"
+              actionHref="/explore"
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {materials.map((material) => (
@@ -209,16 +205,17 @@ export default async function ExploreSlugPage({ params }: PageProps) {
         </header>
 
         {article.coverUrl && (
-          <div className="relative aspect-video overflow-hidden bg-muted mb-12">
-            <Image
-              src={article.coverUrl}
-              alt={String(article.title)}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, 800px"
-            />
-          </div>
+          <CityImage
+            src={article.coverUrl}
+            alt={String(article.title)}
+            aspectRatio="video"
+            sizes="(max-width: 768px) 100vw, 800px"
+            priority
+            className="mb-12 border border-border city-card"
+            rounded
+            caption={article.excerpt ? String(article.excerpt) : undefined}
+            credit={article.authorName ? String(article.authorName) : undefined}
+          />
         )}
 
         {article.authorName && (

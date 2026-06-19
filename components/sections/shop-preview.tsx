@@ -89,7 +89,7 @@ export function ShopPreview({ products }: { products?: Product[] }) {
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border">
             <p className="text-muted-foreground mb-2">
-              Магазин открывается — скоро здесь будут коллекции
+              Магазин открывается — коллекции готовим вместе с маршрутами проекта
             </p>
             <Link href="/shop" className="text-sm text-baikal hover:underline">
               Страница магазина
