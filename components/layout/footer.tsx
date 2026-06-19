@@ -2,7 +2,8 @@ import Link from "next/link";
 import { YANDEX_MAPS_TERMS_URL } from "@/lib/map-config";
 import { BOOSTY_URL, YANDEX_IKS_COUNTER_URL, YANDEX_WEBMASTER_INFO_URL } from "@/lib/site-links";
 import { CityTextureDivider } from "@/components/visual/city-texture-divider";
-import type { SiteSettingsData } from "@/lib/site-settings";
+import type { SiteSettingsData, SiteContacts } from "@/lib/site-settings";
+import { contactsForDisplay } from "@/lib/contact-display";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 
 const footerNav = {
@@ -23,19 +24,22 @@ const footerNav = {
 
 interface FooterProps {
   settings?: SiteSettingsData;
+  contact?: SiteContacts;
+  showEvents?: boolean;
 }
 
-export function Footer({ settings }: FooterProps) {
+export function Footer({ settings, contact: contactProp, showEvents = true }: FooterProps) {
   const projectName = settings?.projectName || "Иркпортал";
   const tagline = settings?.footerTagline || "Авторский навигатор по Иркутску";
   const footerText =
     settings?.footerText ||
     "Маршруты, экскурсии и материалы о городе — без туристических штампов.";
   const legacyName = settings?.legacyProjectName || "Полезно про Иркутск";
-  const telegram = settings?.contact.telegram;
-  const max = settings?.contact.max;
+  const contact = contactProp ?? contactsForDisplay(settings?.contact ?? {});
+  const telegram = contact.telegram;
+  const max = contact.max;
   const instagram = settings?.contact.instagram;
-  const email = settings?.contact.email;
+  const email = contact.email;
   const disclaimer =
     settings?.socialDisclaimerText ||
     "* Instagram принадлежит компании Meta, признанной экстремистской организацией и запрещённой в РФ.";
@@ -144,7 +148,9 @@ export function Footer({ settings }: FooterProps) {
               Ещё
             </p>
             <ul className="flex flex-col gap-3">
-              {footerNav.more.map((link) => (
+              {footerNav.more
+                .filter((link) => showEvents || link.href !== "/events")
+                .map((link) => (
                 <li key={`${link.href}-${link.label}`}>
                   {"external" in link && link.external ? (
                     <a

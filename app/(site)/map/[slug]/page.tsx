@@ -3,16 +3,16 @@ import { notFound } from "next/navigation";
 import { RouteDetailClient } from "@/components/routes/route-detail-client";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { getExcursionForRoute } from "@/lib/excursions";
-import { getRoutePageData } from "@/lib/routes";
+import { getRoutePageData, getPublishedRouteSlugs } from "@/lib/routes";
 import { getProductsForRoute } from "@/lib/souvenirs";
-import { DEMO_ROUTES } from "@/lib/data/routes";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return DEMO_ROUTES.map((route) => ({ slug: route.slug }));
+  const slugs = await getPublishedRouteSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

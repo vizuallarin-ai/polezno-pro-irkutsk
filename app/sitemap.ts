@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { DEMO_EXPLORE_MATERIALS } from "@/lib/data/explore-materials";
 import { EXPLORE_CATEGORIES } from "@/lib/explore-constants";
+import { hasPublishedEvents } from "@/lib/navigation";
 import { getRoutesForMap } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import {
@@ -144,6 +145,8 @@ async function getCmsUrls() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const showEvents = await hasPublishedEvents();
+
   const exploreCategoryUrls = EXPLORE_CATEGORIES.map((cat) => ({
     url: `${BASE_URL}/explore/${cat.slug}`,
     lastModified: new Date(),
@@ -151,26 +154,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
-  const staticPages = [
+  const staticPageDefs = [
     { url: BASE_URL, priority: 1.0, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/map`, priority: 0.9, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/explore`, priority: 0.9, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const },
-    { url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const },
+    ...(showEvents
+      ? [{ url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const }]
+      : []),
     { url: `${BASE_URL}/souvenirs`, priority: 0.8, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/ar-postcards`, priority: 0.75, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/souvenirs/submit-maker`, priority: 0.5, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },
-    { url: `${BASE_URL}/excursions`, priority: 0.85, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/business`, priority: 0.9, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/contact`, priority: 0.7, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/privacy`, priority: 0.3, changeFrequency: "yearly" as const },
   ].map((p) => ({ ...p, lastModified: new Date() }));
 
+  const staticPages = staticPageDefs;
+
   const cmsUrls = await getCmsUrls();
 
   if (cmsUrls.length > 0) {
     return [...staticPages, ...exploreCategoryUrls, ...cmsUrls];
+  }
+
+  // На production с БД — только статика, без demo-URL в sitemap
+  if (process.env.DATABASE_URL) {
+    return [...staticPages, ...exploreCategoryUrls];
   }
 
   const demoArticleUrls = DEMO_EXPLORE_MATERIALS.map((m) => ({

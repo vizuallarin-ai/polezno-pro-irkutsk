@@ -155,3 +155,16 @@ export async function getRoutePageData(slug: string): Promise<{
 
   return { route: null, similar: getSimilarRoutes(slug), source: null };
 }
+
+/** Slugs для SSG: CMS → иначе demo (только если в CMS нет маршрутов вообще). */
+export async function getPublishedRouteSlugs(): Promise<string[]> {
+  const cmsRoutes = await fetchPublishedCmsRoutes();
+  if (cmsRoutes.length > 0) {
+    return cmsRoutes.map((r) => r.slug);
+  }
+
+  const hasCmsData = await cmsHasAnyRoutes();
+  if (hasCmsData) return [];
+
+  return getAllDemoRoutes().map((r) => r.slug);
+}

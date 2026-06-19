@@ -1,149 +1,99 @@
-# Release Phase 14 — Final Stabilization (irkportal.ru)
+# Фаза 14 — стабилизация и готовность к наполнению
 
-**Date:** 2026-06-19  
-**Scope:** QA, SEO, performance, security audit after phases 1–13. No new features or architecture changes.
+Дата: 2026-06-19  
+Сайт: https://irkportal.ru
 
----
+## 1. Что проверено
 
-## 1. What was checked
+- Публичные разделы (главная, маршруты, explore, фото, business, сувениры, AR, контакты)
+- CMS-коллекции и статусы публикации
+- Формы заявок и `/admin/collections/leads`
+- SEO: `sitemap.xml`, `robots.txt` (Host для Яндекса)
+- Редиректы: `/shop`, `/program`, `/for-companies`, `/excursions`
+- Яндекс.Метрика (ID 109995467)
+- Деплой VPS: полная пересборка `.next`
 
-| Area | Result |
-|------|--------|
-| `npm run build` | ✅ Passes (TypeScript clean after `.next` cache clear) |
-| Navigation (header/footer) | ✅ All primary & «Ещё» links resolve 200 |
-| Redirects (`next.config.ts`) | ⚠️ **Fixed:** `/shop/success` was caught by `/shop/:slug` → 404 |
-| Production URL curl audit | ✅ Key routes 200; redirects 308 as expected |
-| `robots.txt` | ✅ `Host: irkportal.ru`, `Sitemap: https://irkportal.ru/sitemap.xml` |
-| `sitemap.ts` | ✅ Uses `PUBLISHED_WHERE` / `ARTICLE_PUBLISHED_WHERE` / `PHOTO_PUBLISHED_WHERE` for CMS |
-| CMS public filters | ✅ `lib/cms-filters.ts` applied in data loaders & sitemap |
-| Leads API (`/api/leads`) | ✅ sourceType tracking, honeypot, rate limit, consent fields |
-| Forms | ✅ LeadForm, business, souvenir, AR preorder schemas wired |
-| Яндекс.Метрика | ✅ Counter `109995467` in site layout |
-| Security grep (client code) | ✅ No hardcoded secrets in components |
-| Admin access | ✅ `adminPanelAccess` — admin role only; leads read = admin |
-| `.env.example` | ✅ DATABASE_URL, Payload, maps, Metrika, Stripe, Resend, revalidate |
-| «Фото скоро» in UI | ✅ Not used; `VisualEmptyState` / editorial placeholders in place |
-| Mobile layout (code review) | ✅ Header mobile menu, map sidebar, responsive grids — no obvious breaks |
-| `/excursions` | ✅ Redirects to `/map?filter=guided` (307 → 200) |
+## 2. Что исправлено без участия клиента
 
-### Production URL check (pre-deploy)
+| Изменение | Зачем |
+|-----------|--------|
+| Sitemap без demo-URL при подключённой БД | Не индексировать фиктивные страницы из кода |
+| `generateStaticParams` маршрутов из CMS | SSG совпадает с опубликованными slug |
+| Скрытие «События» в меню/футере без published events | Нет пустого пункта навигации |
+| Скрытие телефона-заглушки `000-00-00` | Не показывать фейковый контакт |
+| `sharp` в Payload | Ресайз обложек в админке на VPS |
+| `robots.txt` + `Host: irkportal.ru` | Яндекс Вебмастер |
+| Чистая пересборка на проде | Исправлены 500 на `/business`, `/admin` |
 
-| URL | Status |
-|-----|--------|
-| `/` | 200 |
-| `/map`, `/explore`, `/explore/photos` | 200 |
-| `/events`, `/souvenirs`, `/ar-postcards` | 200 |
-| `/business`, `/contact`, `/about` | 200 |
-| `/excursions` | 307 → `/map?filter=guided` |
-| `/shop`, `/program`, `/for-companies` | 308 → correct targets |
-| `/robots.txt`, `/sitemap.xml` | 200 |
-| `/admin` | 200 (login UI) |
-| `/shop/success` | ❌ **404** (broken redirect — fixed in this release) |
+## 3. Что осталось на будущее
 
----
+- Отключить demo-fallback в `lib/data/*` после 100% наполнения CMS
+- Настроить Resend для email-уведомлений о заявках
+- Реальные фото вместо seed SVG (фото, сувениры, AR)
+- Видео для AR-открыток
+- Мастера в каталоге сувениров
+- Отзывы в CMS для блока на главной
+- Stripe: legacy-код можно удалить после подтверждения
+- `docs/release-phase-14.md` — обновлять после каждого крупного релиза
 
-## 2. What was fixed
+## 4. Ключевые URL
 
-### P1 — Stripe checkout success page (404)
-
-**Problem:** Redirect rule `/shop/:slug` matched `success` before `/shop/success`, sending users to `/souvenirs/success` (404) after payment.
-
-**Fix:**
-- `next.config.ts` — reorder redirects; `/shop/success` → `/souvenirs/success` **before** `/shop/:slug`
-- `app/(site)/souvenirs/success/page.tsx` — new thank-you page (moved from `/shop/success`)
-- `app/api/checkout/route.ts` — Stripe `success_url` / `cancel_url` → `/souvenirs/*`
-- Removed obsolete `app/(site)/shop/success/page.tsx`
-
-### P2 — Stale internal `/shop` links
-
-- `components/sections/shop-preview.tsx` — CTA → `/souvenirs`
-- `components/map/route-sidebar.tsx` — paid route buy link → `/souvenirs/:slug`
-
----
-
-## 3. What remains for future
-
-| Priority | Item |
-|----------|------|
-| P3 | Install `sharp` on VPS for Payload image resizing (build warns without it) |
-| P3 | Stripe webhook handler for order fulfillment (currently checkout-only) |
-| P4 | Legacy `/shop/*` route files — kept for redirect compatibility; can deprecate after analytics confirm zero traffic |
-| P4 | `/excursions/[slug]` pages — still exist; list redirects to map; consider consolidating |
-| P5 | E2E tests for lead forms and checkout flow |
-| P5 | Core Web Vitals measurement in production (LCP on hero images) |
-
----
-
-## 4. Key URLs
-
-| Page | URL |
-|------|-----|
-| Homepage | https://irkportal.ru/ |
-| Map / routes | https://irkportal.ru/map |
-| Explore | https://irkportal.ru/explore |
-| Photos | https://irkportal.ru/explore/photos |
-| Business | https://irkportal.ru/business |
-| Souvenirs | https://irkportal.ru/souvenirs |
-| AR postcards | https://irkportal.ru/ar-postcards |
-| Events | https://irkportal.ru/events |
-| Contact | https://irkportal.ru/contact |
-| Admin | https://irkportal.ru/admin |
+| Раздел | URL |
+|--------|-----|
+| Главная | https://irkportal.ru/ |
+| Маршруты | https://irkportal.ru/map |
+| Исследовать | https://irkportal.ru/explore |
+| Фото | https://irkportal.ru/explore/photos |
+| Для бизнеса | https://irkportal.ru/business |
+| Сувениры | https://irkportal.ru/souvenirs |
+| AR-открытки | https://irkportal.ru/ar-postcards |
+| Админка | https://irkportal.ru/admin |
 | Sitemap | https://irkportal.ru/sitemap.xml |
 | Robots | https://irkportal.ru/robots.txt |
 
----
+## 5. Env на production
 
-## 5. Required env vars
-
-See `.env.example`. Production minimum:
-
-```env
-DATABASE_URL=postgresql://...
-PAYLOAD_SECRET=...          # min 32 chars
+```
+DATABASE_URL
+PAYLOAD_SECRET
 NEXT_PUBLIC_SERVER_URL=https://irkportal.ru
-NEXT_PUBLIC_YANDEX_MAPS_API_KEY=...
+NEXT_PUBLIC_YANDEX_MAPS_API_KEY
+YANDEX_ROUTER_API_KEY          # опционально, геометрия маршрутов
 NEXT_PUBLIC_YANDEX_METRIKA_ID=109995467
-REVALIDATE_SECRET=...
-RESEND_API_KEY=...          # optional — email notifications
-EMAIL_FROM=...
-EMAIL_TO=...
-STRIPE_SECRET_KEY=...       # optional — paid checkout
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=...
-YANDEX_ROUTER_API_KEY=...   # optional — server-side routing
+RESEND_API_KEY                 # опционально, уведомления
+EMAIL_FROM / EMAIL_TO
+REVALIDATE_SECRET
 ```
 
----
+## 6. Риски
 
-## 6. Remaining risks
+| Риск | Митигация |
+|------|-----------|
+| Битая сборка `.next` на VPS | `rm -rf .next && npm run build` |
+| Demo-контент в коде | Публиковать через CMS, не полагаться на fallback |
+| Права на фото | Модерация + `rightsType` в админке |
+| Заявки только в админке | Включить email в Site Settings |
 
-1. **Corrupt `.next` on VPS** — if some pages 500 while home works: `rm -rf .next && npm run build && pm2 restart polezno`
-2. **Maps API key** — without `NEXT_PUBLIC_YANDEX_MAPS_API_KEY`, map shows fallback message (not a crash)
-3. **Demo fallback data** — if `DATABASE_URL` missing at build/runtime, demo routes/articles served_ (prod has DB)_
-4. **Instagram link** — Meta disclaimer shown when Instagram URL configured in CMS
-5. **AR media** — placeholder players until client provides `.mp4` / `.glb` assets
+## 7. Что нужно от клиента
 
----
+- [ ] Реальные контакты (Telegram, MAX, email)
+- [ ] Фото Алёны и hero-изображения
+- [ ] Маршруты: тексты, обложки, цены «с Алёной»
+- [ ] Статьи (минимум история Иркутска + 3–5 материалов)
+- [ ] Фотоархив с правами и подписями
+- [ ] Товары и мастера (фото, цены, статусы)
+- [ ] AR: видео или честный `coming_soon`
+- [ ] 3–5 отзывов для главной
+- [ ] Решение по разделу «События»
 
-## 7. What client needs to provide
-
-| Category | Details |
-|----------|---------|
-| **Photos** | Hero, route covers, explore articles, photo gallery — high-res with rights |
-| **Contacts** | Telegram, MAX, email — verify in CMS Site Settings |
-| **Prices** | Paid routes, souvenirs, excursions — update in CMS products/routes |
-| **Rights** | Photo author credits, model releases for gallery submissions |
-| **AR media** | Video/3D files for AR postcards, marker images |
-| **Reviews** | Real testimonials for SocialProof block (currently CMS/demo) |
-| **Business content** | Corporate formats, case studies, partner logos |
-| **Legal** | Privacy policy text if differs from template |
-
----
-
-## Deploy notes
+## 8. Деплой (надёжный)
 
 ```bash
-git push origin master
-ssh root@90.156.170.182 "cd /var/www/polezno && git pull && rm -rf .next && npm run build && pm2 restart polezno"
+cd /var/www/polezno
+git pull origin master
+npm ci --include=dev
+npm run db:push          # при изменении схемы
+rm -rf .next
+NODE_OPTIONS='--max-old-space-size=1536' npm run build
+pm2 restart polezno
 ```
-
-No schema changes in this release — `db:push` not required.

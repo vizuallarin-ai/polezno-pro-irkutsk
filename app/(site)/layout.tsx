@@ -6,8 +6,9 @@ import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { FloatingContact } from "@/components/contact/floating-contact";
 import { YandexMetrikaHead, YandexMetrikaNoscript } from "@/components/analytics/yandex-metrika";
 import { LenisProvider } from "@/components/layout/lenis-provider";
-import { getNavigation } from "@/lib/navigation";
+import { getNavigation, hasPublishedEvents } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
+import { contactsForDisplay } from "@/lib/contact-display";
 import { getSiteUrl } from "@/lib/site-url";
 import "../globals.css";
 
@@ -77,7 +78,12 @@ export default async function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [nav, settings] = await Promise.all([getNavigation(), getSiteSettings()]);
+  const [nav, settings, showEvents] = await Promise.all([
+    getNavigation(),
+    getSiteSettings(),
+    hasPublishedEvents(),
+  ]);
+  const contact = contactsForDisplay(settings.contact);
 
   const orgSchema = {
     "@context": "https://schema.org",
@@ -116,12 +122,12 @@ export default async function SiteLayout({
             contactCtaLabel={settings.leadSettings.contactCtaLabel}
             projectName={settings.projectName}
             projectDescriptor={settings.projectDescriptor}
-            contact={settings.contact}
+            contact={contact}
           />
           <main>{children}</main>
-          <Footer settings={settings} />
+          <Footer settings={settings} contact={contact} showEvents={showEvents} />
           <FloatingContact
-            contact={settings.contact}
+            contact={contact}
             label={settings.leadSettings.contactCtaLabel}
           />
           <ScrollToTop />

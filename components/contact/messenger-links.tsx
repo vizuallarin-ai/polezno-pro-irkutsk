@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Mail, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SiteContacts } from "@/lib/site-settings";
+import { isDisplayablePhone } from "@/lib/contact-display";
 import { leadAnalyticsProps, trackLeadEvent } from "@/lib/analytics-events";
 
 interface MessengerLinksProps {
@@ -46,7 +47,7 @@ export function MessengerLinks({
           external: false,
         }
       : null,
-    contact.phone
+    contact.phone && isDisplayablePhone(contact.phone)
       ? {
           href: `tel:${contact.phone.replace(/\s/g, "")}`,
           label: contact.phone,
