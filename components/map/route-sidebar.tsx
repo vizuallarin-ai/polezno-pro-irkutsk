@@ -264,7 +264,7 @@ export function RouteSidebar({
                   <span>Платный авторский маршрут</span>
                 </div>
                 <Link
-                  href={`/shop/${activeRoute.slug}`}
+                  href={`/souvenirs/${activeRoute.slug}`}
                   className="inline-flex h-10 items-center justify-center gap-2 bg-baikal text-white px-5 text-sm font-medium hover:bg-baikal-light transition-colors duration-200"
                 >
                   Купить маршрут — {activeRoute.price?.toLocaleString("ru-RU")} ₽

@@ -91,7 +91,7 @@ export function ShopPreview({ products }: { products?: Product[] }) {
             <p className="text-muted-foreground mb-2">
               Магазин открывается — коллекции готовим вместе с маршрутами проекта
             </p>
-            <Link href="/shop" className="text-sm text-baikal hover:underline">
+            <Link href="/souvenirs" className="text-sm text-baikal hover:underline">
               Страница магазина
             </Link>
           </div>

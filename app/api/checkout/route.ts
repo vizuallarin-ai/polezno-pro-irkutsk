@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/shop/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/shop`,
+      success_url: `${origin}/souvenirs/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/souvenirs`,
       metadata: { productName },
     });
 
