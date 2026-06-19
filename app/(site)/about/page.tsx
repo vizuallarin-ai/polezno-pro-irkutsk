@@ -7,6 +7,7 @@ import { VisualQuoteBlock } from "@/components/visual/visual-quote-block";
 import { Separator } from "@/components/ui/separator";
 import { resolveVisualImage } from "@/lib/visual-assets";
 import { BRAND } from "@/lib/brand-constants";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 export const metadata: Metadata = {
   title: "О проекте — манифест «Полезно про Иркутск»",
@@ -206,6 +207,8 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      <ContactCtaSection variant="about" sourceType="about" sourceBlock="about-bottom" />
     </main>
   );
 }

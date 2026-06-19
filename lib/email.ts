@@ -102,16 +102,18 @@ export async function sendLeadNotification({
   email,
   serviceType,
   message,
+  to,
 }: {
   name: string;
   email: string;
   serviceType?: string;
   message?: string;
+  to?: string;
 }) {
   const client = getResend();
   if (!client) return;
 
-  const adminEmail = process.env.EMAIL_TO || "info@polezno.irkutsk.ru";
+  const adminEmail = to || process.env.EMAIL_TO || "info@polezno.irkutsk.ru";
 
   await client.emails.send({
     from: `CRM Полезно про Иркутск <${FROM}>`,

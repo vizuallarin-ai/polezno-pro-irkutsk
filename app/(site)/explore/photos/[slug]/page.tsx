@@ -4,6 +4,7 @@ import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getPhotoBySlug, getPublishedPhotoSlugs, getSimilarPhotos } from "@/lib/photos";
 import { getArPostcardForPhoto } from "@/lib/ar-postcards";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { PhotoDetailClient } from "@/components/photos/photo-detail-client";
 
 interface PageProps {
@@ -44,5 +45,19 @@ export default async function PhotoDetailPage({ params }: PageProps) {
   const similar = await getSimilarPhotos(photo, 4);
   const arPostcard = await getArPostcardForPhoto(photo.id);
 
-  return <PhotoDetailClient photo={photo} similar={similar} arPostcard={arPostcard} />;
+  return (
+    <>
+      <PhotoDetailClient photo={photo} similar={similar} arPostcard={arPostcard} />
+      <ContactCtaSection
+        variant="photo_detail"
+        sourceType="photo"
+        sourceSlug={photo.slug}
+        sourceTitle={photo.title}
+        sourceId={photo.id}
+        sourceBlock="photo-detail"
+        photoContext={{ id: photo.id, title: photo.title }}
+        compact
+      />
+    </>
+  );
 }

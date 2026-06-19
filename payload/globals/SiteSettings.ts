@@ -224,5 +224,59 @@ export const SiteSettings: GlobalConfig = {
         { name: "vk", type: "text", label: "ВКонтакте" },
       ],
     },
+    {
+      name: "leadSettings",
+      type: "group",
+      label: "Заявки и согласия",
+      fields: [
+        {
+          name: "consentText",
+          type: "textarea",
+          label: "Текст согласия на обработку данных",
+          defaultValue:
+            "Я согласен(на) на обработку персональных данных и понимаю, что со мной свяжутся по указанному контакту",
+        },
+        {
+          name: "consentVersion",
+          type: "text",
+          label: "Версия согласия",
+          defaultValue: "2026-06",
+        },
+        {
+          name: "privacyPolicyUrl",
+          type: "text",
+          label: "Ссылка на политику конфиденциальности",
+          defaultValue: "/privacy",
+        },
+        {
+          name: "primaryMessenger",
+          type: "select",
+          label: "Основной мессенджер",
+          defaultValue: "telegram",
+          options: [
+            { label: "Telegram", value: "telegram" },
+            { label: "MAX", value: "max" },
+            { label: "Email", value: "email" },
+          ],
+        },
+        {
+          name: "leadNotificationEnabled",
+          type: "checkbox",
+          label: "Email-уведомления о новых заявках",
+          defaultValue: true,
+        },
+        {
+          name: "leadNotificationEmail",
+          type: "email",
+          label: "Email для уведомлений о заявках",
+        },
+        {
+          name: "contactCtaLabel",
+          type: "text",
+          label: "Текст кнопки «Связаться»",
+          defaultValue: "Связаться",
+        },
+      ],
+    },
   ],
 };

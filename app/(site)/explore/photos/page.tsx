@@ -7,6 +7,7 @@ import {
 import { getPublishedPhotos } from "@/lib/photos";
 import type { PhotoCategory, PhotoType } from "@/types/photos";
 import { PhotosPageClient } from "@/components/photos/photos-page-client";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 export const metadata: Metadata = {
   title: PHOTOS_PAGE_TITLE,
@@ -44,8 +45,11 @@ export default async function PhotosPage({ searchParams }: PageProps) {
   });
 
   return (
-    <Suspense>
-      <PhotosPageClient photos={photos} />
-    </Suspense>
+    <>
+      <Suspense>
+        <PhotosPageClient photos={photos} />
+      </Suspense>
+      <ContactCtaSection variant="photo" sourceType="photos" sourceBlock="photos-index" />
+    </>
   );
 }

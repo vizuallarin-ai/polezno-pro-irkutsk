@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
+import { FloatingContact } from "@/components/contact/floating-contact";
 import { LenisProvider } from "@/components/layout/lenis-provider";
 import { getNavigation } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -109,12 +110,17 @@ export default async function SiteLayout({
             moreLinks={nav.moreLinks}
             ctaLabel={settings.mainCta.label}
             ctaHref={settings.mainCta.href}
+            contactCtaLabel={settings.leadSettings.contactCtaLabel}
             projectName={settings.projectName}
             projectDescriptor={settings.projectDescriptor}
             contact={settings.contact}
           />
           <main>{children}</main>
           <Footer settings={settings} />
+          <FloatingContact
+            contact={settings.contact}
+            label={settings.leadSettings.contactCtaLabel}
+          />
           <ScrollToTop />
         </LenisProvider>
       </body>

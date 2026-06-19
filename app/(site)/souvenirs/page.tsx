@@ -10,6 +10,7 @@ import {
   getPublishedProducts,
 } from "@/lib/souvenirs";
 import { SOUVENIR_CATEGORY_FILTERS } from "@/lib/souvenirs";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 export const metadata: Metadata = {
   title: "Сувениры Иркутска — мерч, открытки, карты и местные мастера",
@@ -236,23 +237,7 @@ export default async function SouvenirsPage() {
         </div>
       </section>
 
-      <section>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14 lg:py-20 text-center">
-          <h2 className="text-2xl lg:text-3xl font-light mb-4">
-            Хотите что-то конкретное?
-          </h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            Напишите — подскажем по наличию, предзаказу или мастерам.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex h-11 items-center gap-2 border border-border px-6 text-sm font-medium hover:bg-muted"
-          >
-            Связаться
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-      </section>
+      <ContactCtaSection variant="souvenir" sourceType="souvenirs" sourceBlock="souvenirs-index" />
     </main>
   );
 }

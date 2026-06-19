@@ -5,6 +5,7 @@ import { AuthorBlock } from "@/components/sections/author-block";
 import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
 import { BusinessPreviewSection } from "@/components/sections/business-preview";
 import { FinalCta } from "@/components/sections/final-cta";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { PhotosPreviewSection } from "@/components/sections/photos-preview";
 import { SouvenirsPreviewSection } from "@/components/sections/souvenirs-preview";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
@@ -111,6 +112,7 @@ export default async function HomePage() {
       <PhotosPreviewSection />
       <SouvenirsPreviewSection />
       <BusinessPreviewSection />
+      <ContactCtaSection variant="default" sourceType="home" sourceBlock="home-cta" />
       <FinalCta />
     </>
   );

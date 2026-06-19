@@ -20,6 +20,7 @@ import {
   getPublishedProductSlugs,
 } from "@/lib/souvenirs";
 import { getArPostcardByProductRelation } from "@/lib/ar-postcards";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -252,6 +253,22 @@ export default async function SouvenirProductPage({ params }: PageProps) {
           </div>
         )}
       </div>
+
+      <ContactCtaSection
+        variant="souvenir"
+        sourceType="product"
+        sourceSlug={product.slug}
+        sourceTitle={product.title}
+        sourceId={product.id}
+        sourceBlock="product-bottom"
+        productContext={{
+          id: product.id,
+          slug: product.slug,
+          title: product.title,
+          makerId: product.maker?.id,
+        }}
+        messengersOnly
+      />
     </article>
   );
 }

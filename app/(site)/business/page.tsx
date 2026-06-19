@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BusinessPageContent } from "@/components/business/business-page-content";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { BUSINESS_SEO } from "@/lib/business-constants";
 import { getBusinessPageData } from "@/lib/business-data";
 import { getSiteUrl } from "@/lib/site-url";
@@ -53,14 +54,22 @@ export default async function BusinessPage({ searchParams }: BusinessPageProps) 
   const { corporateRoutes, businessArticles } = await getBusinessPageData();
 
   return (
-    <BusinessPageContent
-      corporateRoutes={corporateRoutes}
-      businessArticles={businessArticles}
-      initialTaskType={params.taskType}
-      initialRouteSlug={params.route}
-      initialExcursionSlug={params.excursion}
-      initialSourceBlock={params.sourceBlock || "hero"}
-      initialMessage={buildInitialMessage(params)}
-    />
+    <>
+      <BusinessPageContent
+        corporateRoutes={corporateRoutes}
+        businessArticles={businessArticles}
+        initialTaskType={params.taskType}
+        initialRouteSlug={params.route}
+        initialExcursionSlug={params.excursion}
+        initialSourceBlock={params.sourceBlock || "hero"}
+        initialMessage={buildInitialMessage(params)}
+      />
+      <ContactCtaSection
+        variant="business"
+        sourceType="business"
+        sourceBlock="business-bottom"
+        messengersOnly
+      />
+    </>
   );
 }

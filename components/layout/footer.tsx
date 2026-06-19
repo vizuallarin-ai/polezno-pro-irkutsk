@@ -200,6 +200,12 @@ export function Footer({ settings }: FooterProps) {
             >
               Контакты
             </Link>
+            <Link
+              href={settings?.leadSettings.privacyPolicyUrl || "/privacy"}
+              className="text-xs text-primary-foreground/40 hover:text-primary-foreground/70 transition-colors duration-200"
+            >
+              Политика данных
+            </Link>
             <a
               href={YANDEX_MAPS_TERMS_URL}
               target="_blank"

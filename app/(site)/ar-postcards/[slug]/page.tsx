@@ -17,6 +17,7 @@ import {
   getArPostcardBySlug,
   getPublishedArPostcardSlugs,
 } from "@/lib/ar-postcards";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { effectTypeLabel } from "@/lib/ar-postcard-adapter";
 
 interface PageProps {
@@ -224,6 +225,21 @@ export default async function ArPostcardDetailPage({ params }: PageProps) {
           </Link>
         </div>
       </div>
+
+      <ContactCtaSection
+        variant="ar_postcard"
+        sourceType="ar_postcard"
+        sourceSlug={postcard.slug}
+        sourceTitle={postcard.title}
+        sourceId={postcard.id}
+        sourceBlock="ar-detail"
+        arPostcardContext={{
+          id: postcard.id,
+          slug: postcard.slug,
+          title: postcard.title,
+        }}
+        messengersOnly
+      />
     </article>
   );
 }

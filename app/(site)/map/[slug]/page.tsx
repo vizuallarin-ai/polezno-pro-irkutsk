@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RouteDetailClient } from "@/components/routes/route-detail-client";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { getExcursionForRoute } from "@/lib/excursions";
 import { getRoutePageData } from "@/lib/routes";
 import { getProductsForRoute } from "@/lib/souvenirs";
@@ -36,11 +37,24 @@ export default async function RouteDetailPage({ params }: PageProps) {
   if (!route) notFound();
 
   return (
-    <RouteDetailClient
-      route={route}
-      similar={similar}
-      relatedExcursionSlug={relatedExcursion?.slug ?? null}
-      relatedSouvenirs={relatedSouvenirs}
-    />
+    <>
+      <RouteDetailClient
+        route={route}
+        similar={similar}
+        relatedExcursionSlug={relatedExcursion?.slug ?? null}
+        relatedSouvenirs={relatedSouvenirs}
+      />
+      <ContactCtaSection
+        variant="route_detail"
+        sourceType="route"
+        sourceSlug={route.slug}
+        sourceTitle={route.title}
+        sourceId={route.id}
+        sourceBlock="route-detail-cta"
+        routeContext={{ id: route.id, slug: route.slug, title: route.title }}
+        compact
+        showForm={false}
+      />
+    </>
   );
 }

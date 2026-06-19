@@ -14,6 +14,11 @@ import {
   BUSINESS_TASK_TYPE_OPTIONS,
 } from "@/lib/leads-business";
 import { LEAD_SOURCE_OPTIONS } from "../constants";
+import {
+  PRIORITY_OPTIONS,
+  PREFERRED_CONTACT_OPTIONS,
+  REQUEST_TYPE_OPTIONS,
+} from "@/lib/leads-constants";
 
 const afterChangeHook: CollectionAfterChangeHook = async ({ doc, previousDoc }) => {
   if (
@@ -43,13 +48,13 @@ export const Leads: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: [
-      "name",
-      "company",
-      "taskType",
-      "status",
-      "source",
-      "businessFormat",
       "createdAt",
+      "name",
+      "contact",
+      "requestType",
+      "source",
+      "status",
+      "priority",
     ],
     listSearchableFields: [
       "name",
@@ -70,6 +75,11 @@ export const Leads: CollectionConfig = {
       "arPostcardTitle",
       "taskType",
       "sourceBlock",
+      "requestType",
+      "pageUrl",
+      "routeTitle",
+      "materialSlug",
+      "photoId",
     ],
     description:
       "Фильтруйте по колонке «Статус» или «Источник». B2B-заявки: источник «Для бизнеса (B2B)» — /admin/collections/leads?where[source][equals]=business",
@@ -127,6 +137,24 @@ export const Leads: CollectionConfig = {
       name: "max",
       type: "text",
       label: "MAX",
+    },
+    {
+      name: "preferredContactMethod",
+      type: "select",
+      label: "Предпочтительный способ связи",
+      options: [...PREFERRED_CONTACT_OPTIONS],
+    },
+    {
+      name: "interestType",
+      type: "text",
+      label: "Тип интереса",
+    },
+    {
+      name: "requestType",
+      type: "select",
+      label: "Тип заявки",
+      options: [...REQUEST_TYPE_OPTIONS],
+      admin: { position: "sidebar" },
     },
     {
       name: "websiteUrl",
@@ -239,9 +267,39 @@ export const Leads: CollectionConfig = {
       },
     },
     {
+      name: "routeId",
+      type: "text",
+      label: "Маршрут (ID)",
+      admin: { position: "sidebar" },
+    },
+    {
       name: "routeSlug",
       type: "text",
       label: "Маршрут (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "routeTitle",
+      type: "text",
+      label: "Маршрут (название)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "materialId",
+      type: "text",
+      label: "Материал (ID)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "materialSlug",
+      type: "text",
+      label: "Материал (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "photoId",
+      type: "text",
+      label: "Фото (ID)",
       admin: { position: "sidebar" },
     },
     {
@@ -341,9 +399,107 @@ export const Leads: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     {
+      name: "arPostcardId",
+      type: "text",
+      label: "AR-открытка (ID)",
+      admin: { position: "sidebar" },
+    },
+    {
       name: "arPostcardSlug",
       type: "text",
       label: "AR-открытка (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "sourceSlug",
+      type: "text",
+      label: "Источник (slug)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "sourceId",
+      type: "text",
+      label: "Источник (ID)",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "sourceUrl",
+      type: "text",
+      label: "URL источника",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "pageUrl",
+      type: "text",
+      label: "Страница отправки",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "referrer",
+      type: "text",
+      label: "Referrer",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "utmSource",
+      type: "text",
+      label: "UTM Source",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "utmMedium",
+      type: "text",
+      label: "UTM Medium",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "utmCampaign",
+      type: "text",
+      label: "UTM Campaign",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "utmContent",
+      type: "text",
+      label: "UTM Content",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "utmTerm",
+      type: "text",
+      label: "UTM Term",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "priority",
+      type: "select",
+      label: "Приоритет",
+      options: [...PRIORITY_OPTIONS],
+      defaultValue: "normal",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "consentAccepted",
+      type: "checkbox",
+      label: "Согласие получено",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "consentText",
+      type: "text",
+      label: "Текст согласия",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "consentVersion",
+      type: "text",
+      label: "Версия согласия",
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "consentAcceptedAt",
+      type: "date",
+      label: "Дата согласия",
       admin: { position: "sidebar" },
     },
     {

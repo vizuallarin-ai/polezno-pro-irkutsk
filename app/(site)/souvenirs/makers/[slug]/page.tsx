@@ -14,6 +14,7 @@ import {
   getProductsByMaker,
   getPublishedMakerSlugs,
 } from "@/lib/souvenirs";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -159,6 +160,15 @@ export default async function MakerDetailPage({ params }: PageProps) {
           </p>
         )}
       </div>
+
+      <ContactCtaSection
+        variant="maker"
+        sourceType="maker"
+        sourceSlug={maker.slug}
+        sourceTitle={maker.title}
+        sourceId={maker.id}
+        sourceBlock="maker-detail"
+      />
     </article>
   );
 }

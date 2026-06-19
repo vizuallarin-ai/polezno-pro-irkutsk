@@ -5,6 +5,7 @@ import { CityHeroVisual } from "@/components/visual/city-hero-visual";
 import { VisualEmptyState } from "@/components/visual/visual-empty-state";
 import { PostcardCard } from "@/components/ar-postcards/postcard-card";
 import { getFeaturedArPostcards, getPublishedArPostcards } from "@/lib/ar-postcards";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 export const metadata: Metadata = {
   title: "Ожившие открытки Иркутска — AR-открытки и цифровые истории",
@@ -230,6 +231,12 @@ export default async function ArPostcardsLandingPage() {
           </div>
         </div>
       </section>
+
+      <ContactCtaSection
+        variant="ar_postcard"
+        sourceType="ar_postcard"
+        sourceBlock="ar-index"
+      />
     </main>
   );
 }

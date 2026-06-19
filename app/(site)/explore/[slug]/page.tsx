@@ -34,6 +34,7 @@ import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
 import { getProductsForArticle } from "@/lib/souvenirs";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -242,6 +243,20 @@ export default async function ExploreSlugPage({ params }: PageProps) {
 
         <ArticleCtaBlock />
       </div>
+
+      <ContactCtaSection
+        variant="material"
+        sourceType="material"
+        sourceSlug={String(article.slug)}
+        sourceTitle={String(article.title)}
+        sourceId={String(article.id)}
+        sourceBlock="article-bottom"
+        materialContext={{
+          id: String(article.id),
+          slug: String(article.slug),
+          title: String(article.title),
+        }}
+      />
     </article>
   );
 }

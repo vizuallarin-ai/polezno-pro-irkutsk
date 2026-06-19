@@ -1,5 +1,10 @@
 import { getPayloadClient } from "@/lib/payload";
 import { BRAND, DEFAULT_SOCIAL_DISCLAIMER } from "@/lib/brand-constants";
+import {
+  DEFAULT_CONSENT_TEXT,
+  DEFAULT_CONSENT_VERSION,
+  DEFAULT_PRIVACY_POLICY_URL,
+} from "@/lib/leads-constants";
 import { BOOSTY_URL, TELEGRAM_URL } from "@/lib/site-links";
 
 export type SiteContacts = {
@@ -12,6 +17,16 @@ export type SiteContacts = {
   boosty?: string;
   youtube?: string;
   instagram?: string;
+};
+
+export type LeadSettings = {
+  consentText: string;
+  consentVersion: string;
+  privacyPolicyUrl: string;
+  primaryMessenger: "telegram" | "max" | "email";
+  leadNotificationEnabled: boolean;
+  leadNotificationEmail?: string;
+  contactCtaLabel: string;
 };
 
 export type SiteSettingsData = {
@@ -29,6 +44,7 @@ export type SiteSettingsData = {
   mainCta: { label: string; href: string; description?: string };
   secondaryCta?: { label: string; href: string };
   contact: SiteContacts;
+  leadSettings: LeadSettings;
   footerText: string;
   footerTagline: string;
   socialDisclaimerText: string;
@@ -62,6 +78,15 @@ const DEFAULTS: SiteSettingsData = {
     instagram: "https://instagram.com/polezno.irkutsk",
     boosty: BOOSTY_URL,
   },
+  leadSettings: {
+    consentText: DEFAULT_CONSENT_TEXT,
+    consentVersion: DEFAULT_CONSENT_VERSION,
+    privacyPolicyUrl: DEFAULT_PRIVACY_POLICY_URL,
+    primaryMessenger: "telegram",
+    leadNotificationEnabled: true,
+    leadNotificationEmail: "info@irkportal.ru",
+    contactCtaLabel: "Связаться",
+  },
   footerText:
     "Маршруты, экскурсии и материалы о городе — без туристических штампов.",
   footerTagline: "Авторский навигатор по Иркутску",
@@ -88,6 +113,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
 
     const contactRaw = (raw.contact || {}) as Record<string, string | undefined>;
     const socialRaw = (raw.socialLinks || {}) as Record<string, string | undefined>;
+    const leadRaw = (raw.leadSettings || {}) as Record<string, string | boolean | undefined>;
     const mainCtaRaw = (raw.mainCta || {}) as Record<string, string | undefined>;
     const secondaryCtaRaw = (raw.secondaryCta || {}) as Record<
       string,
@@ -138,6 +164,29 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
           contactRaw.instagram ||
           socialRaw.instagram ||
           DEFAULTS.contact.instagram,
+      },
+      leadSettings: {
+        consentText: String(leadRaw.consentText || DEFAULTS.leadSettings.consentText),
+        consentVersion: String(
+          leadRaw.consentVersion || DEFAULTS.leadSettings.consentVersion
+        ),
+        privacyPolicyUrl: String(
+          leadRaw.privacyPolicyUrl || DEFAULTS.leadSettings.privacyPolicyUrl
+        ),
+        primaryMessenger:
+          (leadRaw.primaryMessenger as LeadSettings["primaryMessenger"]) ||
+          DEFAULTS.leadSettings.primaryMessenger,
+        leadNotificationEnabled:
+          leadRaw.leadNotificationEnabled !== undefined
+            ? Boolean(leadRaw.leadNotificationEnabled)
+            : DEFAULTS.leadSettings.leadNotificationEnabled,
+        leadNotificationEmail:
+          (leadRaw.leadNotificationEmail as string | undefined) ||
+          contactRaw.email ||
+          DEFAULTS.leadSettings.leadNotificationEmail,
+        contactCtaLabel: String(
+          leadRaw.contactCtaLabel || DEFAULTS.leadSettings.contactCtaLabel
+        ),
       },
       footerText: String(raw.footerText || DEFAULTS.footerText),
       footerTagline: String(raw.footerTagline || DEFAULTS.footerTagline),

@@ -7,6 +7,7 @@ import {
   ExploreBottomCta,
   ExplorePhotoSection,
 } from "@/components/explore/explore-sections";
+import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import {
   EXPLORE_CATEGORIES,
   EXPLORE_H1,
@@ -103,6 +104,7 @@ export default async function ExplorePage() {
         <ExploreRoutesPreview routes={routePreview} />
         <ExplorePhotoSection />
         <ExploreBottomCta />
+        <ContactCtaSection variant="explore" sourceType="explore" sourceBlock="explore-index" />
       </div>
     </main>
   );

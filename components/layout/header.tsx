@@ -13,6 +13,7 @@ import {
 } from "@/lib/navigation-constants";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 import type { SiteContacts } from "@/lib/site-settings";
+import { leadAnalyticsProps, trackLeadEvent } from "@/lib/analytics-events";
 
 function isExternalHref(href: string) {
   return href.startsWith("http://") || href.startsWith("https://");
@@ -52,6 +53,7 @@ interface HeaderProps {
   moreLinks?: NavItem[];
   ctaLabel?: string;
   ctaHref?: string;
+  contactCtaLabel?: string;
   projectName?: string;
   projectDescriptor?: string;
   contact?: SiteContacts;
@@ -145,6 +147,161 @@ function HeaderContacts({
   );
 }
 
+function ContactDropdown({
+  contact,
+  label = "Связаться",
+  onNavigate,
+  variant = "dropdown",
+}: {
+  contact?: SiteContacts;
+  label?: string;
+  onNavigate?: () => void;
+  variant?: "dropdown" | "list";
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (variant !== "dropdown") return;
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [variant]);
+
+  const items = [
+    contact?.telegram
+      ? { href: contact.telegram, label: "Telegram", external: true }
+      : null,
+    contact?.max ? { href: contact.max, label: "MAX", external: true } : null,
+    contact?.email
+      ? { href: `mailto:${contact.email}`, label: "Email", external: false }
+      : null,
+    { href: "/contact#lead-form", label: "Форма на сайте", external: false },
+  ].filter(Boolean) as { href: string; label: string; external: boolean }[];
+
+  if (items.length === 0) return null;
+
+  if (variant === "list") {
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          {label}
+        </p>
+        {items.map((item) =>
+          item.external ? (
+            <a
+              key={item.label}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-lg font-light text-foreground hover:text-baikal transition-colors"
+              onClick={() => {
+                trackLeadEvent("messenger_click", {
+                  sourceType: "header",
+                  cta: item.label,
+                });
+                onNavigate?.();
+              }}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-lg font-light text-foreground hover:text-baikal transition-colors"
+              onClick={() => {
+                trackLeadEvent("cta_click", {
+                  sourceType: "header",
+                  cta: item.label,
+                });
+                onNavigate?.();
+              }}
+            >
+              {item.label}
+            </Link>
+          )
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="hidden md:inline-flex h-9 items-center gap-1.5 px-4 lg:px-5 text-sm border border-border bg-background hover:bg-muted transition-colors duration-200"
+        aria-expanded={open}
+        aria-haspopup="true"
+        {...leadAnalyticsProps("contact_click", {
+          sourceType: "header",
+          cta: label,
+        })}
+      >
+        {label}
+        <ChevronDown
+          size={14}
+          className={cn("transition-transform", open && "rotate-180")}
+        />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] border border-border bg-background py-2 shadow-lg"
+          >
+            {items.map((item) =>
+              item.external ? (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  onClick={() => {
+                    trackLeadEvent("messenger_click", {
+                      sourceType: "header",
+                      cta: item.label,
+                    });
+                    setOpen(false);
+                    onNavigate?.();
+                  }}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  onClick={() => {
+                    trackLeadEvent(
+                      item.label === "Email" ? "email_click" : "cta_click",
+                      { sourceType: "header", cta: item.label }
+                    );
+                    setOpen(false);
+                    onNavigate?.();
+                  }}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function MoreDropdown({ links }: { links: NavItem[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -219,6 +376,7 @@ export function Header({
   moreLinks = MORE_NAV_LINKS,
   ctaLabel = DEFAULT_CTA.label,
   ctaHref = DEFAULT_CTA.href,
+  contactCtaLabel = "Связаться",
   projectName = "Иркпортал",
   projectDescriptor = "Авторский навигатор по Иркутску от Алёны Ямщиковой",
   contact,
@@ -310,9 +468,11 @@ export function Header({
                 </a>
               )}
 
+              <ContactDropdown contact={contact} label={contactCtaLabel} />
+
               <Link
                 href={ctaHref}
-                className="hidden md:inline-flex h-9 items-center px-4 lg:px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
+                className="hidden lg:inline-flex h-9 items-center px-4 lg:px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
               >
                 {ctaLabel}
               </Link>
@@ -380,6 +540,13 @@ export function Header({
                 contact={contact}
                 className="flex-col items-start gap-4"
                 onClick={() => setIsOpen(false)}
+              />
+
+              <ContactDropdown
+                contact={contact}
+                label={contactCtaLabel}
+                variant="list"
+                onNavigate={() => setIsOpen(false)}
               />
 
               <Link
