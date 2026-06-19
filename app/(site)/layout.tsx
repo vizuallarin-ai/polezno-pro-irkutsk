@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { FloatingContact } from "@/components/contact/floating-contact";
+import { YandexMetrikaHead, YandexMetrikaNoscript } from "@/components/analytics/yandex-metrika";
 import { LenisProvider } from "@/components/layout/lenis-provider";
 import { getNavigation } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -98,12 +99,14 @@ export default async function SiteLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable}`}
     >
       <head>
+        <YandexMetrikaHead />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <YandexMetrikaNoscript />
         <LenisProvider>
           <Header
             primaryLinks={nav.primaryLinks}
