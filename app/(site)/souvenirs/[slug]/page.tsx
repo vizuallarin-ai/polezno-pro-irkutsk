@@ -13,11 +13,13 @@ import { productSchema, breadcrumbSchema } from "@/lib/jsonld";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
+import { RelatedArPostcardBlock } from "@/components/ar-postcards/related-ar-postcard-block";
 import {
   formatProductPrice,
   getProductBySlug,
   getPublishedProductSlugs,
 } from "@/lib/souvenirs";
+import { getArPostcardByProductRelation } from "@/lib/ar-postcards";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -58,6 +60,8 @@ export default async function SouvenirProductPage({ params }: PageProps) {
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) notFound();
+
+  const arPostcard = await getArPostcardByProductRelation(slug);
 
   const BASE_URL = getSiteUrl();
   const inStock =
@@ -217,6 +221,8 @@ export default async function SouvenirProductPage({ params }: PageProps) {
             }}
           />
         )}
+
+        {arPostcard && <RelatedArPostcardBlock postcard={arPostcard} variant="product" />}
 
         {(product.relatedArticles.length > 0 || product.relatedPhotos.length > 0) && (
           <div className="mt-12 pt-10 border-t border-border">

@@ -162,6 +162,9 @@ export const LEAD_SOURCE_OPTIONS = [
   { label: "Общий запрос (сувениры)", value: "souvenir_general" },
   { label: "Раздел «Карта»", value: "map" },
   { label: "Фотоархив", value: "photos" },
+  { label: "AR-открытка: предзаказ", value: "ar_postcard_preorder" },
+  { label: "AR-открытка: вопрос", value: "ar_postcard_question" },
+  { label: "Раздел «AR-открытки»", value: "ar_postcards" },
   { label: "Прямой заход", value: "direct" },
   { label: "Другое", value: "other" },
 ] as const satisfies readonly SelectOption[];

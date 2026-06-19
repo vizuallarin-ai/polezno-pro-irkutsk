@@ -63,3 +63,5 @@ export const MAKER_PUBLISHED_WHERE: Where = {
     { placementStatus: { equals: "active" } },
   ],
 };
+
+export const AR_POSTCARD_PUBLISHED_WHERE: Where = PUBLISHED_STATUS_WHERE;

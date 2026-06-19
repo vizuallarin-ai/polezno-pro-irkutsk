@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getPhotoBySlug, getPublishedPhotoSlugs, getSimilarPhotos } from "@/lib/photos";
+import { getArPostcardForPhoto } from "@/lib/ar-postcards";
 import { PhotoDetailClient } from "@/components/photos/photo-detail-client";
 
 interface PageProps {
@@ -41,6 +42,7 @@ export default async function PhotoDetailPage({ params }: PageProps) {
   if (!photo) notFound();
 
   const similar = await getSimilarPhotos(photo, 4);
+  const arPostcard = await getArPostcardForPhoto(photo.id);
 
-  return <PhotoDetailClient photo={photo} similar={similar} />;
+  return <PhotoDetailClient photo={photo} similar={similar} arPostcard={arPostcard} />;
 }

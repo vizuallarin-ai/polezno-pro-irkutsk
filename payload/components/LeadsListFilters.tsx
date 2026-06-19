@@ -17,6 +17,10 @@ const FILTERS = [
     href: "/admin/collections/leads?where[source][equals]=maker_placement",
   },
   {
+    label: "AR-открытки",
+    href: "/admin/collections/leads?where[or][0][source][equals]=ar_postcard_preorder&where[or][1][source][equals]=ar_postcard_question",
+  },
+  {
     label: "Новые",
     href: "/admin/collections/leads?where[status][equals]=new",
   },

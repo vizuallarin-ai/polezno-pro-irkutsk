@@ -12,6 +12,7 @@ export const PRIMARY_NAV_LINKS: NavItem[] = [
 export const MORE_NAV_LINKS: NavItem[] = [
   { href: "/events", label: "События" },
   { href: "/explore/photos", label: "Фото Иркутска" },
+  { href: "/ar-postcards", label: "AR-открытки" },
   { href: BOOSTY_URL, label: "Клуб" },
   { href: "/souvenirs", label: "Сувениры" },
 ];

@@ -14,13 +14,16 @@ import type { PublicPhoto } from "@/types/photos";
 import { BeforeAfterPhotoBlock } from "./before-after-photo-block";
 import { PhotoCard } from "./photo-card";
 import { SouvenirsCtaLink } from "@/components/souvenirs/related-souvenirs-block";
+import { RelatedArPostcardBlock } from "@/components/ar-postcards/related-ar-postcard-block";
+import type { PublicArPostcard } from "@/types/ar-postcards";
 
 interface PhotoDetailClientProps {
   photo: PublicPhoto;
   similar: PublicPhoto[];
+  arPostcard?: PublicArPostcard | null;
 }
 
-export function PhotoDetailClient({ photo, similar }: PhotoDetailClientProps) {
+export function PhotoDetailClient({ photo, similar, arPostcard }: PhotoDetailClientProps) {
   const relatedRoute = photo.relatedRoutes[0];
 
   return (
@@ -141,6 +144,14 @@ export function PhotoDetailClient({ photo, similar }: PhotoDetailClientProps) {
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+      ) : null}
+
+      {arPostcard ? (
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10">
+            <RelatedArPostcardBlock postcard={arPostcard} variant="photo" />
           </div>
         </section>
       ) : null}

@@ -5,6 +5,7 @@ import { getRoutesForMap } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import {
   ARTICLE_PUBLISHED_WHERE,
+  AR_POSTCARD_PUBLISHED_WHERE,
   MAKER_PUBLISHED_WHERE,
   PHOTO_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
@@ -19,7 +20,7 @@ async function getCmsUrls() {
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const [articles, events, products, makersRes, routesRes, excursionsRes, photosRes] =
+    const [articles, events, products, makersRes, routesRes, excursionsRes, photosRes, arPostcardsRes] =
       await Promise.all([
       payload.find({
         collection: "articles",
@@ -60,6 +61,12 @@ async function getCmsUrls() {
       payload.find({
         collection: "photos",
         where: PHOTO_PUBLISHED_WHERE,
+        limit: 1000,
+        depth: 0,
+      }),
+      payload.find({
+        collection: "ar-postcards",
+        where: AR_POSTCARD_PUBLISHED_WHERE,
         limit: 1000,
         depth: 0,
       }),
@@ -114,6 +121,13 @@ async function getCmsUrls() {
       priority: 0.65,
     }));
 
+    const arPostcardUrls = arPostcardsRes.docs.map((p) => ({
+      url: `${BASE_URL}/ar-postcards/${p.slug}`,
+      lastModified: new Date(String(p.updatedAt)),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+
     return [
       ...articleUrls,
       ...eventUrls,
@@ -122,6 +136,7 @@ async function getCmsUrls() {
       ...cmsRouteUrls,
       ...excursionUrls,
       ...photoUrls,
+      ...arPostcardUrls,
     ];
   } catch {
     return [];
@@ -143,6 +158,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/souvenirs`, priority: 0.8, changeFrequency: "weekly" as const },
+    { url: `${BASE_URL}/ar-postcards`, priority: 0.75, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/souvenirs/submit-maker`, priority: 0.5, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/excursions`, priority: 0.85, changeFrequency: "weekly" as const },

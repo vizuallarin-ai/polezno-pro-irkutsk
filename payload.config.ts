@@ -20,6 +20,7 @@ import { Leads } from "./payload/collections/Leads";
 import { Guides } from "./payload/collections/Guides";
 import { Makers } from "./payload/collections/Makers";
 import { Partners } from "./payload/collections/Partners";
+import { ArPostcards } from "./payload/collections/ArPostcards";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 import { Navigation } from "./payload/globals/Navigation";
 
@@ -49,6 +50,7 @@ export default buildConfig({
     Excursions,
     Makers,
     Products,
+    ArPostcards,
     Media,
     Users,
     Places,

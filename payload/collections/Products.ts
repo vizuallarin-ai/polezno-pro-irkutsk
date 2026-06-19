@@ -196,6 +196,15 @@ export const Products: CollectionConfig = {
       hasMany: true,
     },
     {
+      name: "relatedArPostcard",
+      type: "relationship",
+      relationTo: "ar-postcards",
+      label: "Ожившая AR-открытка",
+      admin: {
+        description: "Связь с цифровой версией товара — блок на странице сувенира.",
+      },
+    },
+    {
       name: "externalLink",
       type: "text",
       label: "Внешняя ссылка",

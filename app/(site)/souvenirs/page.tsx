@@ -226,6 +226,12 @@ export default async function SouvenirsPage() {
             >
               Фотоархив
             </Link>
+            <Link
+              href="/ar-postcards"
+              className="text-sm border border-border px-4 py-2 hover:bg-muted"
+            >
+              AR-открытки
+            </Link>
           </div>
         </div>
       </section>

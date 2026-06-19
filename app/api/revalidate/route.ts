@@ -40,6 +40,11 @@ export async function POST(request: NextRequest) {
       revalidatePath("/explore/photos");
     } else if (collection === "photos") {
       revalidatePath("/explore/photos");
+    } else if (collection === "ar-postcards" && slug) {
+      revalidatePath(`/ar-postcards/${slug}`);
+      revalidatePath("/ar-postcards");
+    } else if (collection === "ar-postcards") {
+      revalidatePath("/ar-postcards");
     } else if (collection === "site-settings") {
       revalidatePath("/");
       revalidatePath("/about");

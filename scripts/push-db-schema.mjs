@@ -65,6 +65,7 @@ async function main() {
   const { Partners } = await import("../payload/collections/Partners.ts");
   const { Leads } = await import("../payload/collections/Leads.ts");
   const { Guides } = await import("../payload/collections/Guides.ts");
+  const { ArPostcards } = await import("../payload/collections/ArPostcards.ts");
   const { SiteSettings } = await import("../payload/globals/SiteSettings.ts");
   const { Navigation } = await import("../payload/globals/Navigation.ts");
 
@@ -81,6 +82,7 @@ async function main() {
       Places,
       Excursions,
       Makers,
+      ArPostcards,
       Products,
       Guides,
       Reviews,
