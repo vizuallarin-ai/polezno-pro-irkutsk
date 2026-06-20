@@ -1,23 +1,42 @@
 #!/usr/bin/env node
 /**
- * Генерация PDF из docs/admin-guide.md
- * Запуск: node scripts/generate-admin-guide-pdf.mjs
+ * Генерация PDF из markdown-документов в docs/
+ * Запуск: node scripts/generate-doc-pdf.mjs <input.md> [output.pdf]
  */
-import { readFileSync, writeFileSync, unlinkSync } from "node:fs";
+import { readFileSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { createRequire } from "node:module";
 
-const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 
-const mdPath = path.join(root, "docs", "admin-guide.md");
+const inputArg = process.argv[2];
+const outputArg = process.argv[3];
+
+if (!inputArg) {
+  console.error(
+    "Usage: node scripts/generate-doc-pdf.mjs <input.md> [output.pdf]"
+  );
+  process.exit(1);
+}
+
+const mdPath = path.isAbsolute(inputArg)
+  ? inputArg
+  : path.join(root, inputArg);
+const pdfPath = outputArg
+  ? path.isAbsolute(outputArg)
+    ? outputArg
+    : path.join(root, outputArg)
+  : mdPath.replace(/\.md$/i, ".pdf");
 const cssPath = path.join(root, "docs", "admin-guide-pdf.css");
-const pdfPath = path.join(root, "docs", "admin-guide.pdf");
-const htmlPath = path.join(root, "docs", ".admin-guide-temp.html");
+const htmlPath = path.join(root, "docs", `.${path.basename(mdPath)}.temp.html`);
 
 async function main() {
+  if (!existsSync(mdPath)) {
+    console.error(`Файл не найден: ${mdPath}`);
+    process.exit(1);
+  }
+
   let marked;
   let chromium;
   try {
@@ -31,14 +50,13 @@ async function main() {
   }
 
   const md = readFileSync(mdPath, "utf8");
-  const css = readFileSync(cssPath, "utf8");
+  const css = existsSync(cssPath) ? readFileSync(cssPath, "utf8") : "";
   const body = marked.parse(md, { gfm: true });
 
   const html = `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title>Руководство по админке Иркпортал</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -60,7 +78,7 @@ async function main() {
     path: pdfPath,
     format: "A4",
     printBackground: true,
-    margin: { top: "20mm", right: "18mm", bottom: "20mm", left: "18mm" },
+    margin: { top: "18mm", right: "16mm", bottom: "18mm", left: "16mm" },
   });
   await browser.close();
 

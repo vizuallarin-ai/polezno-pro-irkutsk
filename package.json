@@ -24,7 +24,9 @@
     "deploy:beget-help": "node scripts/deploy-beget-help.mjs",
     "deploy:prod": "node scripts/deploy-prod.mjs",
     "check:prod": "node scripts/check-prod-health.mjs",
-    "docs:admin-pdf": "node scripts/generate-admin-guide-pdf.mjs"
+    "docs:admin-pdf": "node scripts/generate-doc-pdf.mjs docs/admin-guide.md",
+    "docs:capabilities-pdf": "node scripts/generate-doc-pdf.mjs docs/site-capabilities.md",
+    "docs:pdf": "npm run docs:admin-pdf && npm run docs:capabilities-pdf"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
