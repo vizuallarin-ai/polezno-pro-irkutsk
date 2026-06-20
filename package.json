@@ -23,7 +23,8 @@
     "reset-admin-password": "npx tsx scripts/reset-admin-password.mjs",
     "deploy:beget-help": "node scripts/deploy-beget-help.mjs",
     "deploy:prod": "node scripts/deploy-prod.mjs",
-    "check:prod": "node scripts/check-prod-health.mjs"
+    "check:prod": "node scripts/check-prod-health.mjs",
+    "docs:admin-pdf": "node scripts/generate-admin-guide-pdf.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -70,6 +71,8 @@
     "@yandex/ymaps3-types": "^1.0.19977126",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "marked": "^15.0.12",
+    "playwright": "^1.52.0",
     "typescript": "^5"
   }
 }
