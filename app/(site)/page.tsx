@@ -19,6 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${settings.projectName} — ${settings.footerTagline}`,
     description: settings.metaDescription,
+    verification: {
+      google: "LLEp_6ENwdLy4ubS0_YoCB6e4J0xmz5IoGs2iJHrQTk",
+    },
     openGraph: {
       title: settings.projectName,
       description: settings.description,
