@@ -5,14 +5,14 @@
  */
 import { execSync } from "node:child_process";
 
-const run = (cmd: string) => {
+const run = (cmd) => {
   console.log(`\n> ${cmd}`);
   execSync(cmd, { stdio: "inherit", env: process.env });
 };
 
 try {
   run("git pull origin master");
-  run("npm ci --include=dev");
+  run("npm install --include=dev");
   run("npm run db:push");
   run("rm -rf .next");
   process.env.NODE_ENV = "production";
@@ -20,7 +20,7 @@ try {
   run("npm run build");
   run("pm2 restart polezno");
   console.log("\n✓ Deploy complete");
-} catch (e) {
+} catch {
   console.error("\n✗ Deploy failed");
   process.exit(1);
 }
