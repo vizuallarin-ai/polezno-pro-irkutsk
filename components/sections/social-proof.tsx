@@ -16,12 +16,6 @@ export type Review = {
   photo?: { url?: string };
 };
 
-const DEFAULT_STATS: Stat[] = [
-  { value: "8+", label: "авторских маршрутов" },
-  { value: "5+", label: "лет в Иркутске" },
-  { value: "100+", label: "гостей в сезон" },
-];
-
 const GUEST_HIGHLIGHTS = [
   "Маршруты без «топ-10» и сувенирных штампов",
   "Живые истории за фасадами деревянных домов",
@@ -35,12 +29,12 @@ interface SocialProofProps {
 }
 
 export function SocialProof({
-  stats = DEFAULT_STATS,
+  stats,
   reviews,
 }: SocialProofProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const hasReviews = reviews && reviews.length > 0;
-  const displayStats = stats.length > 0 ? stats : DEFAULT_STATS;
+  const displayStats = stats && stats.length > 0 ? stats : [];
 
   useGSAP(
     () => {
@@ -85,7 +79,13 @@ export function SocialProof({
           {hasReviews ? "Отзывы гостей" : "Что обычно отмечают гости"}
         </h2>
 
-        <div className="stats-row grid grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-16 lg:mb-20">
+        <div
+          className={
+            displayStats.length > 0
+              ? "stats-row grid grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-16 lg:mb-20"
+              : "hidden"
+          }
+        >
           {displayStats.map((stat) => (
             <div key={stat.label} className="stat-item">
               <p className="text-4xl lg:text-5xl font-light tabular-nums tracking-tight text-foreground mb-2">

@@ -1,5 +1,6 @@
 import { DEMO_ROUTES, type Route } from "@/lib/data/routes";
 import { PUBLISHED_STATUS_WHERE } from "@/lib/cms-filters";
+import { allowDemoFallback } from "@/lib/demo-fallback";
 import {
   payloadRouteToRoute,
   isPublishedRoute,
@@ -93,7 +94,7 @@ export async function getRoutesForMap(): Promise<{
   }
 
   const hasCmsData = await cmsHasAnyRoutes();
-  if (hasCmsData) {
+  if (hasCmsData || !allowDemoFallback()) {
     return { routes: [], mapRoutes: [], source: "cms" };
   }
 
@@ -148,7 +149,7 @@ export async function getRoutePageData(slug: string): Promise<{
     }
   }
 
-  const demo = getDemoRouteBySlug(slug);
+  const demo = allowDemoFallback() ? getDemoRouteBySlug(slug) : undefined;
   if (demo) {
     return { route: demo, similar: getSimilarRoutes(slug), source: "demo" };
   }
@@ -164,7 +165,7 @@ export async function getPublishedRouteSlugs(): Promise<string[]> {
   }
 
   const hasCmsData = await cmsHasAnyRoutes();
-  if (hasCmsData) return [];
+  if (hasCmsData || !allowDemoFallback()) return [];
 
   return getAllDemoRoutes().map((r) => r.slug);
 }

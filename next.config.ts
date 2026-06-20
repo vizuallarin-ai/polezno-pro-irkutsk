@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         destination: "/business",
         permanent: true,
       },
+      {
+        source: "/excursions",
+        destination: "/map?filter=guided",
+        permanent: true,
+      },
     ];
   },
   experimental: {

@@ -1,6 +1,7 @@
 import type { Where } from "payload";
 import { PHOTO_PUBLISHED_WHERE } from "@/lib/cms-filters";
 import { DEMO_PHOTOS } from "@/lib/data/photos";
+import { allowDemoFallback } from "@/lib/demo-fallback";
 import { photoDocToPublicPhoto, type PhotoDoc } from "@/lib/photo-adapter";
 import type { PhotoFilters, PublicPhoto } from "@/types/photos";
 
@@ -104,9 +105,14 @@ export async function getPublishedPhotos(
     const photos = res.docs.map((doc) =>
       photoDocToPublicPhoto(doc as PhotoDoc)
     );
-    return photos.length > 0 ? photos : applyClientFilters(DEMO_PHOTOS, filters);
+    if (photos.length > 0) return photos;
+    return allowDemoFallback()
+      ? applyClientFilters(DEMO_PHOTOS, filters)
+      : [];
   } catch {
-    return applyClientFilters(DEMO_PHOTOS, filters);
+    return allowDemoFallback()
+      ? applyClientFilters(DEMO_PHOTOS, filters)
+      : [];
   }
 }
 
@@ -127,11 +133,15 @@ export async function getPhotoBySlug(slug: string): Promise<PublicPhoto | null> 
     });
     const doc = res.docs[0];
     if (!doc) {
-      return DEMO_PHOTOS.find((p) => p.slug === slug) ?? null;
+      return allowDemoFallback()
+        ? (DEMO_PHOTOS.find((p) => p.slug === slug) ?? null)
+        : null;
     }
     return photoDocToPublicPhoto(doc as PhotoDoc);
   } catch {
-    return DEMO_PHOTOS.find((p) => p.slug === slug) ?? null;
+    return allowDemoFallback()
+      ? (DEMO_PHOTOS.find((p) => p.slug === slug) ?? null)
+      : null;
   }
 }
 

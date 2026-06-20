@@ -1,4 +1,5 @@
 import { ARTICLE_PUBLISHED_WHERE } from "@/lib/cms-filters";
+import { allowDemoFallback } from "@/lib/demo-fallback";
 import {
   getDemoExploreMaterial,
   getDemoExploreMaterialsByCategory,
@@ -140,6 +141,8 @@ export async function getExploreMaterial(
     }
   }
 
+  if (!allowDemoFallback()) return null;
+
   const demo = getDemoExploreMaterial(slug);
   return demo ? mapDemoMaterial(demo) : null;
 }
@@ -172,9 +175,11 @@ export async function getExploreMaterialsByCategory(
     }
   }
 
-  for (const demo of getDemoExploreMaterialsByCategory(category)) {
-    if (!seen.has(demo.slug)) {
-      merged.push(mapDemoMaterial(demo));
+  if (allowDemoFallback()) {
+    for (const demo of getDemoExploreMaterialsByCategory(category)) {
+      if (!seen.has(demo.slug)) {
+        merged.push(mapDemoMaterial(demo));
+      }
     }
   }
 
@@ -225,10 +230,12 @@ export async function getFeaturedExploreMaterials(
     }
   }
 
-  for (const demo of getFeaturedDemoMaterials(limit)) {
-    if (!seen.has(demo.slug) && merged.length < limit) {
-      seen.add(demo.slug);
-      merged.push(mapDemoMaterial(demo));
+  if (allowDemoFallback()) {
+    for (const demo of getFeaturedDemoMaterials(limit)) {
+      if (!seen.has(demo.slug) && merged.length < limit) {
+        seen.add(demo.slug);
+        merged.push(mapDemoMaterial(demo));
+      }
     }
   }
 
