@@ -68,6 +68,7 @@ async function main() {
     collections: [Users],
     db: postgresAdapter({
       pool: { connectionString: process.env.DATABASE_URL },
+      push: false,
     }),
   });
 
