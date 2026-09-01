@@ -293,6 +293,9 @@ export function RouteMap(props: RouteMapProps) {
         mapRef.current = map;
         setMapError(null);
         setMapReady(true);
+        requestAnimationFrame(() => {
+          if (!cancelled) void drawRoutes();
+        });
       } catch (err) {
         if (!cancelled) {
           setMapError(yandexMapsErrorMessage(err));
@@ -312,8 +315,11 @@ export function RouteMap(props: RouteMapProps) {
   }, [clearLayers]);
 
   useEffect(() => {
-    if (!mapReady) return;
-    drawRoutes();
+    if (!mapReady || !mapRef.current) return;
+    const frame = requestAnimationFrame(() => {
+      void drawRoutes();
+    });
+    return () => cancelAnimationFrame(frame);
   }, [mapReady, drawRoutes]);
 
   if (mapError) {

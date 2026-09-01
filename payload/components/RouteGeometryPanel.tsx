@@ -104,7 +104,10 @@ export function RouteGeometryPanel() {
   }, [id]);
 
   useEffect(() => {
-    loadState();
+    const timer = window.setTimeout(() => {
+      void loadState();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadState]);
 
   const callAction = async (

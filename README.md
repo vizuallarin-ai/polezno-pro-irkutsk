@@ -1,6 +1,8 @@
 # Полезно про Иркутск — Premium Travel Platform
 
-Цифровая культурная платформа про Иркутск и Байкал. Next.js 15 + Payload CMS 3.
+Цифровая культурная платформа про Иркутск и Байкал. Next.js 16 + Payload CMS 3.
+
+**Модель продаж:** заявка через форму → ручное согласование с Алёной. Онлайн-оплата на сайте не используется.
 
 ---
 
@@ -14,8 +16,7 @@
 | Карта | Яндекс Maps JavaScript API 3.0 |
 | Деплой | Beget VPS, PM2, Nginx |
 | Анимации | Lenis, GSAP + ScrollTrigger, Framer Motion |
-| Оплата | Stripe Checkout (опционально) |
-| Формы | React Hook Form + Zod |
+| Заявки | React Hook Form + Zod → Payload `leads` (+ optional Resend) |
 
 Production: [irkportal.ru](https://irkportal.ru). Деплой — `docs/DEPLOY-BEGET.md`.
 
@@ -76,15 +77,15 @@ app/
     map/          # Интерактивная карта
     explore/      # Digital magazine
     events/       # Календарь событий
-    shop/         # Concept store
+    souvenirs/    # Сувениры (заявка, не оплата)
+    business/     # B2B
     about/        # О проекте
-    program/      # Конструктор тура
     contact/      # Контакты
   (payload)/      # Payload admin
   api/
     routes/       # API маршрутов для карты
     leads/        # Сохранение заявок
-    checkout/     # Stripe Checkout
+    health/       # Release identity (commit SHA)
     revalidate/   # ISR revalidation
 
 components/

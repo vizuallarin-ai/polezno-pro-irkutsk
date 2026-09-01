@@ -2,6 +2,16 @@ import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  env: {
+    GIT_COMMIT_SHA:
+      process.env.GIT_COMMIT_SHA ||
+      process.env.VERCEL_GIT_COMMIT_SHA ||
+      "",
+    BUILD_TIMESTAMP:
+      process.env.BUILD_TIMESTAMP ||
+      process.env.VERCEL_BUILD_COMPLETED_AT ||
+      "",
+  },
   async redirects() {
     return [
       {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -40,15 +40,11 @@ export function RoutesPageClient({
   mapRoutes,
 }: RoutesPageClientProps) {
   const searchParams = useSearchParams();
-  const [activeFilter, setActiveFilter] = useState<ExperienceFilterId>("all");
+  const filterParam = searchParams.get("filter");
+  const [userFilter, setUserFilter] = useState<ExperienceFilterId>("all");
+  const activeFilter: ExperienceFilterId =
+    filterParam && isExperienceFilterId(filterParam) ? filterParam : userFilter;
   const [activeRouteId, setActiveRouteId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const filterParam = searchParams.get("filter");
-    if (filterParam && isExperienceFilterId(filterParam)) {
-      setActiveFilter(filterParam);
-    }
-  }, [searchParams]);
 
   const filteredExperiences = useMemo(
     () => filterExperiences(experiences, activeFilter),
@@ -88,7 +84,7 @@ export function RoutesPageClient({
             <ExperienceFilters
               activeFilter={activeFilter}
               onFilterChange={(id) => {
-                setActiveFilter(id);
+                setUserFilter(id);
                 setActiveRouteId(null);
               }}
             />
@@ -111,7 +107,7 @@ export function RoutesPageClient({
                 </p>
                 <button
                   type="button"
-                  onClick={() => setActiveFilter("all")}
+                  onClick={() => setUserFilter("all")}
                   className="text-sm font-medium text-baikal hover:underline"
                 >
                   Показать все

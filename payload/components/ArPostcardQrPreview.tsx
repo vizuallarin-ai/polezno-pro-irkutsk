@@ -22,10 +22,7 @@ export default function ArPostcardQrPreview() {
     (slug ? `${SITE_BASE}/ar-postcards/${slug}` : null);
 
   useEffect(() => {
-    if (!targetUrl) {
-      setQrDataUrl(null);
-      return;
-    }
+    if (!targetUrl) return;
 
     let cancelled = false;
 
@@ -96,7 +93,7 @@ export default function ArPostcardQrPreview() {
       >
         QR для печати
       </p>
-      {qrDataUrl ? (
+      {targetUrl && qrDataUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={qrDataUrl}

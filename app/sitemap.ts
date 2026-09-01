@@ -11,6 +11,7 @@ import {
   PHOTO_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
+import { logSitemapCmsError } from "@/lib/sitemap-contract";
 
 const BASE_URL = getSiteUrl();
 
@@ -139,7 +140,8 @@ async function getCmsUrls() {
       ...photoUrls,
       ...arPostcardUrls,
     ];
-  } catch {
+  } catch (error) {
+    logSitemapCmsError(error);
     return [];
   }
 }

@@ -10,6 +10,10 @@ const run = (cmd) => {
   execSync(cmd, { stdio: "inherit", env: process.env });
 };
 
+const releaseSha = execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
+process.env.GIT_COMMIT_SHA = releaseSha;
+process.env.BUILD_TIMESTAMP = new Date().toISOString();
+
 try {
   run("git pull origin master");
   run("npm install --include=dev");

@@ -4,8 +4,13 @@ import { fileURLToPath } from "url";
 import pg from "pg";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const text = fs.readFileSync(path.join(root, ".env.local"), "utf8");
-const url = text.match(/^DATABASE_URL=(.+)$/m)[1].trim();
+const text = fs.readFileSync(path.join(root, ".env.local"), "utf8").replace(/^\uFEFF/, "");
+const match = text.match(/^DATABASE_URL=(.+)$/m);
+if (!match) {
+  console.error("ensure-db: DATABASE_URL not found in .env.local");
+  process.exit(1);
+}
+const url = match[1].trim().replace(/^["']|["']$/g, "");
 const u = new URL(url);
 const db = u.pathname.replace(/^\//, "");
 const adminUrl = new URL(url);
