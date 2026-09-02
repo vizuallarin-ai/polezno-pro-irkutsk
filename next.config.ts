@@ -55,6 +55,7 @@ const nextConfig: NextConfig = {
         "127.0.0.1:3000",
       ],
     },
+    ...(process.env.PHASE15_DB_POOL_MAX ? { cpus: 1 } : {}),
   },
   images: {
     remotePatterns: [

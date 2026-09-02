@@ -76,6 +76,9 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
+      ...(process.env.PHASE15_DB_POOL_MAX
+        ? { max: Number(process.env.PHASE15_DB_POOL_MAX) }
+        : {}),
     },
     // Sync schema in dev when collections change (fixes missing payload_locked_documents columns)
     push: process.env.NODE_ENV !== "production",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import type { MapRoute } from "@/types/map";
 import type { Route, RoutePoint } from "@/lib/data/routes";
 import { routeToMapRoute } from "@/lib/route-adapters";
@@ -60,12 +60,17 @@ export function RouteMap(props: RouteMapProps) {
   const onRouteSelect = mode === "overview" ? props.onRouteSelect : undefined;
   const onPointSelect = mode === "detail" ? props.onPointSelect : undefined;
 
-  const routes: MapRoute[] =
-    mode === "overview"
-      ? (mapRoutes ?? [])
-      : detailRoute
-        ? [routeToMapRoute(detailRoute)]
-        : [];
+  const routes: MapRoute[] = useMemo(
+    () =>
+      mode === "overview"
+        ? (mapRoutes ?? [])
+        : detailRoute
+          ? [routeToMapRoute(detailRoute)]
+          : [],
+    [mode, mapRoutes, detailRoute]
+  );
+
+  const drawRoutesRef = useRef<() => Promise<void>>(async () => {});
 
   const clearLayers = useCallback(() => {
     const map = mapRef.current;
@@ -259,6 +264,10 @@ export function RouteMap(props: RouteMapProps) {
   ]);
 
   useEffect(() => {
+    drawRoutesRef.current = drawRoutes;
+  }, [drawRoutes]);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function initMap() {
@@ -293,9 +302,6 @@ export function RouteMap(props: RouteMapProps) {
         mapRef.current = map;
         setMapError(null);
         setMapReady(true);
-        requestAnimationFrame(() => {
-          if (!cancelled) void drawRoutes();
-        });
       } catch (err) {
         if (!cancelled) {
           setMapError(yandexMapsErrorMessage(err));
@@ -316,11 +322,15 @@ export function RouteMap(props: RouteMapProps) {
 
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
+    let cancelled = false;
     const frame = requestAnimationFrame(() => {
-      void drawRoutes();
+      if (!cancelled) void drawRoutesRef.current();
     });
-    return () => cancelAnimationFrame(frame);
-  }, [mapReady, drawRoutes]);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, [mapReady, mode, routes, activeRouteId, activePointId, detailRoute]);
 
   if (mapError) {
     return (

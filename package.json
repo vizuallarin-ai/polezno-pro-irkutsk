@@ -26,6 +26,8 @@
     "check:prod": "node scripts/check-prod-health.mjs",
     "check:phase15": "npx tsx scripts/phase15-checks.ts",
     "build:release": "node scripts/build-release.mjs",
+    "build:release:isolated": "node scripts/build-release-isolated.mjs",
+    "deploy:preflight": "node scripts/deploy-prod-safe.mjs --preflight",
     "docs:admin-pdf": "node scripts/generate-doc-pdf.mjs docs/admin-guide.md",
     "docs:capabilities-pdf": "node scripts/generate-doc-pdf.mjs docs/site-capabilities.md",
     "docs:pdf": "npm run docs:admin-pdf && npm run docs:capabilities-pdf"

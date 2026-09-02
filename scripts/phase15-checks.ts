@@ -24,6 +24,13 @@ import {
   isDemoPublicMarker,
   isPublishedCommercialCandidate,
 } from "../lib/public-content-contract";
+import {
+  assertDisposableDatabaseUrl,
+  assertRuntimeDatabaseHandshake,
+  isAllowedSshTunnelDatabaseUrl,
+  isBlockedProductionDatabaseUrl,
+  parseDatabaseUrl,
+} from "../lib/build-database-guard";
 
 let passed = 0;
 let failed = 0;
@@ -160,6 +167,77 @@ test("lead payload validation preserves route context", () => {
   const unified = buildUnifiedLeadData(parsed, "route", "https://irkportal.ru/map/center-walk");
   assert.equal(unified.sourceType, "route");
   assert.equal(unified.routeSlug, "center-walk");
+});
+
+test("disposable database guard blocks production-like URLs", () => {
+  assert.throws(() =>
+    assertDisposableDatabaseUrl("postgresql://polezno_irkutsk@90.156.170.182:5432/polezno_irkutsk")
+  );
+  assert.equal(
+    isBlockedProductionDatabaseUrl("postgresql://build:pass@ep-disposable.neon.tech/neondb"),
+    false
+  );
+  assert.throws(() => assertDisposableDatabaseUrl(""));
+});
+
+test("SSH tunnel disposable URL contract", () => {
+  const tunnel =
+    "postgresql://phase15_builder_a1b2c3d4@127.0.0.1:55432/irkportal_phase15_pre_a1b2c3d4";
+  assert.equal(isAllowedSshTunnelDatabaseUrl(tunnel), true);
+  assert.doesNotThrow(() => assertDisposableDatabaseUrl(tunnel));
+  const parsed = parseDatabaseUrl(tunnel);
+  assert.equal(parsed.host, "127.0.0.1");
+  assert.equal(parsed.port, "55432");
+  assert.equal(parsed.username, "phase15_builder_a1b2c3d4");
+  assert.equal(parsed.database, "irkportal_phase15_pre_a1b2c3d4");
+  assert.throws(() =>
+    assertDisposableDatabaseUrl(
+      "postgresql://phase15_builder_x@127.0.0.1:5432/irkportal_phase15_pre_x"
+    )
+  );
+  assert.throws(() =>
+    assertDisposableDatabaseUrl(
+      "postgresql://phase15_builder_x@127.0.0.1:55432/polezno_irkutsk"
+    )
+  );
+  assert.throws(() =>
+    assertDisposableDatabaseUrl(
+      "postgresql://postgres@127.0.0.1:55432/irkportal_phase15_pre_x"
+    )
+  );
+});
+
+test("runtime database handshake rejects mismatched database", () => {
+  const url =
+    "postgresql://phase15_builder_a1b2c3d4@127.0.0.1:55432/irkportal_phase15_pre_a1b2c3d4";
+  assert.throws(() =>
+    assertRuntimeDatabaseHandshake(url, {
+      currentDatabase: "wrong_db",
+      currentUser: "phase15_builder_a1b2c3d4",
+      isSuperuser: false,
+    })
+  );
+  assert.throws(() =>
+    assertRuntimeDatabaseHandshake(url, {
+      currentDatabase: "irkportal_phase15_pre_a1b2c3d4",
+      currentUser: "wrong_user",
+      isSuperuser: false,
+    })
+  );
+  assert.throws(() =>
+    assertRuntimeDatabaseHandshake(url, {
+      currentDatabase: "irkportal_phase15_pre_a1b2c3d4",
+      currentUser: "phase15_builder_a1b2c3d4",
+      isSuperuser: true,
+    })
+  );
+  assert.doesNotThrow(() =>
+    assertRuntimeDatabaseHandshake(url, {
+      currentDatabase: "irkportal_phase15_pre_a1b2c3d4",
+      currentUser: "phase15_builder_a1b2c3d4",
+      isSuperuser: false,
+    })
+  );
 });
 
 console.log(`\nPhase 15 checks: ${passed} passed, ${failed} failed.`);
