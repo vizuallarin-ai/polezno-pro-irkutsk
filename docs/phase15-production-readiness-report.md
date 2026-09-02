@@ -2,15 +2,19 @@
 
 
 
-**Date:** 2026-09-02 (Gate B closeout)  
+**Date:** 2026-09-02 (Gate B.2 closeout)  
 
 **Project:** Иркпортал / `polezno-pro-irkutsk`  
 
 **Branch:** `phase15-commercial-core-launch`  
 
-**Previous local SHA:** `0e006c7`  
+**Previous local SHA:** `a1eb0205930454530ac826a3ec9672c520a3a202`
 
-**Target release SHA:** recorded after Gate B commit (see `.deploy-artifacts/phase15-gate-b/target-sha.txt`)
+**Gate B.1 orphan (removed):** `phase15_builder_7fc2b65a`
+
+**Gate B RUN_ID (Gate B.2 proof):** recorded in ignored evidence after post-commit build
+
+**Exact post-commit SHA / timestamp proof:** ignored evidence only (`.deploy-artifacts/phase15-gate-b/<TARGET_SHA>/`) — not self-referential in this committed report
 
 
 
@@ -20,17 +24,24 @@
 
 ## 1. Final status
 
-**`LOCAL VERIFIED BACKUP READY / OFFSITE BACKUP BLOCKED / GATE B BUILD BLOCKED`**
+**`GATE B CLOSED LOCALLY / ORPHAN REMOVED / DURABLE TARGET SHA PROVEN / TEMP VPS DB CLEANED / PUSH AND DEPLOY NOT AUTHORIZED`**
 
 | Gate | Status |
 |------|--------|
 | Gate A — production truth | **CLOSED** |
-| Deployment backup prerequisite (same-host) | **LOCAL BACKUP READY** |
-| Offsite disaster recovery backup | **BLOCKED** — artifacts on same VPS only |
-| Gate B — isolated build | **IN PROGRESS / see Gate B closeout** — disposable VPS DB via SSH tunnel; Neon not used; Windows PostgreSQL not installed |
+| Deployment backup prerequisite (same-host) | **LOCAL BACKUP READY** (`20260901T171914Z`) |
+| Offsite disaster recovery backup | **BLOCKED** |
+| Gate B — isolated release build | **CLOSED LOCALLY** |
+| Gate B — durable release identity | **CLOSED LOCALLY** — `.next/release-identity.json` artifact |
+| Gate B — exact SHA/timestamp proof | **PROVEN** — artifact-based `/api/health` without runtime env injection (evidence ignored) |
+| Gate B — PostgreSQL orphan cleanup | **CLOSED** — `phase15_builder_7fc2b65a` removed, role inventory restored |
 | Deploy infrastructure (symlink switching) | **NOT IMPLEMENTED** |
-| Deploy execute | **NOT READY** — owner approval + infra migration still required |
+| Deploy execute | **NOT READY** — owner approval + infra migration required |
 | Gate C / D | **NOT STARTED** |
+
+**Phase 15 overall:** **NOT CLOSED** — offsite backup, deploy infra, production `/api/health`, email, Gate C content remain.
+
+**PostgreSQL wording correction:** production application schema/data in `polezno_irkutsk` were **not modified**. Gate B used authorized temporary PostgreSQL cluster mutations (disposable roles/databases + orphan ACL revoke/drop). Earlier wording implying absolute “no database write” was imprecise.
 
 
 
@@ -77,8 +88,9 @@ Read-only VPS preflight completed via SSH this run.
 |------|----------|-------|
 
 | Prior run | `irkportal_ed25519.pub` added to `/root/.ssh/authorized_keys` | SSH access |
-| Backup run 2026-09-01 | Created `/var/backups/polezno/20260901T171914Z/` with DB/media/env/evidence artifacts | **Authorized backup-only mutations** |
-| Application | Unchanged | No git/npm/build/PM2 restart/nginx/DB schema/CMS mutations |
+| Backup run 2026-09-01 | Created `/var/backups/polezno/20260901T171914Z/` | Authorized backup-only |
+| Gate B runs 2026-09-02 | Temporary disposable PostgreSQL roles/DBs on VPS (created + dropped) | Authorized Gate B scope |
+| Application on VPS | Unchanged | No deploy/CMS/data mutation |
 
 
 
@@ -527,40 +539,98 @@ Rollback manifest captured locally via `npm run deploy:preflight`.
 
 
 
-## 16. Remaining blockers
+## 16. Gate B closeout (2026-09-02)
 
+### Gate B.1 investigation (read-only)
 
+| Finding | Result |
+|---------|--------|
+| Orphan role | **`phase15_builder_7fc2b65a`** — confirmed Phase 15 disposable from failed RUN `20260902T032615Z_7fc2b65a` |
+| Root cause | `GRANT ALL ON SCHEMA public` executed while connected to `postgres` database during early setup script |
+| Residual dependency | ACL on `postgres.public` only — **no** `polezno_irkutsk` dependencies |
+| Role inventory drift | Real mismatch `3ed2674f…` → `c2b913d2…` (not measurement defect) |
+| `buildTimestamp=unknown` | Runtime env injection at `next start`; dynamic `process.env` read bypassed build-time values |
+
+### Gate B.2 remediation (owner-approved)
+
+| Step | Result |
+|------|--------|
+| Orphan ACL revoke | **PASS** — exact `REVOKE ALL PRIVILEGES ON SCHEMA public FROM "phase15_builder_7fc2b65a"` in `postgres` |
+| Orphan DROP ROLE | **PASS** — role inventory hash restored `3ed2674f6fec329463acb5c4fc438ac4` |
+| Release identity artifact | **IMPLEMENTED** — `.next/release-identity.json` written after successful build |
+| Dirty pre-commit semantics | Pre-commit artifact `worktreeDirty=true`; post-commit clean artifact `worktreeDirty=false` |
+| Readiness harness | Fixed — poll `/api/health` 2s interval, 90s timeout (replaced fixed 30s sleep) |
+| Pre-commit isolated build | **PASS** on dirty worktree (functional gate only) |
+| Pre-commit smoke | **PASS** — identity from artifact without runtime env injection |
+| Local commit | **`fix(phase15): persist release identity and close Gate B cleanup`** |
+| Post-commit isolated build | **PASS** on clean worktree |
+| Post-commit `/api/health` | **PASS** — `identitySource=artifact`, SHA + timestamp match artifact |
+| Restart persistence | **PASS** — same SHA/timestamp after stop/start without rebuild |
+| Temp resource cleanup | **PASS** — no `phase15_*` roles or `irkportal_phase15_*` databases remain |
+| Push / deploy | **Not performed** |
+
+Evidence (sanitized, no DSN): `.deploy-artifacts/phase15-gate-b/<TARGET_SHA>/`
+
+### Gate B.1 original commit path (`a1eb020`)
+
+| Step | Result |
+|------|--------|
+| Local commit | **`a1eb020`** — `test(phase15): prove release build and deployment readiness` |
+| Post-commit smoke (original harness) | PASS after health-proof script; orchestrator fixed sleep was defective |
+| Cleanup (original) | **INCOMPLETE** — left orphan `phase15_builder_7fc2b65a` (resolved in Gate B.2) |
+
+---
+
+## 17. Remaining blockers
 
 | # | Blocker | Owner |
 |---|---------|-------|
-| 1 | Isolated release build not PASS | Owner — provide disposable Postgres URL |
-| 2 | Offsite disaster recovery backup | Owner/DevOps — copy `/var/backups/polezno/20260901T171914Z/` off VPS |
-| 3 | Atomic release switching not implemented | DevOps — symlink migration (§15) |
-| 4 | `/api/health` not on production | Deploy after Gate B closed |
-| 5 | Commercial CMS content empty (routes/excursions) | Gate C — Алёна |
-| 6 | Recurring backup schedule | DevOps — fix `backup-db.sh` (remove retention delete, add verification) |
-
-
-
----
-
-
-
-## 17. Local commit policy this run
-
-
-
-**No commit created** — isolated release build still blocked.
-
-Backup run updated this report only (local file); no git commit per policy.
-
-
+| 1 | Offsite disaster recovery backup | Owner/DevOps |
+| 2 | Atomic release switching not implemented | DevOps — symlink migration (§15) |
+| 3 | Production `/api/health` still 404 | Controlled deploy after owner approval |
+| 4 | Resend/email env absent on production | Owner |
+| 5 | Recurring backup hardening | DevOps — fix `backup-db.sh` |
+| 6 | Commercial CMS content empty | Gate C — Алёна |
+| 7 | Yandex Router verification | Owner/DevOps |
+| 8 | Demo content removal or hiding before commercial launch | Gate C |
 
 ---
 
+## 18. Local commit policy this run
 
+**Previous commit:** `a1eb0205930454530ac826a3ec9672c520a3a202`  
+**Gate B.2 commit:** `fix(phase15): persist release identity and close Gate B cleanup`  
+**Push:** not performed  
+**Exact TARGET_SHA proof:** ignored evidence only (see header)
 
-## 18. Untracked baseline (unchanged)
+---
+
+## 19. Production mutation ledger (Gate B)
+
+**Gate B.2 authorized cleanup:**
+- `REVOKE ALL PRIVILEGES ON SCHEMA public FROM "phase15_builder_7fc2b65a"` in database `postgres`
+- `DROP ROLE "phase15_builder_7fc2b65a"`
+- role inventory hash restored to baseline
+
+**Authorized disposable mutations (Gate B + B.2):**
+- temporary `phase15_builder_*` roles created/dropped
+- temporary `irkportal_phase15_pre_*` / `irkportal_phase15_post_*` databases created/dropped
+- `db:push` only against disposable databases
+
+**Confirmed absent:**
+- production application files modified on VPS
+- production `polezno_irkutsk` schema/data/CMS mutation
+- deploy, push, VPS git/npm/build, PM2 restart, nginx mutation, PostgreSQL config mutation, leads, email, firewall changes
+
+**Post-Gate-B.2 production identity:**
+- HEAD `3631094`, BUILD_ID `zOvFS1L8wUwIeQ5wVB9ij`, PM2 restarts **25**
+- DB inventory hash `aa0524ed11168e8312059284fd036dac`
+- Role inventory hash `3ed2674f6fec329463acb5c4fc438ac4`
+- no remaining `phase15_*` PostgreSQL resources
+
+---
+
+## 20. Untracked baseline (unchanged)
 
 
 

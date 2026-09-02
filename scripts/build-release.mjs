@@ -7,6 +7,7 @@ import { execSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeReleaseIdentityFromBuild } from "./write-release-identity.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -41,17 +42,24 @@ const sha = spawnSync("git", ["rev-parse", "HEAD"], {
   encoding: "utf8",
 }).stdout.trim();
 
+const buildTimestamp = new Date().toISOString();
 const buildEnv = {
   DATABASE_URL: databaseUrl,
   GIT_COMMIT_SHA: sha || "unknown",
-  BUILD_TIMESTAMP: new Date().toISOString(),
+  BUILD_TIMESTAMP: buildTimestamp,
   NODE_ENV: "production",
 };
 
 try {
   run("npm run build", buildEnv);
+  writeReleaseIdentityFromBuild({
+    root,
+    commitSha: buildEnv.GIT_COMMIT_SHA,
+    buildTimestamp,
+  });
   console.log("\n✓ Release build complete");
   console.log(`  GIT_COMMIT_SHA=${buildEnv.GIT_COMMIT_SHA}`);
+  console.log(`  BUILD_TIMESTAMP=${buildTimestamp}`);
 } catch {
   console.error(
     "\n✗ Release build failed — ensure local PostgreSQL is running and reachable from DATABASE_URL."

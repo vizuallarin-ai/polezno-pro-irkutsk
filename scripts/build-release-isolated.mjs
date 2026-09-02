@@ -8,6 +8,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { writeReleaseIdentityFromBuild } from "./write-release-identity.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const GIT = ["git", "-c", `safe.directory=${root}`];
@@ -63,6 +64,7 @@ const sha = spawnSync(GIT[0], [...GIT.slice(1), "rev-parse", "HEAD"], {
   cwd: root,
   encoding: "utf8",
 }).stdout.trim();
+const buildTimestamp = new Date().toISOString();
 
 const optionalSecrets = loadOptionalLocalSecrets();
 const payloadSecret =
@@ -75,10 +77,10 @@ const buildEnv = {
   PAYLOAD_SECRET: payloadSecret,
   DATABASE_URL: disposableUrl,
   GIT_COMMIT_SHA: sha || "unknown",
-  BUILD_TIMESTAMP: new Date().toISOString(),
+  BUILD_TIMESTAMP: buildTimestamp,
   NODE_ENV: "production",
   ALLOW_DEMO_FALLBACK: "false",
-  PHASE15_DB_POOL_MAX: "2",
+  PHASE15_DB_POOL_MAX: "4",
   NEXT_PRIVATE_BUILD_WORKER_COUNT: "1",
 };
 
@@ -93,8 +95,14 @@ try {
     env: buildEnv,
   });
   runBuild(buildEnv);
+  writeReleaseIdentityFromBuild({
+    root,
+    commitSha: buildEnv.GIT_COMMIT_SHA,
+    buildTimestamp,
+  });
   console.log("\n✓ Isolated release build complete");
   console.log(`  GIT_COMMIT_SHA=${buildEnv.GIT_COMMIT_SHA}`);
+  console.log(`  BUILD_TIMESTAMP=${buildTimestamp}`);
 } catch {
   console.error("\n✗ Isolated release build failed");
   process.exit(1);
