@@ -63,7 +63,7 @@ export const SiteSettings: GlobalConfig = {
       type: "textarea",
       label: "Hero — подзаголовок",
       defaultValue:
-        "Маршруты, экскурсии и подборка мест — от Алёны Ямщиковой, которая живёт в этом городе.",
+        "Иркпортал — авторский навигатор Алёны Ямщиковой по Иркутску: самостоятельные маршруты, экскурсии с гидом и программы для бизнеса.",
     },
     {
       name: "authorName",
@@ -93,8 +93,18 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Главный CTA",
       fields: [
-        { name: "label", type: "text", label: "Текст кнопки", defaultValue: "Спланировать" },
-        { name: "href", type: "text", label: "Ссылка", defaultValue: "/business" },
+        {
+          name: "label",
+          type: "text",
+          label: "Текст кнопки",
+          defaultValue: "Подобрать прогулку",
+        },
+        {
+          name: "href",
+          type: "text",
+          label: "Ссылка",
+          defaultValue: "/contact",
+        },
         { name: "description", type: "textarea", label: "Подзаголовок" },
       ],
     },
@@ -103,8 +113,18 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Вторичный CTA",
       fields: [
-        { name: "label", type: "text", label: "Текст кнопки", defaultValue: "Маршруты" },
-        { name: "href", type: "text", label: "Ссылка", defaultValue: "/map" },
+        {
+          name: "label",
+          type: "text",
+          label: "Текст кнопки",
+          defaultValue: "Для бизнеса",
+        },
+        {
+          name: "href",
+          type: "text",
+          label: "Ссылка",
+          defaultValue: "/business",
+        },
       ],
     },
     {

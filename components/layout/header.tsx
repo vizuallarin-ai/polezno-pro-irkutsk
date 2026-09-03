@@ -235,7 +235,7 @@ function ContactDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="hidden md:inline-flex h-9 items-center gap-1.5 px-4 lg:px-5 text-sm border border-border bg-background hover:bg-muted transition-colors duration-200"
+        className="hidden md:inline-flex min-h-[44px] h-11 items-center gap-1.5 px-4 lg:px-5 text-sm border border-border bg-background hover:bg-muted transition-colors duration-200"
         aria-expanded={open}
         aria-haspopup="true"
         {...leadAnalyticsProps("contact_click", {
@@ -472,7 +472,7 @@ export function Header({
 
               <Link
                 href={ctaHref}
-                className="hidden lg:inline-flex h-9 items-center px-4 lg:px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
+                className="hidden lg:inline-flex min-h-[44px] h-11 items-center px-4 lg:px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
               >
                 {ctaLabel}
               </Link>
@@ -552,7 +552,7 @@ export function Header({
               <Link
                 href={ctaHref}
                 onClick={() => setIsOpen(false)}
-                className="inline-flex h-12 items-center px-8 text-base bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-fit"
+                className="inline-flex min-h-[44px] h-12 items-center px-8 text-base bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-fit"
               >
                 {ctaLabel}
               </Link>

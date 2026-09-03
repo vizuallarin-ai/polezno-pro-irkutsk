@@ -81,6 +81,7 @@ import {
   routeContactHref,
   excursionContactHref,
   resolveExploreCommercialHref,
+  resolvePublicMainCta,
 } from "../lib/cta-constants";
 
 import { sanitizeAnalyticsParams } from "../lib/analytics-events";
@@ -1051,6 +1052,14 @@ test("CTA B2C and B2B destinations stay separated", () => {
   );
   assert.equal(routeContactHref("center").includes("slug=center"), true);
   assert.equal(excursionContactHref("flagship").includes("excursion"), true);
+  assert.deepEqual(
+    resolvePublicMainCta({ label: "Спланировать", href: "/business" }),
+    { label: CTA.b2cPrimary.label, href: CTA.b2cPrimary.href, description: undefined }
+  );
+  assert.equal(
+    resolvePublicMainCta({ label: "Подобрать прогулку", href: "/contact" }).href,
+    "/contact"
+  );
 });
 
 test("analytics sanitize strips PII keys and contact-like values", () => {

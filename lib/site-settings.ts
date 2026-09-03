@@ -6,6 +6,7 @@ import {
   DEFAULT_PRIVACY_POLICY_URL,
 } from "@/lib/leads-constants";
 import { BOOSTY_URL, TELEGRAM_URL } from "@/lib/site-links";
+import { resolvePublicMainCta } from "@/lib/cta-constants";
 
 export type SiteContacts = {
   phone?: string;
@@ -137,11 +138,11 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
       authorShortText: String(raw.authorShortText || DEFAULTS.authorShortText),
       authorPhotoUrl:
         mediaUrl(raw.authorPhoto) || mediaUrl(raw.founderPhoto),
-      mainCta: {
-        label: String(mainCtaRaw.label || DEFAULTS.mainCta.label),
-        href: String(mainCtaRaw.href || DEFAULTS.mainCta.href),
+      mainCta: resolvePublicMainCta({
+        label: mainCtaRaw.label || DEFAULTS.mainCta.label,
+        href: mainCtaRaw.href || DEFAULTS.mainCta.href,
         description: mainCtaRaw.description || DEFAULTS.mainCta.description,
-      },
+      }),
       secondaryCta: secondaryCtaRaw.label
         ? {
             label: String(secondaryCtaRaw.label),

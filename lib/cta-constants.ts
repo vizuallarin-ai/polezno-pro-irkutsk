@@ -93,6 +93,30 @@ export function excursionContactHref(
   });
 }
 
+/**
+ * Header/global primary CTA must stay B2C.
+ * If CMS still stores legacy /business mainCta, remap to canonical walk CTA.
+ */
+export function resolvePublicMainCta(input: {
+  label?: string | null;
+  href?: string | null;
+  description?: string | null;
+}): { label: string; href: string; description?: string } {
+  const href = (input.href ?? "").trim() || CTA.b2cPrimary.href;
+  if (href === "/business" || href.startsWith("/business?")) {
+    return {
+      label: CTA.b2cPrimary.label,
+      href: CTA.b2cPrimary.href,
+      description: input.description ?? undefined,
+    };
+  }
+  return {
+    label: (input.label ?? "").trim() || CTA.b2cPrimary.label,
+    href,
+    description: input.description ?? undefined,
+  };
+}
+
 export function articleContactHref(
   articleSlug: string,
   sourceBlock = "article"
