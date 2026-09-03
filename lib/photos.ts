@@ -1,5 +1,6 @@
 import type { Where } from "payload";
 import { PHOTO_PUBLISHED_WHERE } from "@/lib/cms-filters";
+import { isPublicPublishedReady } from "@/lib/content-readiness";
 import { DEMO_PHOTOS } from "@/lib/data/photos";
 import { allowDemoFallback } from "@/lib/demo-fallback";
 import { photoDocToPublicPhoto, type PhotoDoc } from "@/lib/photo-adapter";
@@ -13,6 +14,16 @@ async function getPayloadSafe() {
   } catch {
     return null;
   }
+}
+
+function isReadyPhoto(p: PublicPhoto): boolean {
+  return isPublicPublishedReady({
+    kind: "photo",
+    status: "published",
+    title: p.title,
+    slug: p.slug,
+    moderationStatus: "approved",
+  });
 }
 
 function applyClientFilters(photos: PublicPhoto[], filters?: PhotoFilters): PublicPhoto[] {
@@ -90,7 +101,9 @@ export async function getPublishedPhotos(
 ): Promise<PublicPhoto[]> {
   const payload = await getPayloadSafe();
   if (!payload) {
-    return applyClientFilters(DEMO_PHOTOS, filters);
+    return allowDemoFallback()
+      ? applyClientFilters(DEMO_PHOTOS, filters)
+      : [];
   }
 
   try {
@@ -102,9 +115,9 @@ export async function getPublishedPhotos(
       depth: 2,
     });
 
-    const photos = res.docs.map((doc) =>
-      photoDocToPublicPhoto(doc as PhotoDoc)
-    );
+    const photos = res.docs
+      .map((doc) => photoDocToPublicPhoto(doc as PhotoDoc))
+      .filter(isReadyPhoto);
     if (photos.length > 0) return photos;
     return allowDemoFallback()
       ? applyClientFilters(DEMO_PHOTOS, filters)
@@ -119,7 +132,9 @@ export async function getPublishedPhotos(
 export async function getPhotoBySlug(slug: string): Promise<PublicPhoto | null> {
   const payload = await getPayloadSafe();
   if (!payload) {
-    return DEMO_PHOTOS.find((p) => p.slug === slug) ?? null;
+    return allowDemoFallback()
+      ? (DEMO_PHOTOS.find((p) => p.slug === slug) ?? null)
+      : null;
   }
 
   try {
@@ -137,7 +152,8 @@ export async function getPhotoBySlug(slug: string): Promise<PublicPhoto | null> 
         ? (DEMO_PHOTOS.find((p) => p.slug === slug) ?? null)
         : null;
     }
-    return photoDocToPublicPhoto(doc as PhotoDoc);
+    const mapped = photoDocToPublicPhoto(doc as PhotoDoc);
+    return isReadyPhoto(mapped) ? mapped : null;
   } catch {
     return allowDemoFallback()
       ? (DEMO_PHOTOS.find((p) => p.slug === slug) ?? null)

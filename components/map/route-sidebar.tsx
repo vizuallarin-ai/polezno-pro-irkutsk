@@ -8,6 +8,7 @@ import { ROUTE_CATEGORY_LABELS } from "@/types/map";
 import { Badge } from "@/components/ui/badge";
 import { AudioPlayer } from "@/components/map/audio-player";
 import { cn } from "@/lib/utils";
+import { routeContactHref } from "@/lib/cta-constants";
 
 interface RouteSidebarProps {
   routes: MapRoute[];
@@ -250,7 +251,7 @@ export function RouteSidebar({
                   </a>
                 )}
                 <Link
-                  href="/business"
+                  href={routeContactHref(activeRoute.slug, "map-sidebar")}
                   className="inline-flex h-10 items-center justify-center gap-2 bg-foreground text-primary-foreground px-5 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
                 >
                   Забронировать экскурсию

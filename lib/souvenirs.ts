@@ -2,6 +2,7 @@ import {
   MAKER_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
+import { isPublicPublishedReady } from "@/lib/content-readiness";
 import {
   mapMakerRef,
   mapProductDoc,
@@ -15,6 +16,25 @@ export {
   SOUVENIR_CATEGORY_FILTERS,
 } from "@/lib/souvenirs-types";
 
+function isReadyProduct(p: SouvenirProduct): boolean {
+  return isPublicPublishedReady({
+    kind: "product",
+    status: "published",
+    title: p.title,
+    slug: p.slug,
+  });
+}
+
+function isReadyMaker(m: SouvenirMaker): boolean {
+  return isPublicPublishedReady({
+    kind: "maker",
+    status: "published",
+    title: m.title,
+    slug: m.slug,
+    placementStatus: "active",
+  });
+}
+
 export async function getPublishedProducts(limit = 100): Promise<SouvenirProduct[]> {
   if (!process.env.DATABASE_URL) return [];
   try {
@@ -27,7 +47,9 @@ export async function getPublishedProducts(limit = 100): Promise<SouvenirProduct
       sort: "-updatedAt",
       depth: 2,
     });
-    return result.docs.map((doc) => mapProductDoc(doc as Record<string, unknown>));
+    return result.docs
+      .map((doc) => mapProductDoc(doc as Record<string, unknown>))
+      .filter(isReadyProduct);
   } catch {
     return [];
   }
@@ -46,9 +68,9 @@ export async function getFeaturedProducts(limit = 4): Promise<SouvenirProduct[]>
     sort: "-updatedAt",
     depth: 1,
   });
-  const docs = result.docs.map((doc) =>
-    mapProductDoc(doc as Record<string, unknown>)
-  );
+  const docs = result.docs
+    .map((doc) => mapProductDoc(doc as Record<string, unknown>))
+    .filter(isReadyProduct);
   if (docs.length >= 2) return docs;
   const all = await getPublishedProducts(limit);
   return all.slice(0, limit);
@@ -67,7 +89,9 @@ export async function getProductBySlug(slug: string): Promise<SouvenirProduct | 
     depth: 2,
   });
   const doc = result.docs[0];
-  return doc ? mapProductDoc(doc as Record<string, unknown>) : null;
+  if (!doc) return null;
+  const mapped = mapProductDoc(doc as Record<string, unknown>);
+  return isReadyProduct(mapped) ? mapped : null;
 }
 
 export async function getPublishedMakers(limit = 50): Promise<SouvenirMaker[]> {
@@ -83,7 +107,8 @@ export async function getPublishedMakers(limit = 50): Promise<SouvenirMaker[]> {
   });
   return result.docs
     .map((doc) => mapMakerRef(doc))
-    .filter((m): m is SouvenirMaker => m !== null);
+    .filter((m): m is SouvenirMaker => m !== null)
+    .filter(isReadyMaker);
 }
 
 export async function getMakerBySlug(slug: string): Promise<SouvenirMaker | null> {

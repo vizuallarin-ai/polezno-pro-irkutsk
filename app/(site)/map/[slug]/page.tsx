@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RouteDetailClient } from "@/components/routes/route-detail-client";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
+import { RouteViewTracker } from "@/components/analytics/view-trackers";
 import { getExcursionForRoute } from "@/lib/excursions";
 import { getRoutePageData, getPublishedRouteSlugs } from "@/lib/routes";
 import { getProductsForRoute } from "@/lib/souvenirs";
@@ -38,6 +39,7 @@ export default async function RouteDetailPage({ params }: PageProps) {
 
   return (
     <>
+      <RouteViewTracker slug={route.slug} title={route.title} />
       <RouteDetailClient
         route={route}
         similar={similar}

@@ -19,6 +19,7 @@ import {
 } from "@/lib/ar-postcards";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { effectTypeLabel } from "@/lib/ar-postcard-adapter";
+import { CTA, buildContactHref } from "@/lib/cta-constants";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -218,10 +219,14 @@ export default async function ArPostcardDetailPage({ params }: PageProps) {
             </p>
           </div>
           <Link
-            href="/business"
+            href={buildContactHref({
+              intent: "ar",
+              slug: postcard.slug,
+              sourceBlock: "ar-postcard-detail",
+            })}
             className="inline-flex h-10 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 shrink-0"
           >
-            Для бизнеса и гостей
+            {CTA.b2cPrimary.label}
           </Link>
         </div>
       </div>

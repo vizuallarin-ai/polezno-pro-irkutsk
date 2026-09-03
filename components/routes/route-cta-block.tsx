@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Lock } from "lucide-react";
 import type { Route } from "@/lib/data/routes";
 import { BOOSTY_URL } from "@/lib/site-links";
+import { CTA, routeContactHref } from "@/lib/cta-constants";
 
 interface RouteCtaBlockProps {
   route: Route;
@@ -44,6 +45,8 @@ export function RouteHowToBlock() {
 }
 
 export function RouteSalesBlock({ route }: { route: Route }) {
+  const guidedHref = routeContactHref(route.slug, "route-sales");
+
   if (route.type === "free") {
     return (
       <div className="border border-border bg-card p-8 lg:p-10">
@@ -56,7 +59,7 @@ export function RouteSalesBlock({ route }: { route: Route }) {
           попадает в короткие описания точек.
         </p>
         <Link
-          href={`/business?route=${encodeURIComponent(route.slug)}&format=guided&taskType=route_program&sourceBlock=route-sales`}
+          href={guidedHref}
           className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
         >
           Пройти с гидом
@@ -90,7 +93,7 @@ export function RouteSalesBlock({ route }: { route: Route }) {
           <ArrowRight size={14} />
         </a>
         <Link
-          href={`/business?route=${encodeURIComponent(route.slug)}&format=guided&taskType=route_program&sourceBlock=route-sales`}
+          href={guidedHref}
           className="inline-flex h-11 items-center justify-center gap-2 border border-border px-6 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
         >
           Пройти с гидом
@@ -113,10 +116,10 @@ export function RouteIndexCtaBlock() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href="/business"
+              href={CTA.b2cPrimary.href}
               className="inline-flex h-11 items-center justify-center gap-2 bg-white text-baikal px-6 text-sm font-medium hover:bg-white/90 transition-colors duration-200"
             >
-              Собрать программу
+              {CTA.b2cPrimary.label}
               <ArrowRight size={14} />
             </Link>
             <Link

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { VisualEmptyState } from "@/components/visual/visual-empty-state";
-import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
 import { ArrowRight, MapPin, Package, Users } from "lucide-react";
 import { ProductCard } from "@/components/souvenirs/product-card";
 import { MakerCard } from "@/components/souvenirs/maker-card";
@@ -11,15 +10,16 @@ import {
 } from "@/lib/souvenirs";
 import { SOUVENIR_CATEGORY_FILTERS } from "@/lib/souvenirs";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
+import { CTA, buildContactHref } from "@/lib/cta-constants";
 
 export const metadata: Metadata = {
-  title: "Сувениры Иркутска — мерч, открытки, карты и местные мастера",
+  title: "Сувениры Иркутска — коллекция Иркпортала",
   description:
-    "Сувениры и мерч Иркпортала, открытки, карты-прогулки и каталог местных мастеров Иркутска. Заказ по заявке — без корзины и оплаты на сайте.",
+    "Коллекция сувениров и локальных изделий Иркпортала. Каталог открывается после публикации подтверждённых позиций.",
   openGraph: {
-    title: "Сувениры Иркутска — мерч, открытки, карты и местные мастера",
+    title: "Сувениры Иркутска — коллекция Иркпортала",
     description:
-      "Мерч Иркпортала и работы местных мастеров. Заказ по заявке.",
+      "Раздел сувениров сохраняется в архитектуре проекта и наполнится после публикации.",
   },
 };
 
@@ -43,21 +43,25 @@ export default async function SouvenirsPage() {
             <span className="font-serif italic">не из сувенирной лавки</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl leading-relaxed mb-8">
-            Открытки, карты-прогулки, постеры и мини-гиды от Иркпортала — плюс
-            каталог местных мастеров. Без корзины: оставляете заявку, мы
-            связываемся и уточняем детали.
+            Раздел сувениров и локальных изделий — часть архитектуры Иркпортала.
+            Когда появятся подтверждённые позиции, каталог откроется здесь
+            автоматически. Сейчас можно написать о коллекции без обещания
+            предзаказа несуществующих товаров.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="#catalog"
-              className="inline-flex h-11 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90"
+              href={buildContactHref({
+                intent: "souvenir",
+                sourceBlock: "souvenirs-hero",
+              })}
+              className="inline-flex h-11 min-h-[44px] items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90"
             >
-              Смотреть каталог
+              {CTA.souvenirPrelaunch.label}
               <ArrowRight size={14} />
             </Link>
             <Link
               href="/souvenirs/submit-maker"
-              className="inline-flex h-11 items-center gap-2 border border-border px-6 text-sm font-medium hover:bg-muted"
+              className="inline-flex h-11 min-h-[44px] items-center gap-2 border border-border px-6 text-sm font-medium hover:bg-muted"
             >
               Стать мастером в каталоге
             </Link>
@@ -122,11 +126,7 @@ export default async function SouvenirsPage() {
           </div>
 
           {products.length === 0 ? (
-            <VisualEmptyState
-              message={VISUAL_EMPTY_COPY.souvenirs}
-              actionLabel="Написать нам"
-              actionHref="/contact"
-            />
+            <PrelaunchState surface="souvenirs" compact />
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {products.map((product) => (
@@ -153,6 +153,7 @@ export default async function SouvenirsPage() {
         </section>
       )}
 
+      {products.length > 0 && (
       <section className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14 lg:py-16">
           <h2 className="text-2xl font-medium mb-8">Как заказать</h2>
@@ -187,6 +188,7 @@ export default async function SouvenirsPage() {
           </ol>
         </div>
       </section>
+      )}
 
       <section className="border-b border-border bg-muted/20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14 lg:py-16">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MapPin, Compass } from "lucide-react";
+import { resolveExploreCommercialHref } from "@/lib/cta-constants";
 
 type RouteRef = {
   slug: string;
@@ -110,12 +111,23 @@ export function RelatedExcursionBlock({
 export function ArticleCtaBlock({
   ctaText,
   ctaLink,
+  relatedRouteSlug,
+  relatedExcursionSlug,
+  articleSlug,
 }: {
   ctaText?: string | null;
   ctaLink?: string | null;
+  relatedRouteSlug?: string | null;
+  relatedExcursionSlug?: string | null;
+  articleSlug?: string | null;
 }) {
   const text = ctaText?.trim() || "Хотите увидеть это вживую?";
-  const href = ctaLink?.trim() || "/business";
+  const resolved = resolveExploreCommercialHref({
+    relatedRouteSlug,
+    relatedExcursionSlug,
+    articleSlug,
+    ctaLink,
+  });
 
   return (
     <div className="mt-16 bg-card p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -126,10 +138,10 @@ export function ArticleCtaBlock({
         </p>
       </div>
       <Link
-        href={href}
+        href={resolved.href}
         className="inline-flex h-10 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 shrink-0"
       >
-        Подробнее
+        {resolved.label}
         <ArrowRight size={14} />
       </Link>
     </div>

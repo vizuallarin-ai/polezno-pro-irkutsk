@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CTA } from "@/lib/cta-constants";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -43,7 +44,7 @@ const mainProducts = [
     subtitle: "Команды и делегации",
     description:
       "Тимбилдинги, приёмы гостей и программы под задачу — от идеи до сопровождения.",
-    href: "/business",
+    href: CTA.b2bPrimary.href,
     cta: "Обсудить программу",
     image: "/images/direction-tours.svg",
     tags: ["Корпоратив", "Делегации", "Под ключ"],

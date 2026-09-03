@@ -5,6 +5,7 @@ import { ArrowDown } from "lucide-react";
 import { CityImage } from "./city-image";
 import { cn } from "@/lib/utils";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
+import { trackAnalyticsEvent } from "@/lib/analytics-events";
 
 export type HeroCta = {
   label: string;
@@ -113,10 +114,21 @@ export function CityHeroVisual({
                 <Link
                   key={cta.href + cta.label}
                   href={cta.href}
+                  onClick={() => {
+                    const isBusiness = cta.href.startsWith("/business");
+                    trackAnalyticsEvent(
+                      isBusiness ? "business_cta_click" : "hero_cta_click",
+                      {
+                        sourceBlock: "hero",
+                        cta: cta.label,
+                        path: cta.href,
+                      }
+                    );
+                  }}
                   className={
                     cta.variant === "primary"
-                      ? "inline-flex h-12 items-center justify-center px-8 text-sm font-medium bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-colors duration-200 active:scale-[0.98]"
-                      : "inline-flex h-12 items-center justify-center px-8 text-sm font-medium border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-200 active:scale-[0.98]"
+                      ? "inline-flex h-12 min-h-[44px] items-center justify-center px-8 text-sm font-medium bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-colors duration-200 active:scale-[0.98]"
+                      : "inline-flex h-12 min-h-[44px] items-center justify-center px-8 text-sm font-medium border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-200 active:scale-[0.98]"
                   }
                 >
                   {cta.label}

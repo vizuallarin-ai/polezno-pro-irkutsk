@@ -11,9 +11,34 @@ import {
   PHOTO_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
+import { isSitemapEligible } from "@/lib/content-readiness";
 import { logSitemapCmsError } from "@/lib/sitemap-contract";
 
 const BASE_URL = getSiteUrl();
+
+function eligibleDoc(
+  kind:
+    | "article"
+    | "event"
+    | "product"
+    | "maker"
+    | "route"
+    | "excursion"
+    | "photo"
+    | "ar_postcard",
+  doc: { status?: string | null; _status?: string | null; title?: string | null; slug?: string | null; name?: string | null; moderationStatus?: string | null; placementStatus?: string | null; shortDescription?: string | null }
+): boolean {
+  return isSitemapEligible({
+    kind,
+    status: doc.status ?? "published",
+    _status: doc._status,
+    title: doc.title ?? doc.name,
+    slug: doc.slug,
+    shortDescription: doc.shortDescription,
+    moderationStatus: doc.moderationStatus,
+    placementStatus: doc.placementStatus,
+  });
+}
 
 async function getCmsUrls() {
   if (!process.env.DATABASE_URL) return [];
@@ -74,56 +99,91 @@ async function getCmsUrls() {
       }),
     ]);
 
-    const articleUrls = articles.docs.map((a) => ({
+    const articleUrls = articles.docs
+      .filter((a) =>
+        eligibleDoc("article", a as { status?: string; _status?: string; title?: string; slug?: string })
+      )
+      .map((a) => ({
       url: `${BASE_URL}/explore/${a.slug}`,
       lastModified: new Date(String(a.updatedAt)),
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
 
-    const eventUrls = events.docs.map((e) => ({
+    const eventUrls = events.docs
+      .filter((e) =>
+        eligibleDoc("event", e as { status?: string; title?: string; slug?: string })
+      )
+      .map((e) => ({
       url: `${BASE_URL}/events/${e.slug}`,
       lastModified: new Date(String(e.updatedAt)),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     }));
 
-    const productUrls = products.docs.map((p) => ({
+    const productUrls = products.docs
+      .filter((p) =>
+        eligibleDoc("product", p as { status?: string; title?: string; slug?: string })
+      )
+      .map((p) => ({
       url: `${BASE_URL}/souvenirs/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),
       changeFrequency: "monthly" as const,
       priority: 0.6,
     }));
 
-    const makerUrls = makersRes.docs.map((m) => ({
+    const makerUrls = makersRes.docs
+      .filter((m) =>
+        eligibleDoc("maker", {
+          ...(m as { status?: string; name?: string; slug?: string; placementStatus?: string }),
+          title: (m as { name?: string }).name,
+        })
+      )
+      .map((m) => ({
       url: `${BASE_URL}/souvenirs/makers/${m.slug}`,
       lastModified: new Date(String(m.updatedAt)),
       changeFrequency: "monthly" as const,
       priority: 0.55,
     }));
 
-    const cmsRouteUrls = routesRes.docs.map((r) => ({
+    const cmsRouteUrls = routesRes.docs
+      .filter((r) =>
+        eligibleDoc("route", r as { status?: string; title?: string; slug?: string })
+      )
+      .map((r) => ({
       url: `${BASE_URL}/map/${r.slug}`,
       lastModified: new Date(String(r.updatedAt)),
       changeFrequency: "monthly" as const,
       priority: 0.85,
     }));
 
-    const excursionUrls = excursionsRes.docs.map((e) => ({
+    const excursionUrls = excursionsRes.docs
+      .filter((e) =>
+        eligibleDoc("excursion", e as { status?: string; title?: string; slug?: string; shortDescription?: string })
+      )
+      .map((e) => ({
       url: `${BASE_URL}/excursions/${e.slug}`,
       lastModified: new Date(String(e.updatedAt)),
       changeFrequency: "weekly" as const,
       priority: 0.75,
     }));
 
-    const photoUrls = photosRes.docs.map((p) => ({
+    const photoUrls = photosRes.docs
+      .filter((p) =>
+        eligibleDoc("photo", p as { status?: string; title?: string; slug?: string; moderationStatus?: string })
+      )
+      .map((p) => ({
       url: `${BASE_URL}/explore/photos/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),
       changeFrequency: "monthly" as const,
       priority: 0.65,
     }));
 
-    const arPostcardUrls = arPostcardsRes.docs.map((p) => ({
+    const arPostcardUrls = arPostcardsRes.docs
+      .filter((p) =>
+        eligibleDoc("ar_postcard", p as { status?: string; title?: string; slug?: string })
+      )
+      .map((p) => ({
       url: `${BASE_URL}/ar-postcards/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),
       changeFrequency: "monthly" as const,

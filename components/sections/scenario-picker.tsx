@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { ArrowRight, Building2, BookOpen, Compass, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
+import { CTA } from "@/lib/cta-constants";
 
 const scenarios = [
   {
@@ -30,7 +31,7 @@ const scenarios = [
     id: "team",
     title: "Для команды",
     description: "Корпоративы, делегации и программы под вашу задачу.",
-    href: "/business",
+    href: CTA.b2bNav.href,
     cta: "Обсудить",
     icon: Building2,
   },

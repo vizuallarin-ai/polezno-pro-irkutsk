@@ -1,6 +1,7 @@
 import { DEMO_ROUTES, type Route } from "@/lib/data/routes";
 import { PUBLISHED_STATUS_WHERE } from "@/lib/cms-filters";
 import { allowDemoFallback } from "@/lib/demo-fallback";
+import { isPublicPublishedReady } from "@/lib/content-readiness";
 import {
   payloadRouteToRoute,
   isPublishedRoute,
@@ -57,6 +58,22 @@ async function cmsHasAnyRoutes(): Promise<boolean> {
   }
 }
 
+function isReadyRouteDoc(doc: {
+  status?: string;
+  title?: string;
+  slug?: string;
+}): boolean {
+  return (
+    isPublishedRoute(doc) &&
+    isPublicPublishedReady({
+      kind: "route",
+      status: doc.status,
+      title: doc.title,
+      slug: doc.slug,
+    })
+  );
+}
+
 async function fetchPublishedCmsRoutes(): Promise<Route[]> {
   const payload = await getPayloadSafe();
   if (!payload) return [];
@@ -71,14 +88,20 @@ async function fetchPublishedCmsRoutes(): Promise<Route[]> {
     });
 
     return result.docs
-      .filter((doc) => isPublishedRoute(doc as { status?: string }))
-      .map((doc) => payloadRouteToRoute(doc as Parameters<typeof payloadRouteToRoute>[0]));
+      .filter((doc) =>
+        isReadyRouteDoc(
+          doc as { status?: string; title?: string; slug?: string }
+        )
+      )
+      .map((doc) =>
+        payloadRouteToRoute(doc as Parameters<typeof payloadRouteToRoute>[0])
+      );
   } catch {
     return [];
   }
 }
 
-/** CMS-маршруты при наличии, иначе демо-данные. */
+/** CMS published-ready routes only. Demo fallback never in production public mode. */
 export async function getRoutesForMap(): Promise<{
   routes: Route[];
   mapRoutes: MapRoute[];
@@ -125,9 +148,15 @@ export async function getRoutePageData(slug: string): Promise<{
           depth: 2,
         });
 
-        const doc = result.docs[0] as Parameters<typeof payloadRouteToRoute>[0] | undefined;
+        const doc = result.docs[0] as
+          | (Parameters<typeof payloadRouteToRoute>[0] & {
+              status?: string;
+              title?: string;
+              slug?: string;
+            })
+          | undefined;
 
-        if (!doc || !isPublishedRoute(doc)) {
+        if (!doc || !isReadyRouteDoc(doc)) {
           const published = await fetchPublishedCmsRoutes();
           return {
             route: null,
@@ -157,7 +186,7 @@ export async function getRoutePageData(slug: string): Promise<{
   return { route: null, similar: getSimilarRoutes(slug), source: null };
 }
 
-/** Slugs для SSG: CMS → иначе demo (только если в CMS нет маршрутов вообще). */
+/** Slugs для SSG: CMS published-ready only. */
 export async function getPublishedRouteSlugs(): Promise<string[]> {
   const cmsRoutes = await fetchPublishedCmsRoutes();
   if (cmsRoutes.length > 0) {

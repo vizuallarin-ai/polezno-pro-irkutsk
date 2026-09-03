@@ -69,6 +69,28 @@ import {
 } from "../lib/public-content-contract";
 
 import {
+  classifyCommercialRecord,
+  isPublicPublishedReady,
+  mayRenderPublicDetail,
+  catalogReadiness,
+} from "../lib/content-readiness";
+
+import {
+  CTA,
+  buildContactHref,
+  routeContactHref,
+  excursionContactHref,
+  resolveExploreCommercialHref,
+} from "../lib/cta-constants";
+
+import { sanitizeAnalyticsParams } from "../lib/analytics-events";
+
+import {
+  assertAllowedDeployPath,
+  isSafeReleaseDirName,
+} from "../lib/deploy-path-safety";
+
+import {
 
   assertDisposableDatabaseUrl,
 
@@ -964,6 +986,103 @@ test("runtime database handshake rejects mismatched database", () => {
 
   );
 
+});
+
+
+
+test("content readiness fail-closed for demo and incomplete", () => {
+  assert.equal(
+    classifyCommercialRecord({
+      kind: "product",
+      status: "published",
+      title: "Демо-сувенир",
+      slug: "postcard",
+    }),
+    "demo"
+  );
+  assert.equal(
+    classifyCommercialRecord({
+      kind: "route",
+      status: "draft",
+      title: "Реальный маршрут",
+      slug: "real-walk",
+    }),
+    "incomplete"
+  );
+  assert.equal(
+    isPublicPublishedReady({
+      kind: "excursion",
+      status: "published",
+      title: "Авторская прогулка",
+      slug: "author-walk",
+      shortDescription: "Два часа по деревянному Иркутску",
+    }),
+    true
+  );
+  assert.equal(
+    mayRenderPublicDetail({
+      kind: "product",
+      status: "published",
+      title: "Демо",
+      slug: "demo-product",
+    }),
+    false
+  );
+  assert.equal(catalogReadiness(0), "empty");
+  assert.equal(catalogReadiness(2), "published-ready");
+});
+
+test("CTA B2C and B2B destinations stay separated", () => {
+  assert.equal(CTA.b2cPrimary.href, "/contact");
+  assert.equal(CTA.b2bPrimary.href, "/business");
+  assert.ok(buildContactHref({ intent: "walk" }).startsWith("/contact?"));
+  assert.ok(!buildContactHref({ intent: "walk" }).includes("@"));
+  assert.equal(
+    resolveExploreCommercialHref({ ctaLink: "/business", articleSlug: "wooden" })
+      .href.includes("/contact"),
+    true
+  );
+  assert.equal(
+    resolveExploreCommercialHref({
+      relatedRouteSlug: "wooden-irkutsk",
+      articleSlug: "wooden",
+    }).href,
+    "/map/wooden-irkutsk"
+  );
+  assert.equal(routeContactHref("center").includes("slug=center"), true);
+  assert.equal(excursionContactHref("flagship").includes("excursion"), true);
+});
+
+test("analytics sanitize strips PII keys and contact-like values", () => {
+  const clean = sanitizeAnalyticsParams({
+    sourceSlug: "center-walk",
+    email: "a@b.ru",
+    phone: "+79991234567",
+    name: "Иван",
+    message: "секрет",
+    cta: "Подобрать прогулку",
+  });
+  assert.equal(clean.sourceSlug, "center-walk");
+  assert.equal(clean.cta, "Подобрать прогулку");
+  assert.equal("email" in clean, false);
+  assert.equal("phone" in clean, false);
+  assert.equal("name" in clean, false);
+  assert.equal("message" in clean, false);
+});
+
+test("deploy path safety and exact SHA guard", () => {
+  const sha = "94c656409e1c3c43ff23e1d0c0616ee550859b5c";
+  assert.equal(isSafeReleaseDirName(sha), true);
+  assert.equal(isSafeReleaseDirName("94c6564"), false);
+  assert.equal(isSafeReleaseDirName("../etc"), false);
+  assert.doesNotThrow(() =>
+    assertAllowedDeployPath("/var/www/polezno-releases/" + sha, [
+      "/var/www/polezno-releases",
+    ])
+  );
+  assert.throws(() =>
+    assertAllowedDeployPath("/tmp/evil", ["/var/www/polezno-releases"])
+  );
 });
 
 

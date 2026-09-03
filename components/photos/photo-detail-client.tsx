@@ -16,6 +16,7 @@ import { PhotoCard } from "./photo-card";
 import { SouvenirsCtaLink } from "@/components/souvenirs/related-souvenirs-block";
 import { RelatedArPostcardBlock } from "@/components/ar-postcards/related-ar-postcard-block";
 import type { PublicArPostcard } from "@/types/ar-postcards";
+import { buildContactHref } from "@/lib/cta-constants";
 
 interface PhotoDetailClientProps {
   photo: PublicPhoto;
@@ -119,7 +120,11 @@ export function PhotoDetailClient({ photo, similar, arPostcard }: PhotoDetailCli
               Предложить фото
             </Link>
             <Link
-              href="/business"
+              href={buildContactHref({
+                intent: "photo",
+                slug: photo.slug,
+                sourceBlock: "photo-detail",
+              })}
               className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
             >
               Спланировать прогулку

@@ -21,7 +21,7 @@ import {
   type RequestType,
 } from "@/lib/leads-constants";
 import { FORM_STARTED_FIELD, HONEYPOT_FIELD } from "@/lib/lead-spam";
-import { trackLeadEvent } from "@/lib/analytics-events";
+import { trackLeadEvent, trackAnalyticsEvent } from "@/lib/analytics-events";
 
 export type LeadFormVariant =
   | "compact"
@@ -110,6 +110,13 @@ export function LeadForm({
 
   useEffect(() => {
     trackLeadEvent("lead_form_open", {
+      sourceType,
+      sourceTitle,
+      sourceSlug,
+      sourceBlock,
+      requestType: defaultRequestType,
+    });
+    trackAnalyticsEvent("lead_form_start", {
       sourceType,
       sourceTitle,
       sourceSlug,

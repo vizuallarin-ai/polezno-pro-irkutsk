@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { MapPin } from "lucide-react";
 import {
   filterExperiences,
   isExperienceFilterId,
@@ -15,6 +14,8 @@ import type { MapRoute } from "@/types/map";
 import { ExperienceFilters } from "@/components/experiences/experience-filters";
 import { ExperienceCard } from "@/components/experiences/experience-card";
 import { RouteIndexCtaBlock } from "@/components/routes/route-cta-block";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
+import { trackAnalyticsEvent } from "@/lib/analytics-events";
 
 const RouteMap = dynamic(
   () => import("@/components/routes/route-map").then((m) => m.RouteMap),
@@ -46,6 +47,8 @@ export function RoutesPageClient({
     filterParam && isExperienceFilterId(filterParam) ? filterParam : userFilter;
   const [activeRouteId, setActiveRouteId] = useState<string | null>(null);
 
+  const isCatalogEmpty = experiences.length === 0;
+
   const filteredExperiences = useMemo(
     () => filterExperiences(experiences, activeFilter),
     [experiences, activeFilter]
@@ -67,7 +70,58 @@ export function RoutesPageClient({
 
   const handleRouteSelect = (mapRoute: MapRoute | null) => {
     setActiveRouteId(mapRoute?.id ?? null);
+    trackAnalyticsEvent("map_interaction", {
+      sourceBlock: "map-overview",
+      filter: activeFilter,
+    });
   };
+
+  if (isCatalogEmpty) {
+    return (
+      <>
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
+            <h1 className="text-3xl lg:text-4xl font-medium text-foreground mb-3">
+              Маршруты и экскурсии
+            </h1>
+            <p className="text-muted-foreground text-sm lg:text-base max-w-2xl leading-relaxed">
+              Самостоятельные прогулки по Иркутску и авторские экскурсии с гидом.
+              Каталог откроется автоматически после редакционной публикации.
+            </p>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-6 lg:px-8 py-8 lg:py-12">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-10">
+            <div className="order-1">
+              <PrelaunchState surface="map" compact />
+            </div>
+            <div className="order-2 mt-8 lg:mt-0">
+              <div className="sticky top-20">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3 hidden lg:block">
+                  Карта города
+                </p>
+                <div className="h-[min(45vh,300px)] sm:h-[400px] lg:h-[min(70vh,560px)] border border-border overflow-hidden">
+                  <RouteMap
+                    mode="overview"
+                    mapRoutes={[]}
+                    activeRouteId={null}
+                    onRouteSelect={() =>
+                      trackAnalyticsEvent("map_interaction", {
+                        sourceBlock: "map-prelaunch",
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <RouteIndexCtaBlock />
+      </>
+    );
+  }
 
   return (
     <>
@@ -86,6 +140,10 @@ export function RoutesPageClient({
               onFilterChange={(id) => {
                 setUserFilter(id);
                 setActiveRouteId(null);
+                trackAnalyticsEvent("map_interaction", {
+                  sourceBlock: "map-filters",
+                  filter: id,
+                });
               }}
             />
           </div>
@@ -97,9 +155,8 @@ export function RoutesPageClient({
           <div className="order-1 lg:order-1">
             {filteredExperiences.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-6 border border-dashed border-border text-center">
-                <MapPin className="text-muted-foreground mb-4" size={28} />
                 <p className="text-base font-medium text-foreground mb-2">
-                  Ничего не найдено
+                  Ничего не найдено по фильтру
                 </p>
                 <p className="text-sm text-muted-foreground mb-6 max-w-sm">
                   Попробуйте другой фильтр или посмотрите все маршруты и
@@ -108,7 +165,7 @@ export function RoutesPageClient({
                 <button
                   type="button"
                   onClick={() => setUserFilter("all")}
-                  className="text-sm font-medium text-baikal hover:underline"
+                  className="text-sm font-medium text-baikal hover:underline min-h-[44px]"
                 >
                   Показать все
                 </button>
@@ -189,7 +246,7 @@ export function RoutesPageClient({
             </p>
             <Link
               href="/map?filter=guided"
-              className="inline-flex h-11 items-center justify-center gap-2 border border-border bg-background px-6 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
+              className="inline-flex h-11 min-h-[44px] items-center justify-center gap-2 border border-border bg-background px-6 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
             >
               Смотреть экскурсии с гидом
             </Link>

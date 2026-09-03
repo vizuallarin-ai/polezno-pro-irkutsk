@@ -6,12 +6,21 @@ import { ArrowRight } from "lucide-react";
 import type { PublicPhoto } from "@/types/photos";
 import { PhotoFiltersBar } from "./photo-filters";
 import { PhotoGallery } from "./photo-gallery";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
+import { buildContactHref, CTA } from "@/lib/cta-constants";
 
 interface PhotosPageClientProps {
   photos: PublicPhoto[];
+  /** True when archive has zero published-ready photos (ignore filter miss). */
+  catalogEmpty?: boolean;
 }
 
-export function PhotosPageClient({ photos }: PhotosPageClientProps) {
+export function PhotosPageClient({
+  photos,
+  catalogEmpty = false,
+}: PhotosPageClientProps) {
+  const showPrelaunch = catalogEmpty || photos.length === 0;
+
   return (
     <>
       <section className="border-b border-border bg-background pt-24 lg:pt-28">
@@ -26,38 +35,44 @@ export function PhotosPageClient({ photos }: PhotosPageClientProps) {
             Старые и современные фотографии города: улицы, фасады, дворы, детали
             и места, по которым можно увидеть, как менялся Иркутск.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/explore/photos/submit"
-              className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors"
-            >
-              Предложить фото
-              <ArrowRight size={14} />
-            </Link>
-            <Link
-              href="/explore/photos?type=old"
-              className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
-            >
-              Смотреть старые фото
-            </Link>
-            <Link
-              href="/explore/photos?type=modern"
-              className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
-            >
-              Смотреть современные фото
-            </Link>
-          </div>
+          {!catalogEmpty && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/explore/photos/submit"
+                className="inline-flex h-11 min-h-[44px] items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors"
+              >
+                Предложить фото
+                <ArrowRight size={14} />
+              </Link>
+              <Link
+                href="/explore"
+                className="inline-flex h-11 min-h-[44px] items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
+              >
+                {CTA.mapExplore.label}
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
-        <Suspense fallback={<div className="h-20" />}>
-          <PhotoFiltersBar />
-        </Suspense>
-        <div className="mt-8">
-          <PhotoGallery photos={photos} />
-        </div>
-      </section>
+      {catalogEmpty ? (
+        <section className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
+          <PrelaunchState surface="photos" />
+        </section>
+      ) : (
+        <section className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
+          <Suspense fallback={<div className="h-20" />}>
+            <PhotoFiltersBar />
+          </Suspense>
+          <div className="mt-8">
+            {showPrelaunch && !catalogEmpty ? (
+              <PrelaunchState surface="photos" compact />
+            ) : (
+              <PhotoGallery photos={photos} />
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="border-t border-border bg-card">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -70,7 +85,7 @@ export function PhotosPageClient({ photos }: PhotosPageClientProps) {
           </div>
           <Link
             href="/explore/photos/submit"
-            className="inline-flex h-11 items-center gap-2 border border-border px-6 text-sm font-medium hover:bg-muted transition-colors shrink-0"
+            className="inline-flex h-11 min-h-[44px] items-center gap-2 border border-border px-6 text-sm font-medium hover:bg-muted transition-colors shrink-0"
           >
             Предложить фото
             <ArrowRight size={14} />
@@ -83,21 +98,24 @@ export function PhotosPageClient({ photos }: PhotosPageClientProps) {
           <div>
             <h2 className="text-xl font-medium mb-2">Хотите увидеть город вживую?</h2>
             <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
-              Перейдите к маршрутам или спланируйте визит с гидом.
+              Перейдите к материалам о городе или напишите — подберём прогулку.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 shrink-0">
             <Link
-              href="/map"
-              className="inline-flex h-11 items-center justify-center bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors"
+              href="/explore"
+              className="inline-flex h-11 min-h-[44px] items-center justify-center bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors"
             >
-              К маршрутам
+              {CTA.mapExplore.label}
             </Link>
             <Link
-              href="/business"
-              className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
+              href={buildContactHref({
+                intent: "photo",
+                sourceBlock: "photos-page",
+              })}
+              className="inline-flex h-11 min-h-[44px] items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
             >
-              Спланировать визит
+              {CTA.b2cPrimary.label}
             </Link>
           </div>
         </div>

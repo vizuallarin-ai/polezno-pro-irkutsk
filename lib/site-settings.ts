@@ -56,8 +56,7 @@ export type SiteSettingsData = {
 const DEFAULTS: SiteSettingsData = {
   projectName: BRAND.projectName,
   projectDescriptor: BRAND.projectDescriptor,
-  description:
-    "Авторский навигатор по Иркутску: маршруты, экскурсии и материалы о городе без штампов.",
+  description: BRAND.projectDescriptor,
   city: "Иркутск",
   heroTitle: BRAND.slogan,
   heroSubtitle: BRAND.heroSubtitle,
@@ -66,11 +65,11 @@ const DEFAULTS: SiteSettingsData = {
   authorRole: BRAND.authorRole,
   authorShortText: BRAND.authorShortText,
   mainCta: {
-    label: "Спланировать визит",
-    href: "/business",
-    description: "Экскурсии и программы под ваш визит",
+    label: "Подобрать прогулку",
+    href: "/contact",
+    description: "Подберём самостоятельный маршрут или формат с гидом",
   },
-  secondaryCta: { label: "Маршруты", href: "/map" },
+  secondaryCta: { label: "Для бизнеса", href: "/business" },
   contact: {
     phone: "+7 (3952) 000-00-00",
     email: "info@irkportal.ru",
@@ -92,8 +91,7 @@ const DEFAULTS: SiteSettingsData = {
   footerTagline: "Авторский навигатор по Иркутску",
   socialDisclaimerText: DEFAULT_SOCIAL_DISCLAIMER,
   legacyProjectName: BRAND.legacyName,
-  metaDescription:
-    "Иркпортал — авторский навигатор по Иркутску: маршруты, экскурсии и материалы о городе без штампов.",
+  metaDescription: BRAND.projectDescriptor,
 };
 
 function mediaUrl(field: unknown): string | undefined {

@@ -1,10 +1,11 @@
 import type { NavItem } from "@/types/navigation";
 import { BOOSTY_URL } from "@/lib/site-links";
+import { CTA } from "@/lib/cta-constants";
 
 export const PRIMARY_NAV_LINKS: NavItem[] = [
   { href: "/map", label: "Маршруты" },
   { href: "/explore", label: "Исследовать" },
-  { href: "/business", label: "Для бизнеса" },
+  { href: CTA.b2bNav.href, label: CTA.b2bNav.label },
   { href: "/about", label: "О проекте" },
   { href: "/contact", label: "Контакты" },
 ];
@@ -20,4 +21,8 @@ export const MORE_NAV_LINKS: NavItem[] = [
 /** @deprecated Use PRIMARY_NAV_LINKS — kept for CMS fallback compatibility */
 export const DEFAULT_NAV_LINKS = PRIMARY_NAV_LINKS;
 
-export const DEFAULT_CTA = { label: "Спланировать визит", href: "/business" };
+/** Header primary CTA — B2C walk selection, not B2B */
+export const DEFAULT_CTA = {
+  label: CTA.b2cPrimary.label,
+  href: CTA.b2cPrimary.href,
+};

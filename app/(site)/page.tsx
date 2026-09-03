@@ -8,11 +8,11 @@ import { FinalCta } from "@/components/sections/final-cta";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { PhotosPreviewSection } from "@/components/sections/photos-preview";
 import { SouvenirsPreviewSection } from "@/components/sections/souvenirs-preview";
-import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getFeaturedPhotos } from "@/lib/photos";
 import { CURATED_FALLBACKS } from "@/lib/visual-assets";
 import { formatPhotoPlaceLabel, formatPhotoYearLabel } from "@/lib/photo-adapter";
+import { BRAND } from "@/lib/brand-constants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -81,9 +81,9 @@ export default async function HomePage() {
   return (
     <>
       <HeroCinematic
-        badge={settings.heroBadge}
-        title={settings.heroTitle}
-        subtitle={settings.heroSubtitle}
+        badge={settings.heroBadge || BRAND.heroBadge}
+        title={settings.heroTitle || BRAND.slogan}
+        subtitle={settings.heroSubtitle || BRAND.heroSubtitle}
         imageSrc={heroPhoto?.imageUrl || CURATED_FALLBACKS.hero}
         imageAlt={heroPhoto?.imageAlt || "Иркутск — вид города"}
         caption={heroPhoto?.title}
@@ -91,15 +91,14 @@ export default async function HomePage() {
         year={heroPhoto ? formatPhotoYearLabel(heroPhoto) : undefined}
         place={heroPhoto ? formatPhotoPlaceLabel(heroPhoto) : undefined}
         ctas={[
-          { label: "Смотреть маршруты", href: "/map", variant: "primary" },
           {
-            label: settings.mainCta.label,
-            href: settings.mainCta.href,
-            variant: "secondary",
+            label: "Подобрать прогулку",
+            href: "/contact",
+            variant: "primary",
           },
           {
-            label: "Узнать о городе",
-            href: CITY_HISTORY_HREF,
+            label: "Для бизнеса",
+            href: "/business",
             variant: "secondary",
           },
         ]}

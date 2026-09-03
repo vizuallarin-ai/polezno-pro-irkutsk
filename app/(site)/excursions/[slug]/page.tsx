@@ -13,6 +13,8 @@ import {
 } from "@/lib/excursions";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
+import { CTA, excursionContactHref } from "@/lib/cta-constants";
+import { ExcursionViewTracker } from "@/components/analytics/view-trackers";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -51,6 +53,7 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
 
   return (
     <article className="pt-24">
+      <ExcursionViewTracker slug={excursion.slug} title={excursion.title} />
       <div className="mx-auto max-w-3xl px-6 lg:px-8 py-12">
         <Link
           href="/map?filter=guided"
@@ -152,10 +155,10 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
         ))}
 
         <Link
-          href={`/business?excursion=${excursion.slug}&format=guided&sourceTitle=${encodeURIComponent(excursion.title)}&taskType=city_program&sourceBlock=excursion`}
+          href={excursionContactHref(excursion.slug, "excursion")}
           className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 mt-8"
         >
-          Обсудить дату
+          {CTA.excursionRequest.label}
           <ArrowRight size={14} />
         </Link>
       </div>

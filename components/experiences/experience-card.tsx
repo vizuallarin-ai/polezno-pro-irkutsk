@@ -4,6 +4,11 @@ import { Clock, MapPin, ArrowRight } from "lucide-react";
 import type { ExperienceItem } from "@/lib/data/experiences";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  buildContactHref,
+  excursionContactHref,
+  routeContactHref,
+} from "@/lib/cta-constants";
 
 function formatDuration(minutes: number): string {
   if (minutes >= 240) return "полдня";
@@ -14,15 +19,29 @@ function formatDuration(minutes: number): string {
   return `${m} мин`;
 }
 
+/** Guided (B2C) → /contact; corporate (B2B) → /business. */
 function programHref(item: ExperienceItem, format?: string): string {
-  const params = new URLSearchParams();
-  if (item.routeSlug) params.set("route", item.routeSlug);
-  if (item.excursionSlug) params.set("excursion", item.excursionSlug);
-  if (format) params.set("format", format);
-  if (format === "corporate") params.set("taskType", "route_program");
-  params.set("sourceBlock", "experience-card");
-  const qs = params.toString();
-  return qs ? `/business?${qs}#business-form` : "/business";
+  if (format === "corporate") {
+    const params = new URLSearchParams();
+    if (item.routeSlug) params.set("route", item.routeSlug);
+    if (item.excursionSlug) params.set("excursion", item.excursionSlug);
+    params.set("format", "corporate");
+    params.set("taskType", "route_program");
+    params.set("sourceBlock", "experience-card");
+    const qs = params.toString();
+    return qs ? `/business?${qs}#business-form` : "/business";
+  }
+
+  if (item.excursionSlug) {
+    return excursionContactHref(item.excursionSlug, "experience-card");
+  }
+  if (item.routeSlug) {
+    return routeContactHref(item.routeSlug, "experience-card");
+  }
+  return buildContactHref({
+    intent: "walk",
+    sourceBlock: "experience-card",
+  });
 }
 
 interface ExperienceCardProps {
@@ -108,10 +127,7 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
           </Link>
           {(experience.isGuidedAvailable || experience.kind === "excursion") && (
             <Link
-              href={programHref(
-                experience,
-                experience.isCorporateAvailable ? "corporate" : "guided"
-              )}
+              href={programHref(experience, "guided")}
               className="inline-flex h-10 items-center justify-center border border-border px-4 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
             >
               {guidedLabel}

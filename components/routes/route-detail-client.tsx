@@ -52,6 +52,7 @@ function formatDuration(minutes: number): string {
 
 import type { SouvenirProduct } from "@/lib/souvenirs-types";
 import { RelatedSouvenirsBlock } from "@/components/souvenirs/related-souvenirs-block";
+import { routeContactHref } from "@/lib/cta-constants";
 
 interface RouteDetailClientProps {
   route: Route;
@@ -64,14 +65,16 @@ function programHref(
   route: Route,
   format: "self-guided" | "guided" | "corporate"
 ): string {
-  const params = new URLSearchParams({
-    route: route.slug,
-    format,
-    sourceTitle: route.title,
-    sourceBlock: "route-detail",
-    taskType: format === "corporate" ? "route_program" : "city_program",
-  });
-  return `/business?${params.toString()}#business-form`;
+  if (format === "corporate") {
+    const params = new URLSearchParams({
+      route: route.slug,
+      format,
+      sourceBlock: "route-detail",
+      taskType: "route_program",
+    });
+    return `/business?${params.toString()}#business-form`;
+  }
+  return routeContactHref(route.slug, "route-detail");
 }
 
 function RoutePassageBlock({

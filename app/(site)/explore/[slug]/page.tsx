@@ -241,7 +241,13 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           category={article.category}
         />
 
-        <ArticleCtaBlock />
+        <ArticleCtaBlock
+          articleSlug={String(article.slug)}
+          relatedRouteSlug={article.relatedRoute?.slug ?? article.relatedRouteSlug}
+          relatedExcursionSlug={article.relatedExcursionSlug}
+          ctaText={article.ctaText}
+          ctaLink={article.ctaLink}
+        />
       </div>
 
       <ContactCtaSection

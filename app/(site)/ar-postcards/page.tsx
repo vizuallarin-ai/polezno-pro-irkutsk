@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, MapPin, QrCode, Sparkles } from "lucide-react";
 import { CityHeroVisual } from "@/components/visual/city-hero-visual";
-import { VisualEmptyState } from "@/components/visual/visual-empty-state";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
 import { PostcardCard } from "@/components/ar-postcards/postcard-card";
 import { getFeaturedArPostcards, getPublishedArPostcards } from "@/lib/ar-postcards";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
+import { CTA, buildContactHref } from "@/lib/cta-constants";
 
 export const metadata: Metadata = {
   title: "Ожившие открытки Иркутска — AR-открытки и цифровые истории",
@@ -117,11 +118,7 @@ export default async function ArPostcardsLandingPage() {
           </div>
 
           {grid.length === 0 ? (
-            <VisualEmptyState
-              message="Первые ожившие открытки скоро появятся в каталоге."
-              actionLabel="Сувениры"
-              actionHref="/souvenirs"
-            />
+            <PrelaunchState surface="ar" compact />
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
               {grid.map((postcard) => (
@@ -174,17 +171,20 @@ export default async function ArPostcardsLandingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14 lg:py-16">
           <div className="border border-border bg-muted/30 p-8 lg:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-xl font-medium mb-2">Предзаказ открыток</h2>
+              <h2 className="text-xl font-medium mb-2">Написать о направлении</h2>
               <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
-                Напишите, какие сюжеты интересны — сообщим о старте печати и
-                доставке по Иркутску и России.
+                Концепция AR-открыток сохраняется в проекте. Сообщим о публикации
+                готовых материалов — без обещания предзаказа несуществующих SKU.
               </p>
             </div>
             <Link
-              href="/contact"
-              className="inline-flex h-11 items-center justify-center bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 shrink-0"
+              href={buildContactHref({
+                intent: "ar",
+                sourceBlock: "ar-index",
+              })}
+              className="inline-flex h-11 min-h-[44px] items-center justify-center bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 shrink-0"
             >
-              Связаться
+              {CTA.prelaunchContact.label}
             </Link>
           </div>
         </div>

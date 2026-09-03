@@ -1,4 +1,5 @@
 import { AR_POSTCARD_PUBLISHED_WHERE } from "@/lib/cms-filters";
+import { isPublicPublishedReady } from "@/lib/content-readiness";
 import { mapArPostcardDoc } from "@/lib/ar-postcard-adapter";
 import type { PublicArPostcard } from "@/types/ar-postcards";
 
@@ -10,6 +11,15 @@ async function getPayloadSafe() {
   } catch {
     return null;
   }
+}
+
+function isReadyAr(p: PublicArPostcard): boolean {
+  return isPublicPublishedReady({
+    kind: "ar_postcard",
+    status: "published",
+    title: p.title,
+    slug: p.slug,
+  });
 }
 
 export async function getPublishedArPostcards(
@@ -27,9 +37,9 @@ export async function getPublishedArPostcards(
       depth: 2,
     });
 
-    return result.docs.map((doc) =>
-      mapArPostcardDoc(doc as Record<string, unknown>)
-    );
+    return result.docs
+      .map((doc) => mapArPostcardDoc(doc as Record<string, unknown>))
+      .filter(isReadyAr);
   } catch {
     return [];
   }
@@ -55,9 +65,9 @@ export async function getFeaturedArPostcards(
       depth: 2,
     });
 
-    const docs = result.docs.map((doc) =>
-      mapArPostcardDoc(doc as Record<string, unknown>)
-    );
+    const docs = result.docs
+      .map((doc) => mapArPostcardDoc(doc as Record<string, unknown>))
+      .filter(isReadyAr);
     if (docs.length >= 2) return docs;
     const all = await getPublishedArPostcards(limit);
     return all.slice(0, limit);
@@ -83,27 +93,17 @@ export async function getArPostcardBySlug(
     });
 
     const doc = result.docs[0];
-    return doc ? mapArPostcardDoc(doc as Record<string, unknown>) : null;
+    if (!doc) return null;
+    const mapped = mapArPostcardDoc(doc as Record<string, unknown>);
+    return isReadyAr(mapped) ? mapped : null;
   } catch {
     return null;
   }
 }
 
 export async function getPublishedArPostcardSlugs(): Promise<string[]> {
-  const payload = await getPayloadSafe();
-  if (!payload) return [];
-
-  try {
-    const result = await payload.find({
-      collection: "ar-postcards",
-      where: AR_POSTCARD_PUBLISHED_WHERE,
-      limit: 1000,
-      depth: 0,
-    });
-    return result.docs.map((doc) => String(doc.slug));
-  } catch {
-    return [];
-  }
+  const all = await getPublishedArPostcards(1000);
+  return all.map((p) => p.slug);
 }
 
 export async function getArPostcardForProduct(

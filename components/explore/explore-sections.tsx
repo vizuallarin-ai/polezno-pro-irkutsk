@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getFeaturedPhotos } from "@/lib/photos";
 import { EditorialPhotoGrid } from "@/components/visual/editorial-photo-grid";
+import { buildContactHref } from "@/lib/cta-constants";
 
 export async function ExplorePhotoSection() {
   const photos = await getFeaturedPhotos(3);
@@ -93,7 +94,10 @@ export function ExploreBottomCta() {
         </p>
       </div>
       <Link
-        href="/business"
+        href={buildContactHref({
+          intent: "explore",
+          sourceBlock: "explore-bottom",
+        })}
         className="inline-flex h-11 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors shrink-0"
       >
         Спланировать визит

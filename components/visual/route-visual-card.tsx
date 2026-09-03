@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { CityImage } from "./city-image";
 import { resolveVisualImage } from "@/lib/visual-assets";
 import { cn } from "@/lib/utils";
+import { routeContactHref } from "@/lib/cta-constants";
 
 function formatRouteDuration(minutes: number): string {
   if (minutes >= 240) return "полдня";
@@ -104,7 +105,7 @@ export function RouteVisualCard({ route, className }: RouteVisualCardProps) {
             <ArrowRight size={13} />
           </Link>
           <Link
-            href={`/business?route=${encodeURIComponent(route.slug)}&taskType=route_program&sourceBlock=route-card`}
+            href={routeContactHref(route.slug, "route-card")}
             className="inline-flex h-10 items-center justify-center border border-border px-4 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
           >
             Пройти с гидом

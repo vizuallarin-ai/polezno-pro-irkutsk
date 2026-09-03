@@ -17,6 +17,9 @@ export type ExploreMaterialView = ExploreMaterial & {
     description?: string;
     coverImage?: { url?: string; alt?: string };
   } | null;
+  relatedExcursionSlug?: string | null;
+  ctaText?: string | null;
+  ctaLink?: string | null;
 };
 
 type CmsArticleDoc = {
@@ -40,6 +43,13 @@ type CmsArticleDoc = {
     | string
     | number
     | null;
+  relatedExcursion?:
+    | { slug: string }
+    | string
+    | number
+    | null;
+  ctaText?: string | null;
+  ctaLink?: string | null;
   seo?: { title?: string; description?: string } | null;
 };
 
@@ -73,6 +83,13 @@ function mapCmsDoc(doc: CmsArticleDoc): ExploreMaterialView {
         }
       : null;
 
+  const relatedExcursionSlug =
+    doc.relatedExcursion &&
+    typeof doc.relatedExcursion === "object" &&
+    "slug" in doc.relatedExcursion
+      ? String(doc.relatedExcursion.slug)
+      : null;
+
   return {
     id: String(doc.id),
     slug: String(doc.slug),
@@ -94,6 +111,9 @@ function mapCmsDoc(doc: CmsArticleDoc): ExploreMaterialView {
     seoDescription: doc.seo?.description ? String(doc.seo.description) : undefined,
     source: "cms",
     relatedRoute,
+    relatedExcursionSlug,
+    ctaText: doc.ctaText ? String(doc.ctaText) : null,
+    ctaLink: doc.ctaLink ? String(doc.ctaLink) : null,
   };
 }
 

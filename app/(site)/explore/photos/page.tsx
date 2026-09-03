@@ -44,10 +44,13 @@ export default async function PhotosPage({ searchParams }: PageProps) {
     author: params.author,
   });
 
+  const unfiltered = await getPublishedPhotos({ category: "all", photoType: "all" });
+  const catalogEmpty = unfiltered.length === 0;
+
   return (
     <>
       <Suspense>
-        <PhotosPageClient photos={photos} />
+        <PhotosPageClient photos={photos} catalogEmpty={catalogEmpty} />
       </Suspense>
       <ContactCtaSection variant="photo" sourceType="photos" sourceBlock="photos-index" />
     </>

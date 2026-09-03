@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { resolveVisualImage } from "@/lib/visual-assets";
 import { BRAND } from "@/lib/brand-constants";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
+import { CTA, buildContactHref } from "@/lib/cta-constants";
 
 export const metadata: Metadata = {
   title: "О проекте — манифест «Полезно про Иркутск»",
@@ -187,7 +188,10 @@ export default async function AboutPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/business"
+                  href={buildContactHref({
+                    intent: "general",
+                    sourceBlock: "about",
+                  })}
                   className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 group"
                 >
                   Создать тур с нами
@@ -197,10 +201,10 @@ export default async function AboutPage() {
                   />
                 </Link>
                 <Link
-                  href="/contact"
+                  href={CTA.b2bNav.href}
                   className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium border border-border hover:bg-muted transition-colors duration-200"
                 >
-                  Написать нам
+                  {CTA.b2bNav.label}
                 </Link>
               </div>
             </div>
