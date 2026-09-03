@@ -8,8 +8,11 @@
  * Usage (local or VPS, read-only checks + artifact capture):
  *   node scripts/deploy-prod-safe.mjs --preflight
  *
- * There is NO --execute mode in this script. Atomic release switching is NOT
- * implemented here; see docs/phase15-production-readiness-report.md.
+ * There is NO --execute mode in this script. Keep preflight behavior here.
+ * Owner-approved atomic release execute path:
+ *   scripts/immutable-release-deploy.mjs
+ *   (npm run deploy:immutable — dry-run by default; requires --execute …)
+ * See docs/immutable-release-deploy.md and docs/phase15-production-readiness-report.md.
  */
 import { execSync } from "node:child_process";
 import { existsSync, writeFileSync, mkdirSync } from "node:fs";
@@ -51,7 +54,8 @@ function writeRollbackManifest(targetSha) {
     rollbackBuildId: ROLLBACK_BUILD_ID,
     targetSha,
     packageLockDriftPolicy: "preserve — never git checkout -- package-lock.json on production",
-    releaseSwitching: "NOT IMPLEMENTED — requires polezno-current symlink migration (see readiness report)",
+    releaseSwitching:
+      "IMPLEMENTED locally — scripts/immutable-release-deploy.mjs (dry-run default; production execute awaiting owner)",
   };
   const file = path.join(dir, "rollback-manifest.json");
   writeFileSync(file, JSON.stringify(manifest, null, 2));

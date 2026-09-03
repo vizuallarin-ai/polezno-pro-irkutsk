@@ -35,11 +35,11 @@
 | Gate B — durable release identity | **CLOSED LOCALLY** — `.next/release-identity.json` artifact |
 | Gate B — exact SHA/timestamp proof | **PROVEN** — artifact-based `/api/health` without runtime env injection (evidence ignored) |
 | Gate B — PostgreSQL orphan cleanup | **CLOSED** — `phase15_builder_7fc2b65a` removed, role inventory restored |
-| Deploy infrastructure (symlink switching) | **NOT IMPLEMENTED** |
-| Deploy execute | **NOT READY** — owner approval + infra migration required |
+| Deploy infrastructure (symlink switching) | **LOCALLY IMPLEMENTED / FIXTURE TESTED** — `scripts/immutable-release-deploy.mjs` (see `docs/immutable-release-deploy.md`) |
+| Deploy execute | **PRODUCTION EXECUTE AWAITING OWNER** — dry-run default; no production switch claimed |
 | Gate C / D | **NOT STARTED** |
 
-**Phase 15 overall:** **NOT CLOSED** — offsite backup, deploy infra, production `/api/health`, email, Gate C content remain.
+**Phase 15 overall:** **NOT CLOSED** — offsite backup, production deploy execute, production `/api/health`, email, Gate C content remain.
 
 **PostgreSQL wording correction:** production application schema/data in `polezno_irkutsk` were **not modified**. Gate B used authorized temporary PostgreSQL cluster mutations (disposable roles/databases + orphan ACL revoke/drop). Earlier wording implying absolute “no database write” was imprecise.
 
@@ -467,13 +467,17 @@ Script refuses production-like URLs (`90.156.170.182`, `irkportal.ru`, `polezno_
 
 | `scripts/build-release-isolated.mjs` | **PASS review** — requires owner disposable URL; blocks prod DSN; cleans env in `finally` |
 
-| `scripts/deploy-prod-safe.mjs` | **PASS review** — preflight only; `--execute` explicitly blocked; no atomic switch claims |
+| `scripts/deploy-prod-safe.mjs` | **PASS review** — preflight only; `--execute` blocked here; execute path is `immutable-release-deploy.mjs` |
+
+| `scripts/immutable-release-deploy.mjs` | **LOCALLY IMPLEMENTED / FIXTURE TESTED** — dry-run default; production execute awaiting owner |
 
 | `scripts/provision-disposable-db.mjs` | **DELETED** — wrapped unreliable `neon.new` |
 
 | `lib/build-database-guard.ts` | **PASS** — production URL markers blocked; tested in phase15-checks |
 
-| `package.json` scripts | `build:release:isolated`, `deploy:preflight` — appropriate |
+| `lib/deploy-path-safety.ts` / `lib/immutable-release.mjs` | **PASS review** — allowed-prefix checks; no broad rm |
+
+| `package.json` scripts | `build:release:isolated`, `deploy:preflight`, `deploy:immutable`, `test:deploy-immutable` |
 
 | `.gitignore` | `.deploy-artifacts/`, `eslint-*.json` — appropriate |
 
@@ -485,9 +489,9 @@ Script refuses production-like URLs (`90.156.170.182`, `irkportal.ru`, `polezno_
 
 - Preflight ≠ safe deploy
 
-- No atomic release switch implemented
+- Immutable deploy is **LOCALLY IMPLEMENTED / FIXTURE TESTED / PRODUCTION EXECUTE AWAITING OWNER** — do not claim production switched
 
-- `deploy-prod.mjs` still in-place pull/build/restart — high risk
+- `deploy-prod.mjs` still in-place pull/build/restart — high risk until owner-approved migrate + execute
 
 
 
@@ -495,15 +499,15 @@ Script refuses production-like URLs (`90.156.170.182`, `irkportal.ru`, `polezno_
 
 
 
-## 15. Safe deploy architecture (design review — NOT implemented)
+## 15. Safe deploy architecture (Gate 1H)
 
 
 
-Current production: PM2 cwd = `/var/www/polezno` (mutable). Creating `/var/www/polezno-releases/<sha>` alone **does not** switch traffic.
+Current production: PM2 cwd = `/var/www/polezno` (mutable). Creating `/var/www/polezno-releases/<sha>` alone **does not** switch traffic until PM2/nginx point at `polezno-current`.
 
 
 
-### Required infrastructure migration (prerequisite)
+### Required infrastructure migration (prerequisite for production execute)
 
 
 
@@ -513,21 +517,31 @@ Current production: PM2 cwd = `/var/www/polezno` (mutable). Creating `/var/www/p
 
 3. **Shared media:** symlink `public/media` → `/var/www/polezno-shared/media`
 
-4. **Stable symlink:** `/var/www/polezno-current` → active release
+4. **Stable current:** `/var/www/polezno-current` → active release (`--switch-mode=symlink` on Linux)
 
 5. **PM2 cwd:** repoint to `/var/www/polezno-current` (one-time migration)
 
-6. **Pre-switch health:** start release on free local port, verify `/api/health` SHA
+6. **Pre-switch health:** start release on free local port, verify `/api/health` SHA + artifact identity
 
-7. **Atomic switch:** `ln -sfn releases/<sha> polezno-current` then `pm2 restart polezno`
+7. **Atomic switch:** temp link/pointer + rename over `polezno-current`, then `pm2 restart polezno`
 
-8. **Rollback:** reverse symlink to `3631094` + preserved BUILD_ID `zOvFS1L8wUwIeQ5wVB9ij`
+8. **Rollback:** reverse current to previous release (auto on post-switch health failure)
 
-9. **Keep previous release dir** until rollback window closes
+9. **Keep previous release dir** until rollback window closes (retention cleanup **not** in Gate 1H)
 
 
 
-**Status:** `DEPLOY INFRASTRUCTURE MIGRATION REQUIRED` before owner-approved execute.
+**Gate 1H status:** **LOCALLY IMPLEMENTED / FIXTURE TESTED / PRODUCTION EXECUTE AWAITING OWNER**
+
+
+
+- Code: `scripts/immutable-release-deploy.mjs`, `lib/immutable-release.mjs`, `lib/deploy-path-safety.ts`
+
+- Docs: `docs/immutable-release-deploy.md`
+
+- Tests: `npm run test:deploy-immutable` (tmpdir fixtures, `--switch-mode=pointer`)
+
+- Default CLI mode remains dry-run; production has **not** been switched by this gate
 
 
 
@@ -586,7 +600,7 @@ Evidence (sanitized, no DSN): `.deploy-artifacts/phase15-gate-b/<TARGET_SHA>/`
 | # | Blocker | Owner |
 |---|---------|-------|
 | 1 | Offsite disaster recovery backup | Owner/DevOps |
-| 2 | Atomic release switching not implemented | DevOps — symlink migration (§15) |
+| 2 | Atomic release switching — code ready; production execute awaiting owner | DevOps/Owner — migrate PM2 to `polezno-current` then `deploy:immutable --execute` |
 | 3 | Production `/api/health` still 404 | Controlled deploy after owner approval |
 | 4 | Resend/email env absent on production | Owner |
 | 5 | Recurring backup hardening | DevOps — fix `backup-db.sh` |
