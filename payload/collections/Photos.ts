@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 import {
   adminCrud,
+  adminFieldAccess,
   adminPanelAccess,
   photoReadAccess,
 } from "../access";
@@ -13,6 +14,7 @@ import {
 } from "../constants";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
+import { promotePendingMedia } from "@/lib/promote-pending-media";
 
 const CONSENT_VERSION = "2026-06-01";
 
@@ -98,7 +100,29 @@ export const Photos: CollectionConfig = {
         return data;
       },
     ],
-    afterChange: [revalidateAfterChange],
+    afterChange: [
+      revalidateAfterChange,
+      async ({ doc, previousDoc, req }) => {
+        const becamePublished =
+          doc.status === "published" && previousDoc?.status !== "published";
+        if (!becamePublished) return doc;
+
+        const imageRef = doc.image;
+        const mediaId =
+          typeof imageRef === "object" && imageRef !== null && "id" in imageRef
+            ? (imageRef as { id: string | number }).id
+            : imageRef;
+
+        if (mediaId == null) return doc;
+
+        try {
+          await promotePendingMedia(req.payload, mediaId);
+        } catch (err) {
+          console.error("[photos] promotePendingMedia failed:", err);
+        }
+        return doc;
+      },
+    ],
   },
   fields: [
     {
@@ -322,16 +346,28 @@ export const Photos: CollectionConfig = {
           name: "submittedByName",
           type: "text",
           label: "Имя отправителя",
+          access: {
+            read: adminFieldAccess,
+            update: adminFieldAccess,
+          },
         },
         {
           name: "submittedByContact",
           type: "text",
           label: "Контакт",
+          access: {
+            read: adminFieldAccess,
+            update: adminFieldAccess,
+          },
         },
         {
           name: "submittedByEmail",
           type: "email",
           label: "Email",
+          access: {
+            read: adminFieldAccess,
+            update: adminFieldAccess,
+          },
         },
         {
           name: "submittedAt",

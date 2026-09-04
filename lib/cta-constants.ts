@@ -102,7 +102,12 @@ export function resolvePublicMainCta(input: {
   href?: string | null;
   description?: string | null;
 }): { label: string; href: string; description?: string } {
-  const href = (input.href ?? "").trim() || CTA.b2cPrimary.href;
+  const raw = (input.href ?? "").trim() || CTA.b2cPrimary.href;
+  const unsafe =
+    /^javascript:/i.test(raw) ||
+    /^data:/i.test(raw) ||
+    /^vbscript:/i.test(raw);
+  const href = unsafe ? CTA.b2cPrimary.href : raw;
   if (href === "/business" || href.startsWith("/business?")) {
     return {
       label: CTA.b2cPrimary.label,

@@ -1,17 +1,25 @@
 import { getSiteUrl } from "@/lib/site-url";
-import { TELEGRAM_URL } from "@/lib/site-links";
+import { BOOSTY_URL, TELEGRAM_URL } from "@/lib/site-links";
+import { BRAND } from "@/lib/brand-constants";
 
 const BASE_URL = getSiteUrl();
 
-export function organizationSchema() {
+export function organizationSchema(opts?: {
+  name?: string;
+  description?: string;
+  email?: string;
+  sameAs?: string[];
+}) {
+  const sameAs = (opts?.sameAs ?? [TELEGRAM_URL, BOOSTY_URL]).filter(Boolean);
   return {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
-    name: "Полезно про Иркутск",
+    name: opts?.name || BRAND.projectName,
     url: BASE_URL,
-    logo: `${BASE_URL}/images/logo.png`,
+    logo: `${BASE_URL}/icon`,
     description:
-      "Организация путешествий, авторских маршрутов и культурных проектов в Иркутске и на Байкале.",
+      opts?.description ||
+      "Авторский навигатор по Иркутску: маршруты, экскурсии и программы для бизнеса.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Иркутск",
@@ -21,12 +29,9 @@ export function organizationSchema() {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
-      email: "info@polezno.irkutsk.ru",
+      ...(opts?.email ? { email: opts.email } : { email: "info@irkportal.ru" }),
     },
-    sameAs: [
-      TELEGRAM_URL,
-      "https://instagram.com/polezno.irkutsk",
-    ],
+    sameAs,
   };
 }
 
@@ -71,7 +76,7 @@ export function articleSchema({
     image: imageUrl,
     publisher: {
       "@type": "Organization",
-      name: "Полезно про Иркутск",
+      name: BRAND.projectName,
       url: BASE_URL,
     },
     datePublished: publishedAt,
@@ -118,7 +123,7 @@ export function eventSchema({
     },
     organizer: {
       "@type": "Organization",
-      name: "Полезно про Иркутск",
+      name: BRAND.projectName,
       url: BASE_URL,
     },
     offers: offers
@@ -168,7 +173,7 @@ export function productSchema({
       url,
       seller: {
         "@type": "Organization",
-        name: "Полезно про Иркутск",
+        name: BRAND.projectName,
       },
     },
   };
@@ -180,12 +185,14 @@ export function touristTripSchema({
   url,
   duration,
   imageUrl,
+  price,
 }: {
   title: string;
   description: string;
   url: string;
   duration?: number;
   imageUrl?: string;
+  price?: number;
 }) {
   return {
     "@context": "https://schema.org",
@@ -197,15 +204,28 @@ export function touristTripSchema({
     touristType: "Культурный туризм",
     provider: {
       "@type": "TravelAgency",
-      name: "Полезно про Иркутск",
+      name: BRAND.projectName,
       url: BASE_URL,
     },
-    ...(duration && {
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "RUB",
-      },
-    }),
+    ...(duration
+      ? {
+          itinerary: {
+            "@type": "ItemList",
+            numberOfItems: 1,
+          },
+        }
+      : {}),
+    ...(price != null && price > 0
+      ? {
+          offers: {
+            "@type": "Offer",
+            price: String(price),
+            priceCurrency: "RUB",
+            url,
+            availability: "https://schema.org/InStock",
+          },
+        }
+      : {}),
   };
 }
 

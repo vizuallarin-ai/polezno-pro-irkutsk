@@ -36,7 +36,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: "— Полезно про Иркутск CMS",
+      titleSuffix: "— Иркпортал CMS",
     },
     dateFormat: "dd.MM.yyyy",
     components: {
@@ -65,11 +65,21 @@ export default buildConfig({
   secret: (() => {
     const secret = process.env.PAYLOAD_SECRET?.trim();
     if (secret) return secret;
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("PAYLOAD_SECRET is required in production");
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL?.toLowerCase() ?? "";
+    const looksPublic =
+      process.env.NODE_ENV === "production" ||
+      serverUrl.includes("irkportal.ru") ||
+      (!serverUrl.includes("localhost") &&
+        !serverUrl.includes("127.0.0.1") &&
+        serverUrl.startsWith("https://"));
+    if (looksPublic) {
+      throw new Error("PAYLOAD_SECRET is required on public/production hosts");
     }
     return "dev-only-payload-secret";
   })(),
+  graphQL: {
+    disable: true,
+  },
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },

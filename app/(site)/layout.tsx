@@ -6,10 +6,12 @@ import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { FloatingContact } from "@/components/contact/floating-contact";
 import { YandexMetrikaHead, YandexMetrikaNoscript } from "@/components/analytics/yandex-metrika";
 import { LenisProvider } from "@/components/layout/lenis-provider";
-import { getNavigation, hasPublishedEvents } from "@/lib/navigation";
+import { getNavigation, getSecondaryCatalogFlags } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
 import { contactsForDisplay } from "@/lib/contact-display";
 import { getSiteUrl } from "@/lib/site-url";
+import { organizationSchema } from "@/lib/jsonld";
+import { BOOSTY_URL, TELEGRAM_URL } from "@/lib/site-links";
 import "../globals.css";
 
 const siteUrl = getSiteUrl();
@@ -22,7 +24,7 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -50,6 +52,9 @@ export const metadata: Metadata = {
     "путешествия",
     "Байкал",
   ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "ru_RU",
@@ -66,10 +71,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    title: "Иркпортал — авторский навигатор по Иркутску",
+    images: ["/og-default.jpg"],
   },
   robots: {
     index: true,
     follow: true,
+  },
+  verification: {
+    google: "LLEp_6ENwdLy4ubS0_YoCB6e4J0xmz5IoGs2iJHrQTk",
   },
 };
 
@@ -78,26 +88,25 @@ export default async function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [nav, settings, showEvents] = await Promise.all([
+  const [nav, settings, catalogFlags] = await Promise.all([
     getNavigation(),
     getSiteSettings(),
-    hasPublishedEvents(),
+    getSecondaryCatalogFlags(),
   ]);
   const contact = contactsForDisplay(settings.contact);
+  const sameAs = [
+    contact.telegram || TELEGRAM_URL,
+    contact.boosty || BOOSTY_URL,
+    contact.vk,
+    contact.max,
+  ].filter((v): v is string => Boolean(v));
 
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "TravelAgency",
+  const orgSchema = organizationSchema({
     name: settings.projectName,
-    url: siteUrl,
     description: settings.description,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Иркутск",
-      addressRegion: "Иркутская область",
-      addressCountry: "RU",
-    },
-  };
+    email: contact.email || undefined,
+    sameAs,
+  });
 
   return (
     <html
@@ -108,10 +117,18 @@ export default async function SiteLayout({
         <YandexMetrikaHead />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(orgSchema).replace(/</g, "\\u003c"),
+          }}
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:text-foreground focus:outline focus:outline-2 focus:outline-baikal"
+        >
+          Перейти к содержимому
+        </a>
         <YandexMetrikaNoscript />
         <LenisProvider>
           <Header
@@ -124,8 +141,13 @@ export default async function SiteLayout({
             projectDescriptor={settings.projectDescriptor}
             contact={contact}
           />
-          <main>{children}</main>
-          <Footer settings={settings} contact={contact} showEvents={showEvents} />
+          <main id="main-content">{children}</main>
+          <Footer
+            settings={settings}
+            contact={contact}
+            showEvents={catalogFlags.showEvents}
+            showSouvenirs={catalogFlags.showSouvenirs}
+          />
           <FloatingContact
             contact={contact}
             label={settings.leadSettings.contactCtaLabel}

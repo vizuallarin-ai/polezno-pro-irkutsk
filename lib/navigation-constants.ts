@@ -10,6 +10,10 @@ export const PRIMARY_NAV_LINKS: NavItem[] = [
   { href: "/contact", label: "Контакты" },
 ];
 
+/**
+ * Secondary nav. Catalog modules (photos / AR / souvenirs) are gated in
+ * `getNavigation()` — shown only when CMS has published-ready content.
+ */
 export const MORE_NAV_LINKS: NavItem[] = [
   { href: "/events", label: "События" },
   { href: "/explore/photos", label: "Фото Иркутска" },

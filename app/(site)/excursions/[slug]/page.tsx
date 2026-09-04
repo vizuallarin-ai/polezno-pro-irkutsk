@@ -15,6 +15,9 @@ import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { CTA, excursionContactHref } from "@/lib/cta-constants";
 import { ExcursionViewTracker } from "@/components/analytics/view-trackers";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbSchema, touristTripSchema } from "@/lib/jsonld";
+import { getSiteUrl } from "@/lib/site-url";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -35,7 +38,8 @@ export async function generateMetadata({
       coverUrl: excursion.coverUrl,
     },
     excursion.title,
-    site
+    site,
+    { path: `/excursions/${excursion.slug}` }
   );
 }
 
@@ -50,9 +54,29 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
     !excursion.priceOnRequest &&
     excursion.price != null &&
     excursion.price > 0;
+  const siteUrl = getSiteUrl();
+  const absoluteCover =
+    cover && (cover.startsWith("http") ? cover : `${siteUrl}${cover}`);
 
   return (
     <article className="pt-24">
+      <JsonLd
+        data={[
+          touristTripSchema({
+            title: excursion.title,
+            description: excursion.shortDescription,
+            url: `${siteUrl}/excursions/${excursion.slug}`,
+            duration: excursion.duration ?? undefined,
+            imageUrl: absoluteCover,
+            price: showPrice ? excursion.price ?? undefined : undefined,
+          }),
+          breadcrumbSchema([
+            { label: "Главная", href: "/" },
+            { label: "Экскурсии", href: "/map?filter=guided" },
+            { label: excursion.title, href: `/excursions/${excursion.slug}` },
+          ]),
+        ]}
+      />
       <ExcursionViewTracker slug={excursion.slug} title={excursion.title} />
       <div className="mx-auto max-w-3xl px-6 lg:px-8 py-12">
         <Link

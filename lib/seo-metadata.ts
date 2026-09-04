@@ -91,18 +91,37 @@ export function getOgImage(
 export function buildPageMetadata(
   doc: SeoDoc,
   fallbackTitle: string,
-  site?: SiteSeoDefaults
+  site?: SiteSeoDefaults,
+  options?: { path?: string }
 ) {
   const title = getMetaTitle(doc, fallbackTitle, site);
   const description = getMetaDescription(doc, site);
-  const image = getOgImage(doc, site);
+  const image = getOgImage(doc, site) ?? absoluteUrl("/og-default.jpg");
+  const canonicalPath = options?.path
+    ? options.path.startsWith("/")
+      ? options.path
+      : `/${options.path}`
+    : undefined;
+
   return {
     title,
     description,
+    ...(canonicalPath
+      ? { alternates: { canonical: canonicalPath } }
+      : {}),
     openGraph: {
       title,
       description,
       ...(image ? { images: [{ url: image }] } : {}),
+      ...(canonicalPath
+        ? { url: `${getSiteUrl()}${canonicalPath}` }
+        : {}),
+    },
+    twitter: {
+      card: "summary_large_image" as const,
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
     },
   };
 }

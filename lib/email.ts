@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { getSiteUrl } from "@/lib/site-url";
+import { BRAND } from "@/lib/brand-constants";
 
 let resend: Resend | null = null;
 
@@ -10,8 +11,19 @@ function getResend(): Resend | null {
   return resend;
 }
 
-const FROM = process.env.EMAIL_FROM || "noreply@polezno.irkutsk.ru";
+/** Escape untrusted strings before interpolating into HTML email bodies. */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+const FROM = process.env.EMAIL_FROM || "noreply@irkportal.ru";
 const SITE_URL = getSiteUrl();
+const BRAND_NAME = BRAND.projectName;
 
 export async function sendReviewRequest({
   to,
@@ -28,15 +40,16 @@ export async function sendReviewRequest({
     return;
   }
 
+  const safeName = escapeHtml(name);
   const serviceLabel =
     serviceType === "corporate"
       ? "корпоративной программы"
       : serviceType === "excursion"
-      ? "экскурсии"
-      : "путешествия";
+        ? "экскурсии"
+        : "путешествия";
 
   await client.emails.send({
-    from: `Полезно про Иркутск <${FROM}>`,
+    from: `${BRAND_NAME} <${FROM}>`,
     to,
     subject: "Поделитесь впечатлениями — это поможет другим путешественникам",
     html: `
@@ -55,14 +68,14 @@ export async function sendReviewRequest({
           <tr>
             <td style="padding:40px 40px 24px;border-bottom:1px solid #E8E6E3;">
               <p style="margin:0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9CA3AF;">
-                Полезно про Иркутск
+                ${escapeHtml(BRAND_NAME)}
               </p>
             </td>
           </tr>
           <tr>
             <td style="padding:32px 40px;">
               <h1 style="margin:0 0 16px;font-size:28px;font-weight:300;color:#1C1C1E;line-height:1.3;">
-                ${name}, как прошло?
+                ${safeName}, как прошло?
               </h1>
               <p style="margin:0 0 20px;font-size:15px;color:#6B6B6B;line-height:1.6;">
                 Рады, что вы воспользовались нашей ${serviceLabel}.
@@ -83,7 +96,7 @@ export async function sendReviewRequest({
           <tr>
             <td style="padding:24px 40px 40px;border-top:1px solid #E8E6E3;">
               <p style="margin:0;font-size:12px;color:#9CA3AF;line-height:1.6;">
-                Это письмо отправлено после вашей программы с «Полезно про Иркутск».
+                Это письмо отправлено после вашей программы с «${escapeHtml(BRAND_NAME)}».
                 Если вы получили его по ошибке — просто проигнорируйте.
               </p>
             </td>
@@ -113,20 +126,26 @@ export async function sendLeadNotification({
   const client = getResend();
   if (!client) return;
 
-  const adminEmail = to || process.env.EMAIL_TO || "info@polezno.irkutsk.ru";
+  const adminEmail = to || process.env.EMAIL_TO || "info@irkportal.ru";
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeType = escapeHtml(serviceType || "—");
+  const safeMessage = message
+    ? escapeHtml(message).replace(/\n/g, "<br>")
+    : "";
 
   await client.emails.send({
-    from: `CRM Полезно про Иркутск <${FROM}>`,
+    from: `CRM ${BRAND_NAME} <${FROM}>`,
     to: adminEmail,
-    subject: `Новая заявка от ${name}`,
+    subject: `Новая заявка от ${name.replace(/[\r\n]/g, " ").slice(0, 120)}`,
     html: `
 <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;background:#f9f9f7;">
   <h2 style="margin:0 0 16px;font-size:20px;font-weight:400;color:#1C1C1E;">Новая заявка</h2>
   <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;width:120px;">Имя</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;">${name}</td></tr>
-    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;">Email</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;"><a href="mailto:${email}">${email}</a></td></tr>
-    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;">Тип</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;">${serviceType || "—"}</td></tr>
-    ${message ? `<tr><td style="padding:8px 0;color:#6B6B6B;font-size:13px;vertical-align:top;">Сообщение</td><td style="padding:8px 0;font-size:14px;color:#1C1C1E;">${message}</td></tr>` : ""}
+    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;width:120px;">Имя</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;">${safeName}</td></tr>
+    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;">Email</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;"><a href="mailto:${safeEmail}">${safeEmail}</a></td></tr>
+    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;">Тип</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;">${safeType}</td></tr>
+    ${safeMessage ? `<tr><td style="padding:8px 0;color:#6B6B6B;font-size:13px;vertical-align:top;">Сообщение</td><td style="padding:8px 0;font-size:14px;color:#1C1C1E;">${safeMessage}</td></tr>` : ""}
   </table>
   <p style="margin:20px 0 0;font-size:13px;color:#9CA3AF;">Посмотреть в CMS: <a href="${SITE_URL}/admin/collections/leads">открыть</a></p>
 </div>`,

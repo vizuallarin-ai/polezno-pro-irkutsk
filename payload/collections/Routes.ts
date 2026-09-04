@@ -473,10 +473,11 @@ export const Routes: CollectionConfig = {
     {
       name: "stripeProductId",
       type: "text",
-      label: "Stripe Product ID",
+      label: "Stripe Product ID (legacy)",
       admin: {
         position: "sidebar",
-        condition: (data) => data?.type === "paid",
+        hidden: true,
+        description: "Не используется — lead-only продажи.",
       },
     },
     {

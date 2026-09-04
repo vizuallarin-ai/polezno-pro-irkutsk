@@ -181,6 +181,7 @@ export async function POST(request: NextRequest) {
       const data = parsed.data;
       const lead = await payload.create({
         collection: "leads",
+        overrideAccess: true,
         data: withTracking(
           {
             name: data.name,
@@ -248,6 +249,7 @@ export async function POST(request: NextRequest) {
 
       const lead = await payload.create({
         collection: "leads",
+        overrideAccess: true,
         data: withTracking(
           {
             name: data.name,
@@ -296,6 +298,7 @@ export async function POST(request: NextRequest) {
         const data = parsed.data;
         const lead = await payload.create({
           collection: "leads",
+          overrideAccess: true,
           data: withTracking(
             {
               name: data.name,
@@ -349,6 +352,7 @@ export async function POST(request: NextRequest) {
 
       const lead = await payload.create({
         collection: "leads",
+        overrideAccess: true,
         data: withTracking(
           {
             name: data.name,
@@ -398,6 +402,7 @@ export async function POST(request: NextRequest) {
       const leadData = buildUnifiedLeadData(parsed.data, source, referer);
       const lead = await payload.create({
         collection: "leads",
+        overrideAccess: true,
         data: leadData,
       });
 
@@ -424,6 +429,7 @@ export async function POST(request: NextRequest) {
     const data = parsed.data;
     const lead = await payload.create({
       collection: "leads",
+      overrideAccess: true,
       data: withTracking(
         {
           name: data.name,

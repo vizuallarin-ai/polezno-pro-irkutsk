@@ -11,9 +11,10 @@ import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { CTA, buildContactHref } from "@/lib/cta-constants";
 
 export const metadata: Metadata = {
-  title: "О проекте — манифест «Полезно про Иркутск»",
+  title: "О проекте — манифест Иркпортала",
   description:
-    "История и философия проекта «Полезно про Иркутск». Почему мы создаём цифровую культурную платформу про Иркутск и Байкал.",
+    "История и философия Иркпортала. Почему мы создаём авторский навигатор по Иркутску и Байкалу.",
+  alternates: { canonical: "/about" },
 };
 
 const values = [

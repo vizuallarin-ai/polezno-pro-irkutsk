@@ -108,7 +108,12 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
 
   try {
     const payload = await getPayloadClient();
-    const raw = await payload.findGlobal({ slug: "site-settings", depth: 1 });
+    const raw = await payload.findGlobal({
+      slug: "site-settings",
+      depth: 1,
+      // Needed for admin-only fields (e.g. leadNotificationEmail) on the server.
+      overrideAccess: true,
+    });
 
     const contactRaw = (raw.contact || {}) as Record<string, string | undefined>;
     const socialRaw = (raw.socialLinks || {}) as Record<string, string | undefined>;

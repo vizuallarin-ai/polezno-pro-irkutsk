@@ -232,7 +232,8 @@ export const Products: CollectionConfig = {
       label: "Stripe Price ID (legacy)",
       admin: {
         position: "sidebar",
-        description: "Не используется в разделе сувениров.",
+        hidden: true,
+        description: "Не используется — lead-only продажи.",
       },
     },
     {

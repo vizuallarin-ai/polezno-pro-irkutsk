@@ -45,9 +45,14 @@ export const articleReadAccess: Access = ({ req: { user } }) => {
 export const leadsReadAccess: Access = isAdmin;
 export const leadsUpdateAccess: Access = isAdmin;
 export const leadsDeleteAccess: Access = isAdmin;
-export const leadsCreateAccess: Access = () => true;
+/** Create only via trusted Local API (`overrideAccess`) after spam checks — not public REST/GraphQL. */
+export const leadsCreateAccess: Access = isAdmin;
 
-export const mediaReadAccess: Access = () => true;
+/** Public may read only media marked visibility=public; staff sees all. */
+export const mediaReadAccess: Access = ({ req: { user } }) => {
+  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  return { visibility: { equals: "public" } };
+};
 export const mediaWriteAccess: Access = isAdmin;
 
 /** Публично — только опубликованные и одобренные фото. */

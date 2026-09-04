@@ -54,5 +54,21 @@ export const Media: CollectionConfig = {
       type: "text",
       label: "Подпись",
     },
+    {
+      name: "visibility",
+      type: "select",
+      label: "Публичный доступ",
+      defaultValue: "public",
+      required: true,
+      options: [
+        { label: "Публичный", value: "public" },
+        { label: "Только staff (модерация)", value: "private" },
+      ],
+      admin: {
+        position: "sidebar",
+        description:
+          "Private — не отдаётся в REST и не должен попадать в публичный каталог. User-submit создаёт private.",
+      },
+    },
   ],
 };

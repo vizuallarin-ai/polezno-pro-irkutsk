@@ -1,6 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { adminCrud } from "../access";
+import { adminCrud, adminFieldAccess } from "../access";
 import { revalidateGlobalAfterChange } from "../hooks/revalidate";
 
 export const SiteSettings: GlobalConfig = {
@@ -289,6 +289,14 @@ export const SiteSettings: GlobalConfig = {
           name: "leadNotificationEmail",
           type: "email",
           label: "Email для уведомлений о заявках",
+          access: {
+            read: adminFieldAccess,
+            update: adminFieldAccess,
+          },
+          admin: {
+            description:
+              "Не отдаётся в публичный REST. На сервере читается через Local API с overrideAccess.",
+          },
         },
         {
           name: "contactCtaLabel",

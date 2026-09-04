@@ -1,7 +1,7 @@
 /**
  * Typed analytics helper — no PII (name, email, phone, telegram, comments).
  * CustomEvent + dataLayer; optional ym reachGoal when available.
- * CODE READY / EXTERNAL VERIFICATION PENDING for Metrika cabinet goals.
+ * Cabinet goals: see docs/metrika-goals.md (EXTERNAL VERIFICATION PENDING).
  */
 
 export type AnalyticsEventName =
