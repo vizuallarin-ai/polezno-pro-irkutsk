@@ -8,6 +8,7 @@ import {
   buildContactHref,
   excursionContactHref,
   routeContactHref,
+  CTA,
 } from "@/lib/cta-constants";
 
 function formatDuration(minutes: number): string {
@@ -44,6 +45,18 @@ function programHref(item: ExperienceItem, format?: string): string {
   });
 }
 
+function formatLine(item: ExperienceItem): string {
+  const parts: string[] = [];
+  if (item.kind === "route") {
+    if (item.isSelfGuided) parts.push("Самостоятельно");
+    if (item.isGuidedAvailable) parts.push("С Алёной");
+  } else {
+    parts.push("С Алёной");
+  }
+  if (item.isCorporateAvailable) parts.push("Для компании");
+  return parts.join(" · ");
+}
+
 interface ExperienceCardProps {
   experience: ExperienceItem;
   className?: string;
@@ -52,7 +65,8 @@ interface ExperienceCardProps {
 export function ExperienceCard({ experience, className }: ExperienceCardProps) {
   const primaryLabel =
     experience.kind === "route" ? "Открыть маршрут" : "Подробнее";
-  const guidedLabel = experience.bookingCta || "Обсудить дату";
+  const guidedLabel =
+    experience.bookingCta?.trim() || CTA.guided.label;
 
   return (
     <article
@@ -86,20 +100,20 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
 
       <div className="flex flex-col flex-1 p-5 gap-3">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+          <p className="type-meta uppercase text-muted-foreground mb-1">
             {experience.kind === "route" ? "Маршрут" : "Экскурсия"}
             {experience.priceLabel ? ` · ${experience.priceLabel}` : ""}
           </p>
-          <h2 className="text-lg font-medium leading-snug text-foreground">
+          <h2 className="type-h3 text-foreground text-balance">
             {experience.title}
           </h2>
         </div>
 
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 flex-1">
+        <p className="type-body-sm text-muted-foreground line-clamp-2 flex-1">
           {experience.description}
         </p>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 type-meta text-muted-foreground">
           {experience.duration != null && (
             <span className="flex items-center gap-1">
               <Clock size={11} />
@@ -117,10 +131,12 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
           )}
         </div>
 
+        <p className="type-caption text-foreground/70">{formatLine(experience)}</p>
+
         <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border">
           <Link
             href={experience.href}
-            className="inline-flex h-10 flex-1 items-center justify-center gap-2 bg-foreground text-primary-foreground px-4 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
+            className="cta-label inline-flex h-10 flex-1 items-center justify-center gap-2 bg-foreground text-primary-foreground px-4 type-button hover:bg-foreground/90 transition-colors duration-200"
           >
             {primaryLabel}
             <ArrowRight size={13} />
@@ -128,7 +144,7 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
           {(experience.isGuidedAvailable || experience.kind === "excursion") && (
             <Link
               href={programHref(experience, "guided")}
-              className="inline-flex h-10 items-center justify-center border border-border px-4 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
+              className="cta-label cta-label-wrap-sm inline-flex h-10 items-center justify-center border border-border px-4 type-button text-foreground hover:bg-muted transition-colors duration-200"
             >
               {guidedLabel}
             </Link>

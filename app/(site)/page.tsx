@@ -13,6 +13,7 @@ import { getFeaturedPhotos } from "@/lib/photos";
 import { CURATED_FALLBACKS } from "@/lib/visual-assets";
 import { formatPhotoPlaceLabel, formatPhotoYearLabel } from "@/lib/photo-adapter";
 import { BRAND } from "@/lib/brand-constants";
+import { CTA, assistWalkHref } from "@/lib/cta-constants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -90,13 +91,13 @@ export default async function HomePage() {
         place={heroPhoto ? formatPhotoPlaceLabel(heroPhoto) : undefined}
         ctas={[
           {
-            label: "Подобрать прогулку",
-            href: "/contact",
+            label: CTA.discovery.label,
+            href: CTA.discovery.href,
             variant: "primary",
           },
           {
-            label: "Для бизнеса",
-            href: "/business",
+            label: CTA.assist.label,
+            href: assistWalkHref("hero"),
             variant: "secondary",
           },
         ]}

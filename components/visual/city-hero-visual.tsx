@@ -40,7 +40,15 @@ function renderTitle(title: string) {
         >
           Иркутск
         </Link>
-        {after}
+        {after.includes("штампов") ? (
+          <>
+            {after.replace(/\s*штампов.*/, " ")}
+            <em className="italic">штампов</em>
+            {after.match(/штампов(.*)/)?.[1] ?? ""}
+          </>
+        ) : (
+          after
+        )}
       </>
     );
   }
@@ -48,8 +56,7 @@ function renderTitle(title: string) {
     const parts = title.split(/\s+штампов/);
     return (
       <>
-        {parts[0]}
-        <br />
+        {parts[0]}{" "}
         <em className="italic">штампов</em>
         {parts[1] || ""}
       </>
@@ -99,13 +106,13 @@ export function CityHeroVisual({
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
         <div className="max-w-3xl">
-          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-primary-foreground/60">
+          <p className="mb-4 type-caption uppercase tracking-[0.2em] text-primary-foreground/60">
             {badge}
           </p>
-          <h1 className="font-serif text-5xl font-light leading-[1.1] tracking-tight text-primary-foreground md:text-6xl lg:text-7xl xl:text-8xl">
+          <h1 className="type-display-xl text-primary-foreground max-w-[16ch] sm:max-w-[18ch] md:max-w-none">
             {renderTitle(title)}
           </h1>
-          <p className="mt-6 max-w-lg text-base font-light text-primary-foreground/70 leading-relaxed">
+          <p className="mt-6 max-w-lg type-body-lg font-light text-primary-foreground/75">
             {subtitle}
           </p>
           {ctas.length > 0 && (
@@ -127,8 +134,8 @@ export function CityHeroVisual({
                   }}
                   className={
                     cta.variant === "primary"
-                      ? "inline-flex h-12 min-h-[44px] items-center justify-center px-8 text-sm font-medium bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-colors duration-200 active:scale-[0.98]"
-                      : "inline-flex h-12 min-h-[44px] items-center justify-center px-8 text-sm font-medium border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-200 active:scale-[0.98]"
+                      ? "cta-label cta-label-wrap-sm inline-flex h-12 min-h-[44px] items-center justify-center px-8 type-button bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-colors duration-200 active:scale-[0.98]"
+                      : "cta-label cta-label-wrap-sm inline-flex h-12 min-h-[44px] items-center justify-center px-8 type-button border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-200 active:scale-[0.98]"
                   }
                 >
                   {cta.label}
@@ -147,7 +154,7 @@ export function CityHeroVisual({
         className="absolute bottom-8 right-8 z-10 hidden sm:flex flex-col items-center gap-2 text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
         aria-label="Прокрутить вниз"
       >
-        <span className="text-xs uppercase tracking-widest">Смотреть</span>
+        <span className="type-caption uppercase tracking-widest">Смотреть</span>
         <ArrowDown size={16} className="animate-bounce" />
       </button>
     </section>

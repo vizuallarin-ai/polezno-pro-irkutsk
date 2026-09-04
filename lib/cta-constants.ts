@@ -1,15 +1,37 @@
 /**
  * Canonical CTA destinations for B2C / B2B separation.
  * Product type + slug context only — never PII in URLs.
+ *
+ * Vocabulary (UX.B):
+ * - Discovery:        Смотреть маршруты → /map
+ * - Assisted choice:  Подобрать мне прогулку → /contact
+ * - High intent:      Пройти с Алёной → route-aware contact
+ * - B2B:              Обсудить программу → /business
  */
 
 export const CTA = {
-  b2cPrimary: {
-    label: "Подобрать прогулку",
+  /** Primary discovery — browse catalog */
+  discovery: {
+    label: "Смотреть маршруты",
+    href: "/map",
+  },
+  /** Assisted choice — help me pick */
+  assist: {
+    label: "Подобрать мне прогулку",
     href: "/contact",
   },
+  /** High-intent guided walk */
+  guided: {
+    label: "Пройти с Алёной",
+  },
+  /** Header / global primary browse (alias of discovery) */
+  b2cPrimary: {
+    label: "Смотреть маршруты",
+    href: "/map",
+  },
+  /** Compact B2B discuss */
   b2bPrimary: {
-    label: "Обсудить программу для бизнеса",
+    label: "Обсудить программу",
     href: "/business",
   },
   b2bNav: {
@@ -17,17 +39,17 @@ export const CTA = {
     href: "/business",
   },
   exploreFallback: {
-    label: "Подобрать прогулку",
+    label: "Подобрать мне прогулку",
     href: "/contact",
   },
   routeRequest: {
-    label: "Запросить маршрут",
+    label: "Пройти с Алёной",
   },
   excursionRequest: {
-    label: "Запросить дату",
+    label: "Пройти с Алёной",
   },
   mapExplore: {
-    label: "Читать о городе",
+    label: "Исследовать Иркутск",
     href: "/explore",
   },
   souvenirPrelaunch: {
@@ -35,6 +57,10 @@ export const CTA = {
     href: "/contact",
   },
   prelaunchContact: {
+    label: "Связаться",
+    href: "/contact",
+  },
+  contactSecondary: {
     label: "Связаться",
     href: "/contact",
   },
@@ -72,6 +98,13 @@ export function buildContactHref(input: ContactContextInput = {}): string {
   return qs ? `/contact?${qs}${hash}` : `/contact${hash}`;
 }
 
+export function assistWalkHref(sourceBlock = "assist"): string {
+  return buildContactHref({
+    intent: "walk",
+    sourceBlock,
+  });
+}
+
 export function routeContactHref(slug: string, sourceBlock = "route"): string {
   return buildContactHref({
     intent: "route",
@@ -94,29 +127,40 @@ export function excursionContactHref(
 }
 
 /**
- * Header/global primary CTA must stay B2C.
- * If CMS still stores legacy /business mainCta, remap to canonical walk CTA.
+ * Header/global primary CTA must stay B2C discovery.
+ * If CMS still stores legacy /business or old contact-first CTA, remap.
  */
 export function resolvePublicMainCta(input: {
   label?: string | null;
   href?: string | null;
   description?: string | null;
 }): { label: string; href: string; description?: string } {
-  const raw = (input.href ?? "").trim() || CTA.b2cPrimary.href;
+  const raw = (input.href ?? "").trim() || CTA.discovery.href;
   const unsafe =
     /^javascript:/i.test(raw) ||
     /^data:/i.test(raw) ||
     /^vbscript:/i.test(raw);
-  const href = unsafe ? CTA.b2cPrimary.href : raw;
+  const href = unsafe ? CTA.discovery.href : raw;
+
   if (href === "/business" || href.startsWith("/business?")) {
     return {
-      label: CTA.b2cPrimary.label,
-      href: CTA.b2cPrimary.href,
+      label: CTA.discovery.label,
+      href: CTA.discovery.href,
       description: input.description ?? undefined,
     };
   }
+
+  // Legacy CMS contact-first primary → discovery browse
+  if (href === "/contact" || href.startsWith("/contact?")) {
+    return {
+      label: CTA.discovery.label,
+      href: CTA.discovery.href,
+      description: input.description ?? undefined,
+    };
+  }
+
   return {
-    label: (input.label ?? "").trim() || CTA.b2cPrimary.label,
+    label: (input.label ?? "").trim() || CTA.discovery.label,
     href,
     description: input.description ?? undefined,
   };
@@ -149,10 +193,9 @@ export function resolveExploreCommercialHref(input: {
   const raw = input.ctaLink?.trim();
   if (raw) {
     if (raw.startsWith("/business")) {
-      // B2C article must not dump readers into B2B form
       return {
         href: articleContactHref(input.articleSlug ?? "explore"),
-        label: CTA.exploreFallback.label,
+        label: CTA.assist.label,
         kind: "contact",
       };
     }
@@ -163,7 +206,11 @@ export function resolveExploreCommercialHref(input: {
     ) {
       return {
         href: raw,
-        label: CTA.exploreFallback.label,
+        label: raw.startsWith("/map/")
+          ? "Открыть маршрут"
+          : raw.startsWith("/excursions/")
+            ? CTA.guided.label
+            : CTA.assist.label,
         kind: raw.startsWith("/excursions/")
           ? "excursion"
           : raw.startsWith("/map/")
@@ -176,7 +223,7 @@ export function resolveExploreCommercialHref(input: {
   if (input.relatedExcursionSlug) {
     return {
       href: `/excursions/${input.relatedExcursionSlug}`,
-      label: CTA.excursionRequest.label,
+      label: CTA.guided.label,
       kind: "excursion",
     };
   }
@@ -189,7 +236,7 @@ export function resolveExploreCommercialHref(input: {
   }
   return {
     href: articleContactHref(input.articleSlug ?? "explore"),
-    label: CTA.exploreFallback.label,
+    label: CTA.assist.label,
     kind: "contact",
   };
 }

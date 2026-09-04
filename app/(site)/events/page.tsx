@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { VisualEmptyState } from "@/components/visual/visual-empty-state";
-import { VISUAL_EMPTY_COPY } from "@/lib/visual-assets";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, MapPin, Ticket } from "lucide-react";
@@ -164,20 +163,16 @@ export default async function EventsPage() {
     <main className="pt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <div className="mb-16">
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
+          <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
             Событийный Иркутск
           </p>
-          <h1 className="text-5xl lg:text-6xl font-light tracking-tight text-foreground">
+          <h1 className="type-display-l text-foreground max-w-[18ch]">
             Что происходит <span className="font-serif italic">в городе</span>
           </h1>
         </div>
 
         {!hasAny ? (
-          <VisualEmptyState
-            message={VISUAL_EMPTY_COPY.events}
-            actionLabel="Хотите анонсировать событие?"
-            actionHref="/contact"
-          />
+          <PrelaunchState surface="events" />
         ) : (
           <>
             {upcoming.length > 0 && (

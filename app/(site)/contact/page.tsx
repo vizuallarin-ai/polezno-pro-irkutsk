@@ -8,7 +8,7 @@ import { CTA } from "@/lib/cta-constants";
 export const metadata: Metadata = {
   title: "Контакты — подобрать прогулку",
   description:
-    "Напишите Алёне Ямщиковой: подберём самостоятельный маршрут или формат с гидом. Для корпоративных программ — отдельный раздел «Для бизнеса».",
+    "Напишите Алёне Ямщиковой: подберём самостоятельный маршрут или формат с Алёной. Для корпоративных программ — отдельный раздел «Для бизнеса».",
 };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -53,17 +53,16 @@ export default async function ContactPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
           <div className="lg:sticky lg:top-32 lg:self-start flex flex-col gap-10">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-                Подобрать прогулку
+              <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                {CTA.assist.label}
               </p>
-              <h1 className="text-4xl lg:text-5xl font-light tracking-tight text-foreground mb-6">
-                Напишите
-                <br />
+              <h1 className="type-display-l text-foreground mb-6 max-w-[12ch]">
+                Напишите{" "}
                 <span className="font-serif italic">Алёне</span>
               </h1>
-              <p className="text-muted-foreground leading-relaxed mb-4 max-w-sm">
+              <p className="type-body text-muted-foreground mb-4 max-w-sm">
                 Оставьте контакты — подберём самостоятельный маршрут или формат с
-                гидом под ваш день. После отправки заявка сохранится, и с вами
+                Алёной под ваш день. После отправки заявка сохранится, и с вами
                 свяжутся по указанному способу связи.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-sm">

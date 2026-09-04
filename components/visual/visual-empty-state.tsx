@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +10,7 @@ interface VisualEmptyStateProps {
   className?: string;
 }
 
+/** Lightweight empty — prefer PrelaunchState for full section architecture. */
 export function VisualEmptyState({
   message,
   actionLabel,
@@ -17,14 +20,20 @@ export function VisualEmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center py-20 text-center gap-4",
-        "border border-dashed border-border bg-card/50 px-6",
+        "flex flex-col items-center justify-center py-16 lg:py-20 text-center gap-5",
+        "border border-border bg-card px-6",
         className
       )}
+      role="status"
     >
-      <p className="text-muted-foreground max-w-md leading-relaxed">{message}</p>
+      <p className="type-body text-muted-foreground max-w-md text-pretty">
+        {message}
+      </p>
       {actionLabel && actionHref && (
-        <Link href={actionHref} className="text-sm text-baikal hover:underline">
+        <Link
+          href={actionHref}
+          className="cta-label type-button text-baikal hover:underline min-h-[44px] inline-flex items-center"
+        >
           {actionLabel}
         </Link>
       )}

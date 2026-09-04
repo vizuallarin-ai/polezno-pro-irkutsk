@@ -1073,7 +1073,9 @@ test("lead notification payload excludes PII keys", () => {
 });
 
 test("CTA B2C and B2B destinations stay separated", () => {
-  assert.equal(CTA.b2cPrimary.href, "/contact");
+  assert.equal(CTA.discovery.href, "/map");
+  assert.equal(CTA.assist.href, "/contact");
+  assert.equal(CTA.b2cPrimary.href, "/map");
   assert.equal(CTA.b2bPrimary.href, "/business");
   assert.ok(buildContactHref({ intent: "walk" }).startsWith("/contact?"));
   assert.ok(!buildContactHref({ intent: "walk" }).includes("@"));
@@ -1093,11 +1095,15 @@ test("CTA B2C and B2B destinations stay separated", () => {
   assert.equal(excursionContactHref("flagship").includes("excursion"), true);
   assert.deepEqual(
     resolvePublicMainCta({ label: "Спланировать", href: "/business" }),
-    { label: CTA.b2cPrimary.label, href: CTA.b2cPrimary.href, description: undefined }
+    { label: CTA.discovery.label, href: CTA.discovery.href, description: undefined }
   );
   assert.equal(
     resolvePublicMainCta({ label: "Подобрать прогулку", href: "/contact" }).href,
-    "/contact"
+    "/map"
+  );
+  assert.equal(
+    resolvePublicMainCta({ label: "Подобрать прогулку", href: "/contact" }).label,
+    CTA.discovery.label
   );
 });
 

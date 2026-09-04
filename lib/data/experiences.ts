@@ -46,7 +46,7 @@ export const EXPERIENCE_FILTERS: Array<{ id: ExperienceFilterId; label: string }
   { id: "free", label: "Бесплатные" },
   { id: "paid", label: "Платные" },
   { id: "self-guided", label: "Самостоятельно" },
-  { id: "guided", label: "С гидом" },
+  { id: "guided", label: "С Алёной" },
   { id: "corporate", label: "Корпоратив" },
   { id: "walking", label: "Пешие" },
   { id: "1-2h", label: "1–2 ч" },

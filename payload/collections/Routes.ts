@@ -237,7 +237,7 @@ export const Routes: CollectionConfig = {
           name: "bookingCta",
           type: "text",
           label: "Текст кнопки записи",
-          admin: { description: "Например: «Пройти с гидом»" },
+          admin: { description: "Например: «Пройти с Алёной»" },
         },
         {
           name: "bookingDescription",

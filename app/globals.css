@@ -51,8 +51,34 @@
   );
 
   /* Typography */
-  --font-sans: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-onest), "Helvetica Neue", Arial, sans-serif;
   --font-serif: var(--font-cormorant), Georgia, serif;
+
+  /* Semantic type scale (rem) */
+  --text-display-xl: clamp(2.75rem, 5vw + 1rem, 5rem);
+  --text-display-l: clamp(2.25rem, 3.5vw + 1rem, 3.75rem);
+  --text-h1: clamp(1.875rem, 2vw + 1rem, 2.5rem);
+  --text-h2: clamp(1.5rem, 1.2vw + 0.9rem, 2rem);
+  --text-h3: clamp(1.125rem, 0.5vw + 1rem, 1.25rem);
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-ui-label: 0.8125rem;
+  --text-button: 0.875rem;
+  --text-nav: 0.9375rem;
+  --text-nav-secondary: 0.875rem;
+  --text-meta: 0.75rem;
+
+  --leading-display: 1.1;
+  --leading-heading: 1.2;
+  --leading-body: 1.6;
+  --leading-ui: 1.35;
+
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.015em;
+  --tracking-ui: 0;
+  --tracking-meta: 0.04em;
 }
 
 /* ─── Tailwind v4 theme extension ───────────────────────────────── */
@@ -93,7 +119,6 @@
   /* Fonts */
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
-  --font-mono: var(--font-geist-mono, "Courier New", monospace);
 
   /* Radius */
   --radius-sm: calc(var(--radius) - 2px);
@@ -127,6 +152,149 @@ body {
 /* ─── Typography scale helpers ───────────────────────────────────── */
 .font-serif {
   font-family: var(--font-serif);
+}
+
+/* Editorial (Cormorant) — H1 / key H2 / accents only */
+.type-display-xl {
+  font-family: var(--font-serif);
+  font-size: var(--text-display-xl);
+  font-weight: 300;
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.type-display-l {
+  font-family: var(--font-serif);
+  font-size: var(--text-display-l);
+  font-weight: 300;
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+/* UI headings (Onest) — catalog / page chrome */
+.type-h1 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h1);
+  font-weight: 500;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+.type-h2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h2);
+  font-weight: 500;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+.type-h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h3);
+  font-weight: 500;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-ui);
+  text-wrap: balance;
+}
+
+.type-body-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  font-weight: 400;
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+}
+
+.type-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+}
+
+.type-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: 400;
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+}
+
+.type-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: var(--leading-ui);
+  letter-spacing: var(--tracking-meta);
+}
+
+.type-ui-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-ui-label);
+  font-weight: 500;
+  line-height: var(--leading-ui);
+  letter-spacing: var(--tracking-ui);
+}
+
+.type-button {
+  font-family: var(--font-sans);
+  font-size: var(--text-button);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: var(--tracking-ui);
+  white-space: nowrap;
+}
+
+.type-nav {
+  font-family: var(--font-sans);
+  font-size: var(--text-nav);
+  font-weight: 500;
+  line-height: var(--leading-ui);
+  letter-spacing: var(--tracking-ui);
+  white-space: nowrap;
+}
+
+.type-nav-secondary {
+  font-family: var(--font-sans);
+  font-size: var(--text-nav-secondary);
+  font-weight: 400;
+  line-height: var(--leading-ui);
+  letter-spacing: var(--tracking-ui);
+  white-space: nowrap;
+}
+
+.type-meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: var(--leading-ui);
+  letter-spacing: var(--tracking-meta);
+}
+
+/* Wrapping utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.cta-label {
+  white-space: nowrap;
+}
+
+@media (max-width: 379px) {
+  .cta-label-wrap-sm {
+    white-space: normal;
+    text-wrap: balance;
+    text-align: center;
+  }
 }
 
 /* ─── Smooth scrolling (Lenis overrides default scroll-behavior) ── */

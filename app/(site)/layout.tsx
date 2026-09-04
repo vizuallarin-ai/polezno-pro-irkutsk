@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
+import { Onest, Cormorant_Garamond } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
@@ -16,18 +16,14 @@ import "../globals.css";
 
 const siteUrl = getSiteUrl();
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin", "latin-ext"],
+/** UI sans — Cyrillic-first (Onest). Replaces Geist latin→Arial fallback. */
+const onest = Onest({
+  variable: "--font-onest",
+  subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-});
-
+/** Editorial display — limited to H1 / key H2 / accents. */
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin", "latin-ext", "cyrillic"],
@@ -110,7 +106,7 @@ export default async function SiteLayout({
   return (
     <html
       lang="ru"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable}`}
+      className={`${onest.variable} ${cormorant.variable}`}
     >
       <head>
         <YandexMetrikaHead />

@@ -108,7 +108,7 @@ export function RouteVisualCard({ route, className }: RouteVisualCardProps) {
             href={routeContactHref(route.slug, "route-card")}
             className="inline-flex h-10 items-center justify-center border border-border px-4 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
           >
-            Пройти с гидом
+            Пройти с Алёной
           </Link>
         </div>
       </div>

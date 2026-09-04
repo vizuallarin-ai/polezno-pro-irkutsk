@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Menu, X, ChevronDown, Mail, MessageCircle } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types/navigation";
 import {
@@ -12,6 +13,11 @@ import {
   DEFAULT_CTA,
 } from "@/lib/navigation-constants";
 import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
+import {
+  CTA,
+  assistWalkHref,
+  buildContactHref,
+} from "@/lib/cta-constants";
 import type { SiteContacts } from "@/lib/site-settings";
 import { leadAnalyticsProps, trackLeadEvent } from "@/lib/analytics-events";
 
@@ -96,57 +102,6 @@ function NavLink({
   );
 }
 
-function HeaderContacts({
-  contact,
-  className,
-  onClick,
-}: {
-  contact?: SiteContacts;
-  className?: string;
-  onClick?: () => void;
-}) {
-  const items = [
-    contact?.telegram
-      ? { href: contact.telegram, label: "Telegram", external: true }
-      : null,
-    contact?.max ? { href: contact.max, label: "MAX", external: true } : null,
-    contact?.email
-      ? { href: `mailto:${contact.email}`, label: "Email", external: false }
-      : null,
-  ].filter(Boolean) as { href: string; label: string; external: boolean }[];
-
-  if (items.length === 0) return null;
-
-  return (
-    <div className={cn("flex items-center gap-3", className)}>
-      {items.map((item) =>
-        item.external ? (
-          <a
-            key={item.label}
-            href={item.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onClick}
-            className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {item.label}
-          </a>
-        ) : (
-          <a
-            key={item.label}
-            href={item.href}
-            onClick={onClick}
-            className="inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Mail size={12} aria-hidden />
-            {item.label}
-          </a>
-        )
-      )}
-    </div>
-  );
-}
-
 function ContactDropdown({
   contact,
   label = "Связаться",
@@ -168,8 +123,15 @@ function ContactDropdown({
         setOpen(false);
       }
     };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [variant]);
 
   const items = [
@@ -188,7 +150,7 @@ function ContactDropdown({
   if (variant === "list") {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground">
+        <p className="type-caption uppercase tracking-widest text-muted-foreground">
           {label}
         </p>
         {items.map((item) =>
@@ -198,7 +160,7 @@ function ContactDropdown({
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-lg font-light text-foreground hover:text-baikal transition-colors"
+              className="type-body text-foreground hover:text-baikal transition-colors"
               onClick={() => {
                 trackLeadEvent("messenger_click", {
                   sourceType: "header",
@@ -213,7 +175,7 @@ function ContactDropdown({
             <Link
               key={item.label}
               href={item.href}
-              className="text-lg font-light text-foreground hover:text-baikal transition-colors"
+              className="type-body text-foreground hover:text-baikal transition-colors"
               onClick={() => {
                 trackLeadEvent("cta_click", {
                   sourceType: "header",
@@ -235,9 +197,9 @@ function ContactDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="hidden md:inline-flex min-h-[44px] h-11 items-center gap-1.5 px-4 lg:px-5 text-sm border border-border bg-background hover:bg-muted transition-colors duration-200"
+        className="hidden md:inline-flex min-h-[44px] h-11 items-center gap-1.5 px-4 type-button border border-border bg-background hover:bg-muted transition-colors duration-200"
         aria-expanded={open}
-        aria-haspopup="true"
+        aria-haspopup="menu"
         {...leadAnalyticsProps("contact_click", {
           sourceType: "header",
           cta: label,
@@ -252,6 +214,7 @@ function ContactDropdown({
       <AnimatePresence>
         {open && (
           <motion.div
+            role="menu"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
@@ -262,10 +225,11 @@ function ContactDropdown({
               item.external ? (
                 <a
                   key={item.label}
+                  role="menuitem"
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  className="block px-4 py-2 type-body-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   onClick={() => {
                     trackLeadEvent("messenger_click", {
                       sourceType: "header",
@@ -280,8 +244,9 @@ function ContactDropdown({
               ) : (
                 <Link
                   key={item.label}
+                  role="menuitem"
                   href={item.href}
-                  className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  className="block px-4 py-2 type-body-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   onClick={() => {
                     trackLeadEvent(
                       item.label === "Email" ? "email_click" : "cta_click",
@@ -312,8 +277,15 @@ function MoreDropdown({ links }: { links: NavItem[] }) {
         setOpen(false);
       }
     };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, []);
 
   return (
@@ -321,9 +293,9 @@ function MoreDropdown({ links }: { links: NavItem[] }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="relative inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+        className="relative inline-flex items-center gap-1 type-nav-secondary text-muted-foreground hover:text-foreground transition-colors group"
         aria-expanded={open}
-        aria-haspopup="true"
+        aria-haspopup="menu"
       >
         Ещё
         <ChevronDown
@@ -335,11 +307,12 @@ function MoreDropdown({ links }: { links: NavItem[] }) {
       <AnimatePresence>
         {open && (
           <motion.div
+            role="menu"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full z-50 mt-3 min-w-[11rem] border border-border bg-background py-2 shadow-lg"
+            className="absolute right-0 top-full z-50 mt-3 min-w-[12rem] border border-border bg-background py-2 shadow-lg"
           >
             {links.map((link) => (
               <div key={`${link.href}-${link.label}`}>
@@ -348,7 +321,8 @@ function MoreDropdown({ links }: { links: NavItem[] }) {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    role="menuitem"
+                    className="block px-4 py-2 type-body-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     onClick={() => setOpen(false)}
                   >
                     {link.label}
@@ -356,7 +330,8 @@ function MoreDropdown({ links }: { links: NavItem[] }) {
                 ) : (
                   <Link
                     href={link.href}
-                    className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    role="menuitem"
+                    className="block px-4 py-2 type-body-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     onClick={() => setOpen(false)}
                   >
                     {link.label}
@@ -371,6 +346,33 @@ function MoreDropdown({ links }: { links: NavItem[] }) {
   );
 }
 
+function resolveContextualCta(
+  pathname: string | null,
+  fallbackLabel: string,
+  fallbackHref: string
+): { label: string; href: string } {
+  if (pathname?.startsWith("/business")) {
+    return { label: CTA.b2bPrimary.label, href: CTA.b2bPrimary.href };
+  }
+  if (pathname?.match(/^\/map\/[^/]+/) || pathname?.match(/^\/excursions\//)) {
+    const slug =
+      pathname?.split("/")[2] ??
+      pathname?.replace(/^\/(map|excursions)\//, "") ??
+      "";
+    const isExcursion = pathname?.startsWith("/excursions/");
+    return {
+      label: CTA.guided.label,
+      href: buildContactHref({
+        intent: isExcursion ? "excursion" : "route",
+        productType: isExcursion ? "excursion" : "route",
+        slug,
+        sourceBlock: "header-contextual",
+      }),
+    };
+  }
+  return { label: fallbackLabel, href: fallbackHref };
+}
+
 export function Header({
   primaryLinks = PRIMARY_NAV_LINKS,
   moreLinks = MORE_NAV_LINKS,
@@ -381,8 +383,18 @@ export function Header({
   projectDescriptor = "Авторский навигатор по Иркутску от Алёны Ямщиковой",
   contact,
 }: HeaderProps) {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const headerCta = useMemo(
+    () => resolveContextualCta(pathname, ctaLabel, ctaHref),
+    [pathname, ctaLabel, ctaHref]
+  );
+
+  const descriptor =
+    projectDescriptor?.trim() ||
+    "Авторский навигатор по Иркутску от Алёны Ямщиковой";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -402,7 +414,7 @@ export function Header({
   }, [isOpen]);
 
   const navLinkClass =
-    "relative text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group";
+    "relative type-nav text-muted-foreground hover:text-foreground transition-colors duration-200 group";
 
   return (
     <>
@@ -415,16 +427,16 @@ export function Header({
         )}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between gap-4">
-            <div className="flex min-w-0 flex-col">
+          <div className="flex h-16 items-center justify-between gap-4 lg:gap-6">
+            <div className="flex min-w-0 flex-col justify-center gap-0.5">
               <Link
                 href="/"
-                className="text-sm font-medium tracking-widest uppercase text-foreground hover:text-foreground/80 transition-colors"
+                className="type-ui-label tracking-[0.14em] uppercase text-foreground hover:text-foreground/80 transition-colors whitespace-nowrap"
                 aria-label={`${projectName} — на главную`}
               >
                 {projectName}
               </Link>
-              <p className="hidden sm:block text-[11px] text-muted-foreground leading-tight truncate max-w-[220px] lg:max-w-xs">
+              <p className="hidden xl:block type-caption text-muted-foreground leading-snug max-w-[280px] text-pretty">
                 Авторский навигатор по{" "}
                 <Link
                   href={CITY_HISTORY_HREF}
@@ -434,10 +446,14 @@ export function Header({
                 </Link>{" "}
                 от Алёны Ямщиковой
               </p>
+              <p className="hidden md:block xl:hidden type-caption text-muted-foreground leading-snug whitespace-nowrap">
+                Навигатор Алёны Ямщиковой
+              </p>
+              <span className="sr-only">{descriptor}</span>
             </div>
 
             <nav
-              className="hidden lg:flex items-center gap-6 xl:gap-8"
+              className="hidden lg:flex items-center gap-5 xl:gap-7"
               aria-label="Основная навигация"
             >
               {primaryLinks.map((link) => (
@@ -450,31 +466,14 @@ export function Header({
               <MoreDropdown links={moreLinks} />
             </nav>
 
-            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
-              <HeaderContacts
-                contact={contact}
-                className="hidden xl:flex"
-              />
-
-              {contact?.telegram && (
-                <a
-                  href={contact.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="xl:hidden flex items-center justify-center w-10 h-10 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Telegram — написать Алёне"
-                >
-                  <MessageCircle size={20} aria-hidden />
-                </a>
-              )}
-
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <ContactDropdown contact={contact} label={contactCtaLabel} />
 
               <Link
-                href={ctaHref}
-                className="hidden lg:inline-flex min-h-[44px] h-11 items-center px-4 lg:px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
+                href={headerCta.href}
+                className="cta-label hidden lg:inline-flex min-h-[44px] h-11 items-center px-4 xl:px-5 type-button bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
               >
-                {ctaLabel}
+                {headerCta.label}
               </Link>
 
               <button
@@ -498,7 +497,7 @@ export function Header({
             initial="closed"
             animate="open"
             exit="exit"
-            className="fixed inset-0 z-50 bg-background flex flex-col px-6 pt-20 pb-10"
+            className="fixed inset-0 z-50 bg-background flex flex-col px-6 pt-20 pb-10 overflow-y-auto"
           >
             <button
               onClick={() => setIsOpen(false)}
@@ -509,10 +508,13 @@ export function Header({
             </button>
 
             <nav
-              className="flex flex-col gap-6 mt-4"
-              aria-label="Мобильная навигация"
+              className="flex flex-col gap-5 mt-2"
+              aria-label="Основные разделы"
             >
-              {[...primaryLinks, ...moreLinks].map((link, i) => (
+              <p className="type-caption uppercase tracking-widest text-muted-foreground">
+                Главное
+              </p>
+              {primaryLinks.map((link, i) => (
                 <motion.div
                   key={`${link.href}-${link.label}`}
                   custom={i}
@@ -522,7 +524,31 @@ export function Header({
                 >
                   <NavLink
                     link={link}
-                    className="text-3xl font-light tracking-tight text-foreground hover:text-baikal transition-colors duration-200 block"
+                    className="text-2xl sm:text-3xl font-medium tracking-tight text-foreground hover:text-baikal transition-colors duration-200 block"
+                    onClick={() => setIsOpen(false)}
+                  />
+                </motion.div>
+              ))}
+            </nav>
+
+            <nav
+              className="flex flex-col gap-4 mt-10"
+              aria-label="Ещё разделы"
+            >
+              <p className="type-caption uppercase tracking-widest text-muted-foreground">
+                Ещё
+              </p>
+              {moreLinks.map((link, i) => (
+                <motion.div
+                  key={`${link.href}-${link.label}`}
+                  custom={primaryLinks.length + i}
+                  variants={linkVariants}
+                  initial="closed"
+                  animate="open"
+                >
+                  <NavLink
+                    link={link}
+                    className="text-lg font-normal text-foreground/85 hover:text-baikal transition-colors duration-200 block"
                     onClick={() => setIsOpen(false)}
                   />
                 </motion.div>
@@ -534,14 +560,8 @@ export function Header({
               variants={linkVariants}
               initial="closed"
               animate="open"
-              className="mt-8 flex flex-col gap-6"
+              className="mt-10 flex flex-col gap-5 border-t border-border pt-8"
             >
-              <HeaderContacts
-                contact={contact}
-                className="flex-col items-start gap-4"
-                onClick={() => setIsOpen(false)}
-              />
-
               <ContactDropdown
                 contact={contact}
                 label={contactCtaLabel}
@@ -550,11 +570,19 @@ export function Header({
               />
 
               <Link
-                href={ctaHref}
+                href={headerCta.href}
                 onClick={() => setIsOpen(false)}
-                className="inline-flex min-h-[44px] h-12 items-center px-8 text-base bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-fit"
+                className="cta-label cta-label-wrap-sm inline-flex min-h-[44px] h-12 items-center justify-center px-8 type-button bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-full sm:w-fit"
               >
-                {ctaLabel}
+                {headerCta.label}
+              </Link>
+
+              <Link
+                href={assistWalkHref("mobile-menu")}
+                onClick={() => setIsOpen(false)}
+                className="type-body-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {CTA.assist.label}
               </Link>
             </motion.div>
           </motion.div>

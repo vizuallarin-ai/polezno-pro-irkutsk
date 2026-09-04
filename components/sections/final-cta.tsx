@@ -68,10 +68,9 @@ export function FinalCta() {
           </p>
           <h2
             id="cta-heading"
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight text-white leading-[1.1] mb-8"
+            className="type-display-l text-white mb-8 max-w-[12ch]"
           >
-            Готовы
-            <br />
+            Готовы{" "}
             <span className="font-serif italic">гулять?</span>
           </h2>
           <p className="text-white/60 leading-relaxed mb-12 max-w-md text-base">
@@ -82,19 +81,19 @@ export function FinalCta() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/map"
-              className="inline-flex h-12 items-center justify-center gap-2 px-8 text-sm font-medium bg-white text-baikal hover:bg-white/90 transition-colors duration-200 active:scale-[0.98] group"
+              className="cta-label inline-flex h-12 items-center justify-center gap-2 px-8 type-button bg-white text-baikal hover:bg-white/90 transition-colors duration-200 active:scale-[0.98] group"
             >
-              К маршрутам
+              Смотреть маршруты
               <ArrowRight
                 size={14}
                 className="transition-transform duration-200 group-hover:translate-x-1"
               />
             </Link>
             <Link
-              href="/contact"
-              className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium border border-white/30 text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.98]"
+              href="/contact?intent=walk&sourceBlock=final-cta#lead-form"
+              className="cta-label cta-label-wrap-sm inline-flex h-12 items-center justify-center px-8 type-button border border-white/30 text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.98]"
             >
-              Написать нам
+              Подобрать мне прогулку
             </Link>
           </div>
         </div>

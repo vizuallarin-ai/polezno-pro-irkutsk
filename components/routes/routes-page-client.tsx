@@ -81,12 +81,13 @@ export function RoutesPageClient({
       <>
         <section className="border-b border-border bg-background">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
-            <h1 className="text-3xl lg:text-4xl font-medium text-foreground mb-3">
-              Маршруты и экскурсии
+            <h1 className="type-h1 text-foreground mb-3">
+              Маршруты по Иркутску
             </h1>
-            <p className="text-muted-foreground text-sm lg:text-base max-w-2xl leading-relaxed">
-              Самостоятельные прогулки по Иркутску и авторские экскурсии с гидом.
-              Каталог откроется автоматически после редакционной публикации.
+            <p className="type-body text-muted-foreground max-w-2xl">
+              Авторские прогулки и экскурсии: самостоятельно по карте или с
+              Алёной. Каталог готов к публикации — материалы появляются здесь
+              после редакционной подготовки.
             </p>
           </div>
         </section>
@@ -94,11 +95,11 @@ export function RoutesPageClient({
         <section className="mx-auto max-w-7xl px-6 lg:px-8 py-8 lg:py-12">
           <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-10">
             <div className="order-1">
-              <PrelaunchState surface="map" compact />
+              <PrelaunchState surface="map" />
             </div>
             <div className="order-2 mt-8 lg:mt-0">
               <div className="sticky top-20">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3 hidden lg:block">
+                <p className="type-caption uppercase tracking-widest text-muted-foreground mb-3 hidden lg:block">
                   Карта города
                 </p>
                 <div className="h-[min(45vh,300px)] sm:h-[400px] lg:h-[min(70vh,560px)] border border-border overflow-hidden">
@@ -127,11 +128,11 @@ export function RoutesPageClient({
     <>
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
-          <h1 className="text-3xl lg:text-4xl font-medium text-foreground mb-3">
-            Маршруты и экскурсии
+          <h1 className="type-h1 text-foreground mb-3">
+            Маршруты по Иркутску
           </h1>
-          <p className="text-muted-foreground text-sm lg:text-base max-w-2xl leading-relaxed">
-            Готовые прогулки по Иркутску и авторские экскурсии с гидом: точки на
+          <p className="type-body text-muted-foreground max-w-2xl">
+            Готовые прогулки по Иркутску и авторские экскурсии с Алёной: точки на
             карте, форматы прохождения и запись на дату.
           </p>
           <div className="mt-6">

@@ -98,13 +98,13 @@ function RoutePassageBlock({
     },
     {
       key: "guided",
-      title: "С гидом",
+      title: "С Алёной",
       text:
         route.bookingDescription ||
-        "Гид добавит контекст, истории и детали, которые не видны с тротуара.",
+        "Алёна добавит контекст, истории и детали, которые не видны с тротуара.",
       available: route.isGuidedAvailable !== false,
       cta: {
-        label: route.bookingCta || "Пройти с гидом",
+        label: route.bookingCta || "Пройти с Алёной",
         href: guidedHref,
         scroll: false,
       },
@@ -279,7 +279,7 @@ export function RouteDetailClient({
                 href={guideHref}
                 className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
               >
-                {route.bookingCta || "Пройти с гидом"}
+                {route.bookingCta || "Пройти с Алёной"}
                 <ArrowRight size={14} />
               </Link>
             )}

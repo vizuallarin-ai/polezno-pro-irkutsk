@@ -66,11 +66,11 @@ const DEFAULTS: SiteSettingsData = {
   authorRole: BRAND.authorRole,
   authorShortText: BRAND.authorShortText,
   mainCta: {
-    label: "Подобрать прогулку",
-    href: "/contact",
-    description: "Подберём самостоятельный маршрут или формат с гидом",
+    label: "Смотреть маршруты",
+    href: "/map",
+    description: "Авторские прогулки: самостоятельно или с Алёной",
   },
-  secondaryCta: { label: "Для бизнеса", href: "/business" },
+  secondaryCta: { label: "Подобрать мне прогулку", href: "/contact" },
   contact: {
     phone: "+7 (3952) 000-00-00",
     email: "info@irkportal.ru",
