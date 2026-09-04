@@ -70,7 +70,7 @@ export async function ContactCtaSection({
   const resolvedDescription = description || copy.description;
   const resolvedRequestType = defaultRequestType || copy.defaultRequestType;
   const resolvedSourceType = sourceType || variant;
-  const useCompact = compact || messengersOnly;
+  const useCompact = true;
   const showLeadForm = showForm && !messengersOnly;
 
   return (
@@ -89,32 +89,41 @@ export async function ContactCtaSection({
           )}
         >
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-              Связаться
+            <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
+              {variant === "business"
+                ? "Для бизнеса"
+                : variant === "route" || variant === "route_detail"
+                  ? "Пройти с Алёной"
+                  : "Подобрать мне прогулку"}
             </p>
             <h2
               id={`cta-${resolvedSourceType}`}
-              className="text-2xl lg:text-3xl font-light tracking-tight text-foreground mb-4"
+              className="type-h2 text-foreground mb-4"
             >
               {resolvedTitle}
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-md">
+            <p className="type-body-sm text-muted-foreground mb-6 max-w-md text-pretty">
               {resolvedDescription}
             </p>
 
             {showMessengers && (
-              <MessengerLinks
-                contact={settings.contact}
-                sourceType={resolvedSourceType}
-                sourceBlock={sourceBlock}
-                layout={useCompact ? "row" : "column"}
-              />
+              <div className="flex flex-col gap-3">
+                <p className="type-caption uppercase tracking-widest text-muted-foreground">
+                  Или напишите напрямую
+                </p>
+                <MessengerLinks
+                  contact={settings.contact}
+                  sourceType={resolvedSourceType}
+                  sourceBlock={sourceBlock}
+                  layout={useCompact ? "row" : "column"}
+                />
+              </div>
             )}
 
             {variant === "photo" && (
               <Link
                 href="/explore/photos/submit"
-                className="inline-flex mt-6 text-sm underline underline-offset-4 hover:text-baikal transition-colors"
+                className="inline-flex mt-6 type-body-sm underline underline-offset-4 hover:text-baikal transition-colors min-h-[44px] items-center"
               >
                 {primaryCtaLabel || copy.primaryCtaLabel} →
               </Link>
@@ -125,10 +134,15 @@ export async function ContactCtaSection({
             <div className="border border-border bg-background p-6 lg:p-8">
               <LeadForm
                 id={formId}
-                variant={useCompact ? "compact" : "full"}
+                variant="compact"
                 sourceType={resolvedSourceType}
                 sourceSlug={sourceSlug}
-                sourceTitle={sourceTitle || routeContext?.title || productContext?.title}
+                sourceTitle={
+                  sourceTitle ||
+                  routeContext?.title ||
+                  productContext?.title ||
+                  arPostcardContext?.title
+                }
                 sourceId={sourceId}
                 sourceBlock={sourceBlock}
                 defaultRequestType={resolvedRequestType}
@@ -139,13 +153,17 @@ export async function ContactCtaSection({
                 photoContext={photoContext}
                 arPostcardContext={arPostcardContext}
                 showDate={variant === "route" || variant === "route_detail"}
-                showPeopleCount={variant === "route" || variant === "route_detail"}
-                showFormat={variant === "route_detail"}
+                showPeopleCount={
+                  variant === "route" || variant === "route_detail"
+                }
                 submitLabel={primaryCtaLabel || copy.primaryCtaLabel}
                 consentText={settings.leadSettings.consentText}
                 consentVersion={settings.leadSettings.consentVersion}
                 privacyPolicyUrl={settings.leadSettings.privacyPolicyUrl}
                 requireConsent
+                fallbackTelegram={settings.contact.telegram}
+                fallbackMax={settings.contact.max}
+                fallbackEmail={settings.contact.email}
               />
             </div>
           )}

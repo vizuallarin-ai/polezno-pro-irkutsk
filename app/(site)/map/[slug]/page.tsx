@@ -82,7 +82,8 @@ export default async function RouteDetailPage({ params }: PageProps) {
         sourceBlock="route-detail-cta"
         routeContext={{ id: route.id, slug: route.slug, title: route.title }}
         compact
-        showForm={false}
+        showForm
+        formId="lead-form"
       />
     </>
   );

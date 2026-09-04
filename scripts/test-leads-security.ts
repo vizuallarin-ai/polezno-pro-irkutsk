@@ -70,13 +70,18 @@ function testEscapeHtml() {
 }
 
 function testCtaHref() {
+  // Unsafe / legacy primary CTAs remap to B2C discovery browse (/map).
   assert.equal(
     resolvePublicMainCta({ href: "javascript:alert(1)" }).href,
-    "/contact"
+    "/map"
   );
   assert.equal(
     resolvePublicMainCta({ href: "/business" }).href,
-    "/contact"
+    "/map"
+  );
+  assert.equal(
+    resolvePublicMainCta({ href: "/contact" }).href,
+    "/map"
   );
   assert.equal(
     resolvePublicMainCta({ href: "/map" }).href,

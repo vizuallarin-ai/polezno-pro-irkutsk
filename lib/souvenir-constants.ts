@@ -11,7 +11,8 @@ export const MAKER_ADVERTISING_CONSENT =
 
 export const productOrderLeadSchema = z.object({
   name: z.string().min(2, "Укажите имя"),
-  email: z.string().email("Некорректный email"),
+  contact: z.string().min(3, "Укажите контакт для связи").max(200),
+  email: z.string().email("Некорректный email").optional().or(z.literal("")),
   phone: z.string().optional(),
   telegram: z.string().optional(),
   message: z.string().optional(),

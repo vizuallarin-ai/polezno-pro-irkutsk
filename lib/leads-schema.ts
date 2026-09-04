@@ -85,19 +85,30 @@ function withContactRefine<T extends z.ZodType>(schema: T) {
 
 export const compactLeadSchema = withContactRefine(z.object(baseLeadFields));
 
+/** Public B2C: name + contact + consent; message optional. */
+export const publicB2cLeadSchema = withContactRefine(
+  z.object({
+    ...baseLeadFields,
+    message: z.string().max(5000).optional().or(z.literal("")),
+    consentAccepted: z.boolean().refine((v) => v === true, {
+      message: "Подтвердите согласие на обработку данных",
+    }),
+  })
+);
+
+/** @deprecated Prefer publicB2cLeadSchema — message no longer required for first contact */
 export const fullLeadSchema = withContactRefine(
   z.object({
     ...baseLeadFields,
-    message: z.string().min(10, "Опишите задачу").max(5000),
-    consentAccepted: z
-      .boolean()
-      .refine((v) => v === true, {
-        message: "Подтвердите согласие на обработку данных",
-      }),
+    message: z.string().max(5000).optional().or(z.literal("")),
+    consentAccepted: z.boolean().refine((v) => v === true, {
+      message: "Подтвердите согласие на обработку данных",
+    }),
   })
 );
 
 export type CompactLeadInput = z.infer<typeof compactLeadSchema>;
+export type PublicB2cLeadInput = z.infer<typeof publicB2cLeadSchema>;
 export type FullLeadInput = z.infer<typeof fullLeadSchema>;
 
 export function extractUtmFromUrl(url: string): Partial<CompactLeadInput> {

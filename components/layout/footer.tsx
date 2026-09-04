@@ -8,17 +8,18 @@ import { CITY_HISTORY_HREF } from "@/lib/brand-constants";
 
 const footerNav = {
   main: [
-    { href: "/map", label: "Маршруты и экскурсии" },
+    { href: "/map", label: "Маршруты" },
     { href: "/explore", label: "Исследовать" },
     { href: "/business", label: "Для бизнеса" },
     { href: "/about", label: "О проекте" },
-    { href: "/contact", label: "Контакты" },
+    { href: "/contact?intent=walk&sourceBlock=footer#lead-form", label: "Подобрать мне прогулку" },
   ],
   more: [
     { href: "/events", label: "События" },
     { href: BOOSTY_URL, label: "Клуб на Boosty", external: true },
     { href: "/souvenirs", label: "Сувениры" },
     { href: CITY_HISTORY_HREF, label: "История Иркутска" },
+    { href: "/contact", label: "Контакты" },
   ],
 };
 

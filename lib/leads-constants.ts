@@ -130,38 +130,38 @@ export function requestTypeFromLegacy(input: {
 
 export const CTA_VARIANT_COPY = {
   default: {
-    title: "Спланировать визит",
+    title: "Подобрать мне прогулку",
     description:
-      "Напишите, когда вы будете в Иркутске — подберём маршруты, экскурсии или программу под ваши даты.",
-    primaryCtaLabel: "Спланировать визит",
-    defaultRequestType: "plan_visit" as RequestType,
+      "Оставьте имя и контакт — подберём самостоятельный маршрут или формат с Алёной. Длинное сообщение не обязательно.",
+    primaryCtaLabel: "Подобрать мне прогулку",
+    defaultRequestType: "route_request" as RequestType,
   },
   route: {
     title: "Пройти с Алёной",
     description:
-      "Маршруты можно пройти самостоятельно или адаптировать под прогулку с автором навигатора.",
+      "Можно пройти маршрут самостоятельно или запросить прогулку с автором навигатора.",
     primaryCtaLabel: "Пройти с Алёной",
     defaultRequestType: "guided_route" as RequestType,
   },
   route_detail: {
     title: "Хотите пройти этот маршрут с Алёной?",
     description:
-      "Напишите, когда вы будете в Иркутске и что вам интересно — маршрут можно пройти самостоятельно или адаптировать под прогулку с Алёной.",
-    primaryCtaLabel: "Обсудить маршрут",
+      "Контекст маршрута уже сохранён. Нужны имя и контакт — даты и компанию можно уточнить при желании.",
+    primaryCtaLabel: "Пройти с Алёной",
     defaultRequestType: "guided_route" as RequestType,
   },
   business: {
     title: "Есть задача для гостей, команды или проекта?",
     description:
       "Опишите, что нужно: программа по Иркутску, сопровождение турпроекта или обучение персонала.",
-    primaryCtaLabel: "Обсудить задачу",
+    primaryCtaLabel: "Обсудить программу",
     defaultRequestType: "business_request" as RequestType,
   },
   souvenir: {
-    title: "Хотите уточнить наличие?",
+    title: "Уточнить наличие",
     description:
-      "Напишите по товару — уточним наличие, предзаказ или связь с мастером.",
-    primaryCtaLabel: "Уточнить товар",
+      "Напишите по товару — уточним наличие, предзаказ или связь с мастером. Название позиции передаётся автоматически.",
+    primaryCtaLabel: "Уточнить наличие",
     defaultRequestType: "product_question" as RequestType,
   },
   photo: {
@@ -175,54 +175,54 @@ export const CTA_VARIANT_COPY = {
     title: "Увидеть это место",
     description:
       "Хотите пройти мимо этого места в маршруте или узнать больше об истории кадра?",
-    primaryCtaLabel: "Увидеть это место",
+    primaryCtaLabel: "Подобрать мне прогулку",
     defaultRequestType: "content_question" as RequestType,
   },
   ar_postcard: {
-    title: "Предзаказать открытку",
+    title: "Написать об открытке",
     description:
-      "Оставьте контакт — сообщим о готовности набора или поможем с предзаказом.",
-    primaryCtaLabel: "Предзаказать открытку",
+      "Оставьте контакт — сообщим о готовности набора или поможем с предзаказом. Контекст открытки сохраняется автоматически.",
+    primaryCtaLabel: "Написать об открытке",
     defaultRequestType: "ar_postcard_preorder" as RequestType,
   },
   material: {
     title: "Увидеть это в маршруте",
     description:
       "Расскажите, что вас заинтересовало — подскажем маршрут или формат прогулки.",
-    primaryCtaLabel: "Увидеть это в маршруте",
+    primaryCtaLabel: "Подобрать мне прогулку",
     defaultRequestType: "content_question" as RequestType,
   },
   explore: {
     title: "Задать вопрос о городе",
     description:
       "Если хотите углубиться в тему или собрать маршрут по материалам Иркпортала — напишите.",
-    primaryCtaLabel: "Задать вопрос о городе",
+    primaryCtaLabel: "Подобрать мне прогулку",
     defaultRequestType: "content_question" as RequestType,
   },
   maker: {
     title: "Связаться по товарам",
     description:
       "Уточним наличие, сроки изготовления или поможем с заказом у мастера.",
-    primaryCtaLabel: "Связаться по товарам",
+    primaryCtaLabel: "Связаться",
     defaultRequestType: "product_question" as RequestType,
   },
   about: {
-    title: "Написать Алёне",
+    title: "Подобрать мне прогулку",
     description:
-      "По вопросам проекта, сотрудничества, маршрутов и программ — напишите напрямую.",
-    primaryCtaLabel: "Написать Алёне",
+      "По вопросам проекта, маршрутов и программ — напишите. Длинное сообщение не обязательно.",
+    primaryCtaLabel: "Подобрать мне прогулку",
     defaultRequestType: "general_contact" as RequestType,
   },
   contact: {
-    title: "Отправить сообщение",
-    description: "Опишите запрос — ответим в течение рабочего дня.",
-    primaryCtaLabel: "Отправить сообщение",
+    title: "Подобрать мне прогулку",
+    description: "Оставьте имя и контакт — ответим по указанному способу связи.",
+    primaryCtaLabel: "Подобрать мне прогулку",
     defaultRequestType: "general_contact" as RequestType,
   },
   compact: {
     title: "Связаться",
     description: "Напишите — ответим по указанному контакту.",
-    primaryCtaLabel: "Написать",
+    primaryCtaLabel: "Связаться",
     defaultRequestType: "general_contact" as RequestType,
   },
 } as const;

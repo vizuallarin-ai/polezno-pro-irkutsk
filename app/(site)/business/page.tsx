@@ -3,6 +3,7 @@ import { BusinessPageContent } from "@/components/business/business-page-content
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { BUSINESS_SEO } from "@/lib/business-constants";
 import { getBusinessPageData } from "@/lib/business-data";
+import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
@@ -51,7 +52,10 @@ function buildInitialMessage(params: {
 
 export default async function BusinessPage({ searchParams }: BusinessPageProps) {
   const params = await searchParams;
-  const { corporateRoutes, businessArticles } = await getBusinessPageData();
+  const [{ corporateRoutes, businessArticles }, settings] = await Promise.all([
+    getBusinessPageData(),
+    getSiteSettings(),
+  ]);
 
   return (
     <>
@@ -63,6 +67,9 @@ export default async function BusinessPage({ searchParams }: BusinessPageProps) 
         initialExcursionSlug={params.excursion}
         initialSourceBlock={params.sourceBlock || "hero"}
         initialMessage={buildInitialMessage(params)}
+        fallbackTelegram={settings.contact.telegram}
+        fallbackMax={settings.contact.max}
+        fallbackEmail={settings.contact.email}
       />
       <ContactCtaSection
         variant="business"

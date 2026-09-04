@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { getSiteSettings } from "@/lib/site-settings";
 import { ContactForm } from "@/components/forms/contact-form";
 import { MessengerLinks } from "@/components/contact/messenger-links";
 import { CTA } from "@/lib/cta-constants";
+import type { RequestType } from "@/lib/leads-constants";
 
 export const metadata: Metadata = {
   title: "Контакты — подобрать прогулку",
@@ -16,6 +18,166 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 function first(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
   return v;
+}
+
+function resolveContactChrome(input: {
+  intent?: string;
+  productType?: string;
+  slug?: string;
+  articleSlug?: string;
+}): {
+  eyebrow: string;
+  title: ReactNode;
+  description: string;
+  requestType: RequestType;
+  submitLabel: string;
+  showDate: boolean;
+  showPeople: boolean;
+  showFormat: boolean;
+} {
+  const { intent, productType, slug, articleSlug } = input;
+
+  if (productType === "excursion" || intent === "excursion") {
+    return {
+      eyebrow: CTA.guided.label,
+      title: (
+        <>
+          Пройти с <span className="font-serif italic">Алёной</span>
+        </>
+      ),
+      description:
+        "Оставьте имя и контакт — маршрут уже понятен из запроса. При желании уточните даты и компанию.",
+      requestType: "guided_route",
+      submitLabel: CTA.guided.label,
+      showDate: true,
+      showPeople: true,
+      showFormat: false,
+    };
+  }
+
+  if (productType === "route" || intent === "route") {
+    return {
+      eyebrow: CTA.guided.label,
+      title: (
+        <>
+          Пройти этот маршрут с <span className="font-serif italic">Алёной</span>
+        </>
+      ),
+      description:
+        "Контекст маршрута уже сохранён. Нужны только имя и способ связи — детали можно уточнить ниже.",
+      requestType: "guided_route",
+      submitLabel: CTA.guided.label,
+      showDate: true,
+      showPeople: true,
+      showFormat: true,
+    };
+  }
+
+  if (intent === "walk") {
+    return {
+      eyebrow: CTA.assist.label,
+      title: (
+        <>
+          Подобрать <span className="font-serif italic">прогулку</span>
+        </>
+      ),
+      description:
+        "Расскажите, как с вами связаться — подберём самостоятельный маршрут или формат с Алёной. Длинное сообщение не обязательно.",
+      requestType: "route_request",
+      submitLabel: CTA.assist.label,
+      showDate: true,
+      showPeople: true,
+      showFormat: false,
+    };
+  }
+
+  if (intent === "souvenir") {
+    return {
+      eyebrow: "Сувениры",
+      title: (
+        <>
+          Узнать о <span className="font-serif italic">коллекции</span>
+        </>
+      ),
+      description:
+        "Оставьте контакт — уточним наличие или сообщим о запуске. Название позиции передаётся автоматически, если вы пришли со страницы товара.",
+      requestType: "souvenir_general",
+      submitLabel: "Написать о коллекции",
+      showDate: false,
+      showPeople: false,
+      showFormat: false,
+    };
+  }
+
+  if (intent === "ar") {
+    return {
+      eyebrow: "AR-открытки",
+      title: (
+        <>
+          Вопрос по <span className="font-serif italic">открытке</span>
+        </>
+      ),
+      description:
+        "Контекст открытки сохраняется автоматически. Достаточно имени и контакта.",
+      requestType: "ar_postcard_preorder",
+      submitLabel: "Написать об открытке",
+      showDate: false,
+      showPeople: false,
+      showFormat: false,
+    };
+  }
+
+  if (intent === "photo") {
+    return {
+      eyebrow: "Фотоархив",
+      title: (
+        <>
+          Вопрос по <span className="font-serif italic">кадру</span>
+        </>
+      ),
+      description:
+        "Можно спросить о месте на фото или предложить свой снимок — сначала оставьте контакт.",
+      requestType: "photo_submission_question",
+      submitLabel: CTA.contactSecondary.label,
+      showDate: false,
+      showPeople: false,
+      showFormat: false,
+    };
+  }
+
+  if (intent === "explore" || articleSlug) {
+    return {
+      eyebrow: "Исследовать",
+      title: (
+        <>
+          Вопрос о <span className="font-serif italic">городе</span>
+        </>
+      ),
+      description:
+        "Если материал навёл на мысль о маршруте — напишите. Ссылку на статью сохраним в заявке.",
+      requestType: "content_question",
+      submitLabel: CTA.assist.label,
+      showDate: false,
+      showPeople: false,
+      showFormat: false,
+    };
+  }
+
+  return {
+    eyebrow: CTA.assist.label,
+    title: (
+      <>
+        Напишите <span className="font-serif italic">Алёне</span>
+      </>
+    ),
+    description:
+      "Оставьте имя и контакт — подберём самостоятельный маршрут или формат с Алёной. Длинное сообщение не обязательно.",
+    requestType: "general_contact",
+    submitLabel: CTA.assist.label,
+    showDate: false,
+    showPeople: false,
+    showFormat: false,
+  };
 }
 
 export default async function ContactPage({
@@ -31,21 +193,35 @@ export default async function ContactPage({
   const articleSlug = first(sp.article);
   const sourceBlock = first(sp.sourceBlock) ?? "contact-page";
 
-  const defaultRequestType =
-    productType === "excursion" || intent === "excursion"
-      ? "guided_route"
-      : productType === "route" || intent === "route" || intent === "walk"
-        ? "route_request"
-        : "general_contact";
+  const chrome = resolveContactChrome({
+    intent,
+    productType,
+    slug,
+    articleSlug,
+  });
 
-  const contextBits = [
-    slug ? `Тема: ${productType ?? intent ?? "запрос"} / ${slug}` : null,
-    articleSlug ? `Статья: ${articleSlug}` : null,
-  ].filter(Boolean);
+  const isRouteLike =
+    productType === "route" ||
+    intent === "route" ||
+    (intent === "walk" && Boolean(slug));
 
-  const defaultMessage = contextBits.length
-    ? `${contextBits.join(". ")}.\n\n`
-    : "";
+  const routeContext =
+    isRouteLike && slug
+      ? {
+          slug,
+          title: slug.replace(/-/g, " "),
+        }
+      : productType === "route" && slug
+        ? { slug, title: slug.replace(/-/g, " ") }
+        : undefined;
+
+  const sourceTitle = routeContext?.title
+    ? routeContext.title
+    : articleSlug
+      ? `Статья: ${articleSlug}`
+      : slug
+        ? `${productType ?? intent ?? "request"}:${slug}`
+        : undefined;
 
   return (
     <main className="pt-24 min-h-screen">
@@ -54,20 +230,16 @@ export default async function ContactPage({
           <div className="lg:sticky lg:top-32 lg:self-start flex flex-col gap-10">
             <div>
               <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
-                {CTA.assist.label}
+                {chrome.eyebrow}
               </p>
-              <h1 className="type-display-l text-foreground mb-6 max-w-[12ch]">
-                Напишите{" "}
-                <span className="font-serif italic">Алёне</span>
+              <h1 className="type-display-l text-foreground mb-6 max-w-[14ch]">
+                {chrome.title}
               </h1>
-              <p className="type-body text-muted-foreground mb-4 max-w-sm">
-                Оставьте контакты — подберём самостоятельный маршрут или формат с
-                Алёной под ваш день. После отправки заявка сохранится, и с вами
-                свяжутся по указанному способу связи.
+              <p className="type-body text-muted-foreground mb-4 max-w-sm text-pretty">
+                {chrome.description}
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-sm">
-                Срок ответа зависит от загрузки. Для программ компаний и
-                делегаций используйте раздел{" "}
+              <p className="type-body-sm text-muted-foreground mb-8 max-w-sm text-pretty">
+                Для программ компаний и делегаций — раздел{" "}
                 <Link
                   href={CTA.b2bNav.href}
                   className="text-baikal hover:underline"
@@ -76,23 +248,31 @@ export default async function ContactPage({
                 </Link>
                 .
               </p>
-              <MessengerLinks
-                contact={settings.contact}
-                sourceType="contact"
-                sourceBlock="contact-page"
-                layout="column"
-              />
+              <div className="flex flex-col gap-3">
+                <p className="type-caption uppercase tracking-widest text-muted-foreground">
+                  Или напишите напрямую
+                </p>
+                <MessengerLinks
+                  contact={settings.contact}
+                  sourceType="contact"
+                  sourceBlock="contact-page"
+                  layout="column"
+                />
+              </div>
             </div>
 
             <div>
-              <h2 className="text-sm font-medium mb-4">С чем можно обратиться</h2>
-              <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+              <h2 className="type-ui-label mb-4">С чем можно обратиться</h2>
+              <ul className="flex flex-col gap-2 type-body-sm text-muted-foreground">
                 <li>Самостоятельная прогулка по городу</li>
-                <li>Экскурсия или персональный подбор с гидом</li>
+                <li>Прогулка с Алёной</li>
                 <li>Вопросы по материалам и фотоархиву</li>
                 <li>
                   Корпоративные программы — через{" "}
-                  <Link href={CTA.b2bNav.href} className="text-baikal hover:underline">
+                  <Link
+                    href={CTA.b2bNav.href}
+                    className="text-baikal hover:underline"
+                  >
                     {CTA.b2bNav.label}
                   </Link>
                 </li>
@@ -106,26 +286,22 @@ export default async function ContactPage({
               consentVersion={settings.leadSettings.consentVersion}
               privacyPolicyUrl={settings.leadSettings.privacyPolicyUrl}
               sourceSlug={slug}
-              sourceTitle={
-                slug
-                  ? `${productType ?? intent ?? "request"}:${slug}`
-                  : articleSlug
-                    ? `article:${articleSlug}`
-                    : undefined
-              }
+              sourceTitle={sourceTitle}
               sourceBlock={sourceBlock}
-              defaultRequestType={defaultRequestType}
-              defaultMessage={defaultMessage}
+              defaultRequestType={chrome.requestType}
+              showDate={chrome.showDate}
+              showPeopleCount={chrome.showPeople}
+              showFormat={chrome.showFormat}
+              submitLabel={chrome.submitLabel}
               materialContext={
                 articleSlug
                   ? { slug: articleSlug, title: articleSlug }
                   : undefined
               }
-              routeContext={
-                productType === "route" && slug
-                  ? { slug, title: slug }
-                  : undefined
-              }
+              routeContext={routeContext}
+              fallbackTelegram={settings.contact.telegram}
+              fallbackMax={settings.contact.max}
+              fallbackEmail={settings.contact.email}
             />
           </div>
         </div>

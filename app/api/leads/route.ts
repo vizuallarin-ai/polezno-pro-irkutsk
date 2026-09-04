@@ -243,7 +243,10 @@ export async function POST(request: NextRequest) {
         data: withTracking(
           {
             name: data.name,
-            email: data.email,
+            contact: data.contact,
+            email:
+              data.email ||
+              (data.contact.includes("@") ? data.contact : undefined),
             phone: data.phone || undefined,
             telegram: data.telegram || undefined,
             message: sanitizeLeadText(data.message, 5000),
@@ -334,7 +337,10 @@ export async function POST(request: NextRequest) {
         data: withTracking(
           {
             name: data.name,
-            email: data.email,
+            contact: data.contact,
+            email:
+              data.email ||
+              (data.contact.includes("@") ? data.contact : undefined),
             phone: data.phone || undefined,
             telegram: data.telegram || undefined,
             message: sanitizeLeadText(data.message, 5000),

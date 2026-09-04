@@ -26,6 +26,9 @@ interface BusinessPageContentProps {
   initialExcursionSlug?: string;
   initialSourceBlock?: string;
   initialMessage?: string;
+  fallbackTelegram?: string | null;
+  fallbackMax?: string | null;
+  fallbackEmail?: string | null;
 }
 
 function buildBusinessFormHref(taskType: string, sourceBlock: string) {
@@ -41,6 +44,9 @@ export function BusinessPageContent({
   initialExcursionSlug,
   initialSourceBlock,
   initialMessage,
+  fallbackTelegram,
+  fallbackMax,
+  fallbackEmail,
 }: BusinessPageContentProps) {
   return (
     <main className="pt-24 min-h-screen">
@@ -362,6 +368,9 @@ export function BusinessPageContent({
               initialExcursionSlug={initialExcursionSlug}
               initialSourceBlock={initialSourceBlock}
               initialMessage={initialMessage}
+              fallbackTelegram={fallbackTelegram}
+              fallbackMax={fallbackMax}
+              fallbackEmail={fallbackEmail}
             />
           </div>
         </div>

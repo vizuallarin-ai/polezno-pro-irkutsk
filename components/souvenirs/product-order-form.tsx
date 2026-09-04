@@ -15,6 +15,7 @@ import {
 } from "@/lib/souvenir-constants";
 import { SOUVENIR_PERSONAL_DATA_CONSENT } from "@/lib/souvenir-constants";
 import type { SouvenirProduct } from "@/lib/souvenirs-types";
+import { trackLeadEvent } from "@/lib/analytics-events";
 
 interface ProductOrderFormProps {
   product: SouvenirProduct;
@@ -37,6 +38,7 @@ export function ProductOrderForm({
     resolver: zodResolver(productOrderLeadSchema),
     defaultValues: {
       name: "",
+      contact: "",
       email: "",
       phone: "",
       telegram: "",
@@ -59,18 +61,43 @@ export function ProductOrderForm({
   const onSubmit = form.handleSubmit(async (values) => {
     setLoading(true);
     setServerError(null);
+    trackLeadEvent("lead_form_submit", {
+      sourceType,
+      sourceSlug: product.slug,
+      sourceTitle: product.title,
+      sourceBlock,
+      requestType: "product_order",
+      productType: "souvenir",
+    });
     try {
+      const payload = {
+        ...values,
+        email: values.contact.includes("@") ? values.contact : values.email,
+      };
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         throw new Error(data.error || "Не удалось отправить заявку");
       }
+      trackLeadEvent("lead_form_success", {
+        sourceType,
+        sourceSlug: product.slug,
+        sourceBlock,
+        requestType: "product_order",
+        productType: "souvenir",
+      });
       setSuccess(true);
     } catch (err) {
+      trackLeadEvent("lead_form_error", {
+        sourceType,
+        sourceSlug: product.slug,
+        sourceBlock,
+        requestType: "product_order",
+      });
       setServerError(err instanceof Error ? err.message : "Ошибка отправки");
     } finally {
       setLoading(false);
@@ -79,11 +106,12 @@ export function ProductOrderForm({
 
   if (success) {
     return (
-      <div className="border border-baikal/30 bg-baikal/5 p-6 text-sm leading-relaxed">
+      <div className="border border-baikal/30 bg-baikal/5 p-6 text-sm leading-relaxed" role="status">
         <p className="font-medium mb-2">Заявка отправлена</p>
         <p className="text-muted-foreground">
-          Мы свяжемся с вами по указанному контакту и уточним детали заказа.
-          Оплата и доставка — по договорённости, без корзины на сайте.
+          Запрос по «{product.title}» получен. Свяжемся по указанному контакту и
+          уточним наличие. Оплата и доставка — по договорённости, без корзины на
+          сайте.
         </p>
       </div>
     );
@@ -99,7 +127,7 @@ export function ProductOrderForm({
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
             Заявка на товар
           </p>
-          <p className="text-sm font-medium">{product.title}</p>
+          <p className="text-sm font-medium">Вы выбрали: {product.title}</p>
           <p className="text-xs text-muted-foreground mt-1">
             Без оплаты на сайте — только запрос, мы ответим лично.
           </p>
@@ -108,26 +136,22 @@ export function ProductOrderForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="order-name">Имя</Label>
-          <Input id="order-name" {...form.register("name")} />
+          <Label htmlFor="order-name">Имя *</Label>
+          <Input id="order-name" autoComplete="name" {...form.register("name")} />
           {form.formState.errors.name && (
-            <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
+            <p className="text-xs text-destructive" role="alert">{form.formState.errors.name.message}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="order-email">Email</Label>
-          <Input id="order-email" type="email" {...form.register("email")} />
-          {form.formState.errors.email && (
-            <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
+        <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor="order-contact">Контакт для связи *</Label>
+          <Input
+            id="order-contact"
+            placeholder="Telegram, телефон, MAX или email"
+            {...form.register("contact")}
+          />
+          {form.formState.errors.contact && (
+            <p className="text-xs text-destructive" role="alert">{form.formState.errors.contact.message}</p>
           )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="order-phone">Телефон</Label>
-          <Input id="order-phone" {...form.register("phone")} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="order-telegram">Telegram</Label>
-          <Input id="order-telegram" {...form.register("telegram")} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="order-qty">Количество</Label>
@@ -136,6 +160,7 @@ export function ProductOrderForm({
             type="number"
             min={1}
             max={99}
+            inputMode="numeric"
             {...form.register("quantity", { valueAsNumber: true })}
           />
         </div>
@@ -146,7 +171,7 @@ export function ProductOrderForm({
         <Textarea
           id="order-message"
           rows={compact ? 3 : 4}
-          placeholder="Адрес доставки, желаемые сроки, вопросы…"
+          placeholder="Адрес доставки, желаемые сроки, вопросы — по желанию"
           {...form.register("message")}
         />
       </div>
@@ -166,16 +191,16 @@ export function ProductOrderForm({
         </Label>
       </div>
       {form.formState.errors.personalDataConsent && (
-        <p className="text-xs text-destructive">
+        <p className="text-xs text-destructive" role="alert">
           {form.formState.errors.personalDataConsent.message}
         </p>
       )}
 
-      {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+      {serverError && <p className="text-sm text-destructive" role="alert">{serverError}</p>}
 
       <Button type="submit" disabled={loading} className="w-full sm:w-auto">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {product.orderCtaLabel}
+        {loading ? "Отправляем…" : product.orderCtaLabel || "Уточнить наличие"}
       </Button>
     </form>
   );

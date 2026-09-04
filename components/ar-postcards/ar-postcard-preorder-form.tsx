@@ -15,6 +15,7 @@ import {
   type ArPostcardPreorderLeadInput,
 } from "@/lib/ar-postcard-constants";
 import type { PublicArPostcard } from "@/types/ar-postcards";
+import { trackLeadEvent } from "@/lib/analytics-events";
 
 interface ArPostcardPreorderFormProps {
   postcard: PublicArPostcard;
@@ -35,6 +36,7 @@ export function ArPostcardPreorderForm({
     resolver: zodResolver(arPostcardPreorderLeadSchema),
     defaultValues: {
       name: "",
+      contact: "",
       email: "",
       phone: "",
       telegram: "",
@@ -55,18 +57,43 @@ export function ArPostcardPreorderForm({
   const onSubmit = form.handleSubmit(async (values) => {
     setLoading(true);
     setServerError(null);
+    trackLeadEvent("lead_form_submit", {
+      sourceType,
+      sourceSlug: postcard.slug,
+      sourceTitle: postcard.title,
+      sourceBlock,
+      requestType: sourceType,
+      productType: "ar_postcard",
+    });
     try {
+      const payload = {
+        ...values,
+        email: values.contact.includes("@") ? values.contact : values.email,
+      };
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         throw new Error(data.error || "Не удалось отправить заявку");
       }
+      trackLeadEvent("lead_form_success", {
+        sourceType,
+        sourceSlug: postcard.slug,
+        sourceBlock,
+        requestType: sourceType,
+        productType: "ar_postcard",
+      });
       setSuccess(true);
     } catch (err) {
+      trackLeadEvent("lead_form_error", {
+        sourceType,
+        sourceSlug: postcard.slug,
+        sourceBlock,
+        requestType: sourceType,
+      });
       setServerError(err instanceof Error ? err.message : "Ошибка отправки");
     } finally {
       setLoading(false);
@@ -75,10 +102,14 @@ export function ArPostcardPreorderForm({
 
   if (success) {
     return (
-      <div className="border border-baikal/30 bg-baikal/5 p-6 text-sm leading-relaxed">
+      <div
+        className="border border-baikal/30 bg-baikal/5 p-6 text-sm leading-relaxed"
+        role="status"
+      >
         <p className="font-medium mb-2">Заявка отправлена</p>
         <p className="text-muted-foreground">
-          Мы свяжемся с вами и уточним наличие, сроки и доставку открыток.
+          Запрос по «{postcard.title}» получен. Свяжемся по указанному контакту и
+          уточним наличие, сроки и доставку.
         </p>
       </div>
     );
@@ -87,7 +118,7 @@ export function ArPostcardPreorderForm({
   const ctaLabel =
     sourceType === "ar_postcard_question"
       ? "Отправить вопрос"
-      : "Заказать / предзаказ";
+      : "Написать об открытке";
 
   return (
     <form
@@ -98,7 +129,7 @@ export function ArPostcardPreorderForm({
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
           {sourceType === "ar_postcard_question" ? "Вопрос" : "Предзаказ"}
         </p>
-        <p className="text-sm font-medium">{postcard.title}</p>
+        <p className="text-sm font-medium">Вы выбрали: {postcard.title}</p>
         <p className="text-xs text-muted-foreground mt-1">
           Без оплаты на сайте — только запрос.
         </p>
@@ -106,30 +137,26 @@ export function ArPostcardPreorderForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="ar-name">Имя</Label>
-          <Input id="ar-name" {...form.register("name")} />
+          <Label htmlFor="ar-name">Имя *</Label>
+          <Input id="ar-name" autoComplete="name" {...form.register("name")} />
           {form.formState.errors.name && (
-            <p className="text-xs text-destructive">
+            <p className="text-xs text-destructive" role="alert">
               {form.formState.errors.name.message}
             </p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="ar-email">Email</Label>
-          <Input id="ar-email" type="email" {...form.register("email")} />
-          {form.formState.errors.email && (
-            <p className="text-xs text-destructive">
-              {form.formState.errors.email.message}
+        <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor="ar-contact">Контакт для связи *</Label>
+          <Input
+            id="ar-contact"
+            placeholder="Telegram, телефон, MAX или email"
+            {...form.register("contact")}
+          />
+          {form.formState.errors.contact && (
+            <p className="text-xs text-destructive" role="alert">
+              {form.formState.errors.contact.message}
             </p>
           )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="ar-phone">Телефон</Label>
-          <Input id="ar-phone" {...form.register("phone")} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="ar-telegram">Telegram</Label>
-          <Input id="ar-telegram" {...form.register("telegram")} />
         </div>
         {sourceType === "ar_postcard_preorder" && (
           <div className="space-y-2">
@@ -139,6 +166,7 @@ export function ArPostcardPreorderForm({
               type="number"
               min={1}
               max={99}
+              inputMode="numeric"
               {...form.register("quantity", { valueAsNumber: true })}
             />
           </div>
@@ -151,11 +179,11 @@ export function ArPostcardPreorderForm({
         </Label>
         <Textarea
           id="ar-message"
-          rows={4}
+          rows={3}
           placeholder={
             sourceType === "ar_postcard_question"
-              ? "Не работает QR, хотите оптом, нужна другая открытка…"
-              : "Адрес доставки, желаемые сроки…"
+              ? "Не работает QR, хотите оптом…"
+              : "По желанию"
           }
           {...form.register("message")}
         />
@@ -173,21 +201,28 @@ export function ArPostcardPreorderForm({
             )
           }
         />
-        <Label htmlFor="ar-consent" className="text-xs leading-relaxed font-normal">
+        <Label
+          htmlFor="ar-consent"
+          className="text-xs leading-relaxed font-normal"
+        >
           {AR_POSTCARD_PERSONAL_DATA_CONSENT}
         </Label>
       </div>
       {form.formState.errors.personalDataConsent && (
-        <p className="text-xs text-destructive">
+        <p className="text-xs text-destructive" role="alert">
           {form.formState.errors.personalDataConsent.message}
         </p>
       )}
 
-      {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+      {serverError && (
+        <p className="text-sm text-destructive" role="alert">
+          {serverError}
+        </p>
+      )}
 
       <Button type="submit" disabled={loading} className="w-full sm:w-auto">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {ctaLabel}
+        {loading ? "Отправляем…" : ctaLabel}
       </Button>
     </form>
   );

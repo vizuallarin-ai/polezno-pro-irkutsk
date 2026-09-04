@@ -174,10 +174,10 @@ export default async function GuidesPage() {
             </p>
           </div>
           <Link
-            href="/contact"
-            className="inline-flex h-11 min-h-[44px] items-center gap-2 bg-foreground text-primary-foreground px-7 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 group shrink-0"
+            href="/contact?intent=walk&sourceBlock=guides#lead-form"
+            className="inline-flex h-11 min-h-[44px] items-center gap-2 bg-foreground text-primary-foreground px-7 type-button hover:bg-foreground/90 transition-colors duration-200 group shrink-0"
           >
-            Написать нам
+            Связаться
             <ArrowRight
               size={14}
               className="transition-transform duration-200 group-hover:translate-x-1"

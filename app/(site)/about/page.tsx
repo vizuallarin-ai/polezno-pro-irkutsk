@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { resolveVisualImage } from "@/lib/visual-assets";
 import { BRAND } from "@/lib/brand-constants";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
-import { CTA, buildContactHref } from "@/lib/cta-constants";
+import { CTA, assistWalkHref } from "@/lib/cta-constants";
 
 export const metadata: Metadata = {
   title: "О проекте — манифест Иркпортала",
@@ -189,13 +189,10 @@ export default async function AboutPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href={buildContactHref({
-                    intent: "general",
-                    sourceBlock: "about",
-                  })}
-                  className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 group"
+                  href={assistWalkHref("about")}
+                  className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 type-button hover:bg-foreground/90 transition-colors duration-200 group"
                 >
-                  Создать тур с нами
+                  {CTA.assist.label}
                   <ArrowRight
                     size={14}
                     className="transition-transform duration-200 group-hover:translate-x-1"

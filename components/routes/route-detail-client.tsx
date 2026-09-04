@@ -79,20 +79,19 @@ function programHref(
 
 function RoutePassageBlock({
   route,
-  relatedExcursionSlug,
+  guidedHref,
 }: {
   route: Route;
-  relatedExcursionSlug?: string | null;
+  guidedHref: string;
 }) {
-  const guidedHref = relatedExcursionSlug
-    ? `/excursions/${relatedExcursionSlug}`
-    : programHref(route, "guided");
-
+  const guidedIsLocal = guidedHref.startsWith("#");
   const variants = [
     {
       key: "self-guided",
       title: "Самостоятельно",
-      text: "Откройте точки на карте и двигайтесь в своём темпе — без группы и фиксированного времени.",
+      text: route.isSelfGuided !== false
+        ? "Откройте точки на карте и двигайтесь в своём темпе — без группы и фиксированного времени."
+        : "Самостоятельный формат ещё готовится. Пока можно запросить прогулку с Алёной.",
       available: route.isSelfGuided !== false,
       cta: { label: "Открыть на карте", href: "#route-map", scroll: true },
     },
@@ -106,7 +105,7 @@ function RoutePassageBlock({
       cta: {
         label: route.bookingCta || "Пройти с Алёной",
         href: guidedHref,
-        scroll: false,
+        scroll: guidedIsLocal,
       },
     },
     {
@@ -128,7 +127,7 @@ function RoutePassageBlock({
         <div
           key={variant.key}
           className={`border border-border p-6 bg-card ${
-            !variant.available ? "opacity-50" : ""
+            !variant.available ? "opacity-60" : ""
           }`}
         >
           <h3 className="text-sm font-medium text-foreground mb-2">
@@ -137,7 +136,7 @@ function RoutePassageBlock({
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             {variant.text}
           </p>
-          {variant.available && (
+          {variant.available ? (
             variant.cta.scroll ? (
               <a
                 href={variant.cta.href}
@@ -153,6 +152,8 @@ function RoutePassageBlock({
                 {variant.cta.label} →
               </Link>
             )
+          ) : (
+            <p className="text-xs text-muted-foreground">Скоро</p>
           )}
         </div>
       ))}
@@ -168,7 +169,7 @@ export function RouteDetailClient({
 }: RouteDetailClientProps) {
   const guideHref = relatedExcursionSlug
     ? `/excursions/${relatedExcursionSlug}`
-    : programHref(route, "guided");
+    : "#lead-form";
   const [activePointId, setActivePointId] = useState<string | null>(null);
 
   const handlePointSelect = useCallback((point: RoutePoint | null) => {
@@ -275,13 +276,23 @@ export function RouteDetailClient({
 
           <div className="flex flex-col sm:flex-row gap-3">
             {route.isGuidedAvailable !== false && (
-              <Link
-                href={guideHref}
-                className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
-              >
-                {route.bookingCta || "Пройти с Алёной"}
-                <ArrowRight size={14} />
-              </Link>
+              guideHref.startsWith("#") ? (
+                <a
+                  href={guideHref}
+                  className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
+                >
+                  {route.bookingCta || "Пройти с Алёной"}
+                  <ArrowRight size={14} />
+                </a>
+              ) : (
+                <Link
+                  href={guideHref}
+                  className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
+                >
+                  {route.bookingCta || "Пройти с Алёной"}
+                  <ArrowRight size={14} />
+                </Link>
+              )
             )}
             {route.isSelfGuided !== false && (
               <button
@@ -324,7 +335,7 @@ export function RouteDetailClient({
           <h2 className="text-xl font-medium mb-6">Как можно пройти</h2>
           <RoutePassageBlock
             route={route}
-            relatedExcursionSlug={relatedExcursionSlug}
+            guidedHref={guideHref}
           />
         </div>
       </section>

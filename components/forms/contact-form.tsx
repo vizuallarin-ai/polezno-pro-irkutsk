@@ -14,6 +14,16 @@ type ContactFormProps = Pick<
   | "defaultMessage"
   | "routeContext"
   | "materialContext"
+  | "productContext"
+  | "arPostcardContext"
+  | "photoContext"
+  | "showDate"
+  | "showPeopleCount"
+  | "showFormat"
+  | "submitLabel"
+  | "fallbackTelegram"
+  | "fallbackMax"
+  | "fallbackEmail"
 >;
 
 export function ContactForm({
@@ -27,11 +37,21 @@ export function ContactForm({
   defaultMessage,
   routeContext,
   materialContext,
+  productContext,
+  arPostcardContext,
+  photoContext,
+  showDate = false,
+  showPeopleCount = false,
+  showFormat = false,
+  submitLabel = "Подобрать мне прогулку",
+  fallbackTelegram,
+  fallbackMax,
+  fallbackEmail,
 }: ContactFormProps) {
   return (
     <LeadForm
-      id="lead-form"
-      variant="full"
+      id="contact-lead-form"
+      variant="contact"
       sourceType="contact"
       sourceSlug={sourceSlug}
       sourceTitle={sourceTitle}
@@ -40,11 +60,20 @@ export function ContactForm({
       defaultMessage={defaultMessage}
       routeContext={routeContext}
       materialContext={materialContext}
-      submitLabel="Отправить сообщение"
+      productContext={productContext}
+      arPostcardContext={arPostcardContext}
+      photoContext={photoContext}
+      showDate={showDate}
+      showPeopleCount={showPeopleCount}
+      showFormat={showFormat}
+      submitLabel={submitLabel}
       consentText={consentText}
       consentVersion={consentVersion}
       privacyPolicyUrl={privacyPolicyUrl}
       requireConsent
+      fallbackTelegram={fallbackTelegram}
+      fallbackMax={fallbackMax}
+      fallbackEmail={fallbackEmail}
     />
   );
 }

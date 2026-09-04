@@ -1,25 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { Check, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import {
-  compactLeadSchema,
-  fullLeadSchema,
+  publicB2cLeadSchema,
   extractUtmFromUrl,
-  type CompactLeadInput,
 } from "@/lib/leads-schema";
-import {
-  PREFERRED_CONTACT_OPTIONS,
-  type RequestType,
-} from "@/lib/leads-constants";
+import { type RequestType } from "@/lib/leads-constants";
+import { CTA } from "@/lib/cta-constants";
 import { FORM_STARTED_FIELD, HONEYPOT_FIELD } from "@/lib/lead-spam";
 import { trackLeadEvent, trackAnalyticsEvent } from "@/lib/analytics-events";
 
@@ -54,6 +50,10 @@ export interface LeadFormProps {
   showDate?: boolean;
   showPeopleCount?: boolean;
   showFormat?: boolean;
+  /** Show preferred-contact select (default: hidden on compact B2C). */
+  showPreferredMethod?: boolean;
+  /** Start with details panel open (dates/people/message). */
+  detailsOpenByDefault?: boolean;
   submitLabel?: string;
   consentText?: string;
   consentVersion?: string;
@@ -61,6 +61,10 @@ export interface LeadFormProps {
   requireConsent?: boolean;
   className?: string;
   id?: string;
+  /** Messenger fallbacks for error state */
+  fallbackTelegram?: string | null;
+  fallbackMax?: string | null;
+  fallbackEmail?: string | null;
 }
 
 export function LeadForm({
@@ -80,6 +84,8 @@ export function LeadForm({
   showDate = false,
   showPeopleCount = false,
   showFormat = false,
+  showPreferredMethod = false,
+  detailsOpenByDefault = false,
   submitLabel,
   consentText = "Я согласен(на) на обработку персональных данных и понимаю, что со мной свяжутся по указанному контакту",
   consentVersion = "2026-06",
@@ -87,15 +93,22 @@ export function LeadForm({
   requireConsent = true,
   className,
   id = "lead-form",
+  fallbackTelegram,
+  fallbackMax,
+  fallbackEmail,
 }: LeadFormProps) {
-  const isFull = variant !== "compact";
-  const schema = isFull && requireConsent ? fullLeadSchema : compactLeadSchema;
+  const needsQualification = showDate || showPeopleCount || showFormat;
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [startedAt] = useState(() => Date.now());
+  const [detailsOpen, setDetailsOpen] = useState(
+    detailsOpenByDefault || Boolean(defaultMessage?.trim()) || needsQualification
+  );
+  const trackedStart = useRef(false);
+  const trackedOpen = useRef(false);
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(publicB2cLeadSchema),
     defaultValues: {
       name: "",
       contact: "",
@@ -103,12 +116,14 @@ export function LeadForm({
       preferredContactMethod: "any",
       dates: "",
       groupSize: undefined,
-      selectedFormat: "",
+      selectedFormat: showFormat ? "guided" : "",
       consentAccepted: false,
     },
   });
 
   useEffect(() => {
+    if (trackedOpen.current) return;
+    trackedOpen.current = true;
     trackLeadEvent("lead_form_open", {
       sourceType,
       sourceTitle,
@@ -116,6 +131,11 @@ export function LeadForm({
       sourceBlock,
       requestType: defaultRequestType,
     });
+  }, [sourceType, sourceTitle, sourceSlug, sourceBlock, defaultRequestType]);
+
+  const markFormStart = () => {
+    if (trackedStart.current) return;
+    trackedStart.current = true;
     trackAnalyticsEvent("lead_form_start", {
       sourceType,
       sourceTitle,
@@ -123,7 +143,7 @@ export function LeadForm({
       sourceBlock,
       requestType: defaultRequestType,
     });
-  }, [sourceType, sourceTitle, sourceSlug, sourceBlock, defaultRequestType]);
+  };
 
   const onSubmit = form.handleSubmit(async (values) => {
     setServerError(null);
@@ -206,17 +226,50 @@ export function LeadForm({
     }
   });
 
+  const contextLabel =
+    routeContext?.title ||
+    productContext?.title ||
+    arPostcardContext?.title ||
+    materialContext?.title ||
+    photoContext?.title;
+
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+      <div
+        className="flex flex-col items-center justify-center py-12 text-center gap-5"
+        role="status"
+        aria-live="polite"
+      >
         <div className="w-14 h-14 rounded-full bg-baikal/10 flex items-center justify-center">
           <Check size={22} className="text-baikal" />
         </div>
         <div>
-          <h3 className="text-lg font-light mb-1">Спасибо</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Заявка отправлена. Мы свяжемся с вами по указанному контакту.
+          <h3 className="text-lg font-medium mb-2">Заявка отправлена</h3>
+          <p className="type-body-sm text-muted-foreground max-w-sm text-pretty">
+            Алёна получит ваш запрос
+            {contextLabel ? (
+              <>
+                {" "}
+                по «{contextLabel}»
+              </>
+            ) : null}{" "}
+            и свяжется с вами по указанному контакту. Сейчас ничего дополнительно
+            делать не нужно.
           </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link
+            href={CTA.discovery.href}
+            className="cta-label inline-flex h-11 min-h-[44px] items-center justify-center px-5 type-button border border-border text-foreground hover:bg-muted transition-colors"
+          >
+            {CTA.discovery.label}
+          </Link>
+          <Link
+            href={CTA.mapExplore.href}
+            className="cta-label inline-flex h-11 min-h-[44px] items-center justify-center px-5 type-button text-baikal hover:underline"
+          >
+            {CTA.mapExplore.label}
+          </Link>
         </div>
       </div>
     );
@@ -224,13 +277,19 @@ export function LeadForm({
 
   const label =
     submitLabel ||
-    (isFull ? "Отправить заявку" : "Написать");
+    (variant === "route" || defaultRequestType === "guided_route"
+      ? CTA.guided.label
+      : CTA.assist.label);
+
+  const hasMessengerFallback =
+    Boolean(fallbackTelegram) || Boolean(fallbackMax) || Boolean(fallbackEmail);
 
   return (
     <form
       id={id}
       onSubmit={onSubmit}
-      className={cn("flex flex-col gap-6", className)}
+      onFocusCapture={markFormStart}
+      className={cn("flex flex-col gap-5", className)}
       noValidate
     >
       <input
@@ -242,11 +301,18 @@ export function LeadForm({
         {...form.register(HONEYPOT_FIELD)}
       />
 
+      {contextLabel && (
+        <p className="type-body-sm border border-border bg-muted/40 px-4 py-3 text-foreground text-pretty">
+          Вы выбрали: <span className="font-medium">{contextLabel}</span>
+        </p>
+      )}
+
       <div className="flex flex-col gap-2">
         <Label htmlFor={`${id}-name`}>Имя *</Label>
         <Input
           id={`${id}-name`}
-          placeholder="Ваше имя"
+          autoComplete="name"
+          placeholder="Как к вам обращаться"
           {...form.register("name")}
         />
         {form.formState.errors.name && (
@@ -260,7 +326,9 @@ export function LeadForm({
         <Label htmlFor={`${id}-contact`}>Контакт для связи *</Label>
         <Input
           id={`${id}-contact`}
-          placeholder="Telegram, email или телефон"
+          autoComplete="tel"
+          inputMode="text"
+          placeholder="Telegram, телефон, MAX или email"
           {...form.register("contact")}
         />
         {form.formState.errors.contact && (
@@ -270,75 +338,93 @@ export function LeadForm({
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-method`}>Как удобнее связаться</Label>
-        <select
-          id={`${id}-method`}
-          className="flex h-10 w-full border border-border bg-background px-3 text-sm"
-          {...form.register("preferredContactMethod")}
-        >
-          {PREFERRED_CONTACT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {showDate && (
+      {showPreferredMethod && (
         <div className="flex flex-col gap-2">
-          <Label htmlFor={`${id}-dates`}>Планируемые даты</Label>
-          <Input
-            id={`${id}-dates`}
-            placeholder="Например: 12–15 июля"
-            {...form.register("dates")}
-          />
-        </div>
-      )}
-
-      {showPeopleCount && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${id}-group`}>Количество человек</Label>
-          <Input
-            id={`${id}-group`}
-            type="number"
-            min={1}
-            {...form.register("groupSize", { valueAsNumber: true })}
-          />
-        </div>
-      )}
-
-      {showFormat && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${id}-format`}>Формат</Label>
+          <Label htmlFor={`${id}-method`}>Как удобнее связаться</Label>
           <select
-            id={`${id}-format`}
+            id={`${id}-method`}
             className="flex h-10 w-full border border-border bg-background px-3 text-sm"
-            {...form.register("selectedFormat")}
+            {...form.register("preferredContactMethod")}
           >
-            <option value="">Выберите формат</option>
-            <option value="self-guided">Самостоятельно</option>
-            <option value="guided">С Алёной</option>
-            <option value="corporate">Для компании</option>
-            <option value="undecided">Пока не знаю</option>
+            <option value="any">Любой</option>
+            <option value="telegram">Telegram</option>
+            <option value="max">MAX</option>
+            <option value="email">Email</option>
+            <option value="phone">Телефон</option>
           </select>
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-message`}>
-          Сообщение{isFull ? " *" : ""}
-        </Label>
-        <Textarea
-          id={`${id}-message`}
-          rows={isFull ? 5 : 3}
-          placeholder="Расскажите, чем мы можем помочь…"
-          {...form.register("message")}
-        />
-        {form.formState.errors.message && (
-          <p className="text-xs text-destructive" role="alert">
-            {form.formState.errors.message.message}
-          </p>
+      <div className="border border-border">
+        <button
+          type="button"
+          onClick={() => setDetailsOpen((v) => !v)}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 type-ui-label text-foreground hover:bg-muted/50 transition-colors min-h-[44px]"
+          aria-expanded={detailsOpen}
+        >
+          Уточнить детали
+          <ChevronDown
+            size={16}
+            className={cn(
+              "transition-transform text-muted-foreground",
+              detailsOpen && "rotate-180"
+            )}
+          />
+        </button>
+        {detailsOpen && (
+          <div className="flex flex-col gap-4 border-t border-border px-4 py-4">
+            {showDate && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor={`${id}-dates`}>Когда примерно</Label>
+                <Input
+                  id={`${id}-dates`}
+                  placeholder="Например: 12–15 июля или выходные"
+                  {...form.register("dates")}
+                />
+              </div>
+            )}
+            {showPeopleCount && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor={`${id}-group`}>Сколько человек</Label>
+                <Input
+                  id={`${id}-group`}
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  {...form.register("groupSize", { valueAsNumber: true })}
+                />
+              </div>
+            )}
+            {showFormat && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor={`${id}-format`}>Формат</Label>
+                <select
+                  id={`${id}-format`}
+                  className="flex h-10 w-full border border-border bg-background px-3 text-sm"
+                  {...form.register("selectedFormat")}
+                >
+                  <option value="guided">С Алёной</option>
+                  <option value="self-guided">Самостоятельно</option>
+                  <option value="corporate">Для компании</option>
+                  <option value="undecided">Пока не знаю</option>
+                </select>
+              </div>
+            )}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={`${id}-message`}>Короткий комментарий</Label>
+              <Textarea
+                id={`${id}-message`}
+                rows={3}
+                placeholder="Что важно учесть — по желанию"
+                {...form.register("message")}
+              />
+              {form.formState.errors.message && (
+                <p className="text-xs text-destructive" role="alert">
+                  {form.formState.errors.message.message}
+                </p>
+              )}
+            </div>
+          </div>
         )}
       </div>
 
@@ -355,7 +441,7 @@ export function LeadForm({
           />
           <Label
             htmlFor={`${id}-consent`}
-            className="text-xs text-muted-foreground leading-relaxed font-normal cursor-pointer"
+            className="type-caption text-muted-foreground leading-relaxed font-normal cursor-pointer text-pretty"
           >
             {consentText}{" "}
             <Link
@@ -375,18 +461,66 @@ export function LeadForm({
         )}
 
       {serverError && (
-        <p className="text-sm text-destructive" role="alert">
-          {serverError}
-        </p>
+        <div
+          className="flex flex-col gap-3 border border-destructive/30 bg-destructive/5 px-4 py-3"
+          role="alert"
+        >
+          <p className="type-body-sm text-destructive">{serverError}</p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setServerError(null);
+                void onSubmit();
+              }}
+              className="type-ui-label text-foreground underline underline-offset-2 min-h-[44px]"
+            >
+              Повторить отправку
+            </button>
+            {hasMessengerFallback && (
+              <span className="type-caption text-muted-foreground self-center">
+                Или напишите напрямую:
+              </span>
+            )}
+            {fallbackTelegram && (
+              <a
+                href={fallbackTelegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="type-ui-label text-baikal hover:underline min-h-[44px] inline-flex items-center"
+              >
+                Telegram
+              </a>
+            )}
+            {fallbackMax && (
+              <a
+                href={fallbackMax}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="type-ui-label text-baikal hover:underline min-h-[44px] inline-flex items-center"
+              >
+                MAX
+              </a>
+            )}
+            {fallbackEmail && (
+              <a
+                href={`mailto:${fallbackEmail}`}
+                className="type-ui-label text-baikal hover:underline min-h-[44px] inline-flex items-center"
+              >
+                Email
+              </a>
+            )}
+          </div>
+        </div>
       )}
 
       <button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 active:scale-[0.98] disabled:opacity-60 w-full sm:w-auto"
+        className="cta-label cta-label-wrap-sm inline-flex h-12 min-h-[44px] items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 type-button hover:bg-foreground/90 transition-colors duration-200 active:scale-[0.98] disabled:opacity-60 w-full sm:w-auto"
       >
         {form.formState.isSubmitting ? (
-          <Loader2 size={14} className="animate-spin" />
+          <Loader2 size={14} className="animate-spin" aria-hidden />
         ) : null}
         {form.formState.isSubmitting ? "Отправляем…" : label}
       </button>
