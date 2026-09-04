@@ -1,8 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, MapPin, ArrowRight } from "lucide-react";
+import { MapPin, ArrowRight } from "lucide-react";
 import type { ExperienceItem } from "@/lib/data/experiences";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   buildContactHref,
@@ -67,15 +66,25 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
     experience.kind === "route" ? "Открыть маршрут" : "Подробнее";
   const guidedLabel =
     experience.bookingCta?.trim() || CTA.guided.label;
+  const showGuided =
+    experience.isGuidedAvailable || experience.kind === "excursion";
+
+  const metaParts: string[] = [];
+  if (experience.duration != null) metaParts.push(formatDuration(experience.duration));
+  if (experience.kind === "route" && experience.distance != null) {
+    metaParts.push(`${experience.distance} км`);
+  }
+  if (experience.kind === "route" && experience.pointsCount != null) {
+    metaParts.push(`${experience.pointsCount} точек`);
+  }
 
   return (
-    <article
-      className={cn(
-        "flex flex-col border border-border bg-background hover:border-foreground/30 transition-colors duration-200",
-        className
-      )}
-    >
-      <div className="relative aspect-[16/10] bg-muted overflow-hidden">
+    <article className={cn("editorial-card group", className)}>
+      <Link
+        href={experience.href}
+        className="editorial-card-media img-reveal aspect-[16/10] block"
+        aria-label={`${primaryLabel}: ${experience.title}`}
+      >
         {experience.cover ? (
           <Image
             src={experience.cover}
@@ -85,27 +94,22 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <MapPin className="text-muted-foreground" size={24} />
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
+            <MapPin className="text-muted-foreground/60" size={22} strokeWidth={1.25} />
           </div>
         )}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[90%]">
-          {experience.badges.slice(0, 3).map((badge) => (
-            <Badge key={badge.label} variant={badge.variant ?? "outline"}>
-              {badge.label}
-            </Badge>
-          ))}
-        </div>
-      </div>
+      </Link>
 
-      <div className="flex flex-col flex-1 p-5 gap-3">
+      <div className="flex flex-col flex-1 pt-5 gap-3">
         <div>
-          <p className="type-meta uppercase text-muted-foreground mb-1">
+          <p className="type-meta uppercase text-muted-foreground mb-2">
             {experience.kind === "route" ? "Маршрут" : "Экскурсия"}
             {experience.priceLabel ? ` · ${experience.priceLabel}` : ""}
           </p>
-          <h2 className="type-h3 text-foreground text-balance">
-            {experience.title}
+          <h2 className="type-h3 text-foreground text-balance group-hover:text-baikal transition-colors duration-200">
+            <Link href={experience.href} className="outline-none">
+              {experience.title}
+            </Link>
           </h2>
         </div>
 
@@ -113,38 +117,26 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
           {experience.description}
         </p>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-1 type-meta text-muted-foreground">
-          {experience.duration != null && (
-            <span className="flex items-center gap-1">
-              <Clock size={11} />
-              {formatDuration(experience.duration)}
-            </span>
-          )}
-          {experience.kind === "route" && experience.distance != null && (
-            <span className="flex items-center gap-1">
-              <MapPin size={11} />
-              {experience.distance} км
-            </span>
-          )}
-          {experience.kind === "route" && experience.pointsCount != null && (
-            <span>{experience.pointsCount} точек</span>
-          )}
-        </div>
+        {(metaParts.length > 0 || formatLine(experience)) && (
+          <p className="type-meta text-muted-foreground">
+            {[metaParts.join(" · "), formatLine(experience)]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
 
-        <p className="type-caption text-foreground/70">{formatLine(experience)}</p>
-
-        <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
           <Link
             href={experience.href}
-            className="cta-label inline-flex h-10 flex-1 items-center justify-center gap-2 bg-foreground text-primary-foreground px-4 type-button hover:bg-foreground/90 transition-colors duration-200"
+            className="cta-ghost type-ui-label"
           >
             {primaryLabel}
-            <ArrowRight size={13} />
+            <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
-          {(experience.isGuidedAvailable || experience.kind === "excursion") && (
+          {showGuided && (
             <Link
               href={programHref(experience, "guided")}
-              className="cta-label cta-label-wrap-sm inline-flex h-10 items-center justify-center border border-border px-4 type-button text-foreground hover:bg-muted transition-colors duration-200"
+              className="type-ui-label text-muted-foreground hover:text-foreground transition-colors duration-200 min-h-[44px] inline-flex items-center"
             >
               {guidedLabel}
             </Link>

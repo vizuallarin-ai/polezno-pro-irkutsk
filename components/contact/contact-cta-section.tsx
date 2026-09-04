@@ -76,7 +76,7 @@ export async function ContactCtaSection({
   return (
     <section
       className={cn(
-        "border-t border-border bg-muted/30 py-16 lg:py-20",
+        "border-t border-border/70 surface-quiet section-pad",
         className
       )}
       aria-labelledby={`cta-${resolvedSourceType}`}
@@ -84,12 +84,12 @@ export async function ContactCtaSection({
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div
           className={cn(
-            "grid gap-10 lg:gap-16",
+            "grid gap-12 lg:gap-20",
             showLeadForm ? "lg:grid-cols-2 lg:items-start" : "max-w-2xl"
           )}
         >
           <div>
-            <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
+            <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-5">
               {variant === "business"
                 ? "Для бизнеса"
                 : variant === "route" || variant === "route_detail"
@@ -98,17 +98,17 @@ export async function ContactCtaSection({
             </p>
             <h2
               id={`cta-${resolvedSourceType}`}
-              className="type-h2 text-foreground mb-4"
+              className="type-display-l text-foreground mb-5 max-w-[14ch]"
             >
               {resolvedTitle}
             </h2>
-            <p className="type-body-sm text-muted-foreground mb-6 max-w-md text-pretty">
+            <p className="type-body text-muted-foreground mb-8 max-w-md text-pretty">
               {resolvedDescription}
             </p>
 
             {showMessengers && (
               <div className="flex flex-col gap-3">
-                <p className="type-caption uppercase tracking-widest text-muted-foreground">
+                <p className="type-caption uppercase tracking-[0.18em] text-muted-foreground">
                   Или напишите напрямую
                 </p>
                 <MessengerLinks
@@ -131,7 +131,7 @@ export async function ContactCtaSection({
           </div>
 
           {showLeadForm && (
-            <div className="border border-border bg-background p-6 lg:p-8">
+            <div className="bg-card/80 p-6 sm:p-8 lg:p-10">
               <LeadForm
                 id={formId}
                 variant="compact"

@@ -67,14 +67,14 @@ export function SocialProof({
   return (
     <section
       ref={sectionRef}
-      className="py-24 lg:py-36"
+      className="section-pad"
       aria-labelledby="social-proof-heading"
       id="trust"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h2
           id="social-proof-heading"
-          className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-12"
+          className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-12 lg:mb-14"
         >
           {hasReviews ? "Отзывы гостей" : "Что обычно отмечают гости"}
         </h2>
@@ -88,41 +88,41 @@ export function SocialProof({
         >
           {displayStats.map((stat) => (
             <div key={stat.label} className="stat-item">
-              <p className="text-4xl lg:text-5xl font-light tabular-nums tracking-tight text-foreground mb-2">
+              <p className="type-display-l tabular-nums text-foreground mb-2">
                 {stat.value}
               </p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <p className="type-body-sm text-muted-foreground">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {hasReviews ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
             {reviews.map((review) => (
               <figure
                 key={review.id}
-                className="flex flex-col gap-4 border border-border p-6"
+                className="flex flex-col gap-5 border-t border-border pt-6"
               >
-                <blockquote className="text-sm leading-relaxed text-foreground flex-1">
+                <blockquote className="type-body text-foreground flex-1 text-pretty">
                   &ldquo;{review.text}&rdquo;
                 </blockquote>
-                <figcaption className="pt-4 border-t border-border">
-                  <p className="text-sm font-medium">{review.author}</p>
+                <figcaption>
+                  <p className="type-ui-label">{review.author}</p>
                   {review.city && (
-                    <p className="text-xs text-muted-foreground">{review.city}</p>
+                    <p className="type-meta text-muted-foreground mt-1">{review.city}</p>
                   )}
                 </figcaption>
               </figure>
             ))}
           </div>
         ) : (
-          <ul className="highlights-grid grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+          <ul className="highlights-grid grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 max-w-3xl">
             {GUEST_HIGHLIGHTS.map((item) => (
               <li
                 key={item}
-                className="highlight-item flex items-start gap-3 text-sm text-muted-foreground leading-relaxed border border-border p-4"
+                className="highlight-item flex items-start gap-4 type-body-sm text-muted-foreground text-pretty"
               >
-                <span className="text-baikal mt-0.5" aria-hidden>
+                <span className="text-baikal mt-1 select-none" aria-hidden>
                   —
                 </span>
                 {item}

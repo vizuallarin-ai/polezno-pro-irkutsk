@@ -127,7 +127,7 @@ export function BusinessForm({
   if (submitted) {
     return (
       <div
-        className="flex flex-col items-center justify-center py-16 text-center gap-6 border border-border bg-card p-8"
+        className="flex flex-col items-center justify-center py-16 text-center gap-6 bg-card/80 p-8"
         role="status"
       >
         <div className="w-16 h-16 rounded-full bg-baikal/10 flex items-center justify-center">
@@ -155,7 +155,7 @@ export function BusinessForm({
     <form
       id={id}
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-6 border border-border bg-card p-6 lg:p-8"
+      className="flex flex-col gap-6 bg-card/80 p-6 lg:p-8"
     >
       <input
         type="text"

@@ -197,7 +197,7 @@ function ContactDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="hidden md:inline-flex min-h-[44px] h-11 items-center gap-1.5 px-4 type-button border border-border bg-background hover:bg-muted transition-colors duration-200"
+        className="hidden md:inline-flex min-h-[44px] h-10 items-center gap-1.5 px-3 type-button text-muted-foreground hover:text-foreground transition-colors duration-200"
         aria-expanded={open}
         aria-haspopup="menu"
         {...leadAnalyticsProps("contact_click", {
@@ -427,20 +427,20 @@ export function Header({
         )}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between gap-4 lg:gap-6">
-            <div className="flex min-w-0 flex-col justify-center gap-0.5">
+          <div className="flex h-[4.25rem] lg:h-[4.5rem] items-center justify-between gap-4 lg:gap-8">
+            <div className="flex min-w-0 flex-col justify-center gap-1">
               <Link
                 href="/"
-                className="type-ui-label tracking-[0.14em] uppercase text-foreground hover:text-foreground/80 transition-colors whitespace-nowrap"
+                className="type-brand text-foreground hover:text-foreground/75 transition-colors duration-200 whitespace-nowrap"
                 aria-label={`${projectName} — на главную`}
               >
                 {projectName}
               </Link>
-              <p className="hidden xl:block type-caption text-muted-foreground leading-snug max-w-[280px] text-pretty">
+              <p className="hidden xl:block type-caption text-muted-foreground leading-snug max-w-[18rem] text-pretty">
                 Авторский навигатор по{" "}
                 <Link
                   href={CITY_HISTORY_HREF}
-                  className="text-foreground/80 hover:text-baikal underline-offset-2 hover:underline"
+                  className="text-foreground/70 hover:text-baikal underline-offset-2 hover:underline transition-colors"
                 >
                   Иркутску
                 </Link>{" "}
@@ -453,7 +453,7 @@ export function Header({
             </div>
 
             <nav
-              className="hidden lg:flex items-center gap-5 xl:gap-7"
+              className="hidden lg:flex items-center gap-6 xl:gap-8"
               aria-label="Основная навигация"
             >
               {primaryLinks.map((link) => (
@@ -466,12 +466,12 @@ export function Header({
               <MoreDropdown links={moreLinks} />
             </nav>
 
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <ContactDropdown contact={contact} label={contactCtaLabel} />
 
               <Link
                 href={headerCta.href}
-                className="cta-label hidden lg:inline-flex min-h-[44px] h-11 items-center px-4 xl:px-5 type-button bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200 active:scale-[0.98]"
+                className="cta-label cta-primary hidden lg:inline-flex type-button px-5 xl:px-6"
               >
                 {headerCta.label}
               </Link>
@@ -572,7 +572,7 @@ export function Header({
               <Link
                 href={headerCta.href}
                 onClick={() => setIsOpen(false)}
-                className="cta-label cta-label-wrap-sm inline-flex min-h-[44px] h-12 items-center justify-center px-8 type-button bg-primary text-primary-foreground hover:bg-primary/90 transition-colors w-full sm:w-fit"
+                className="cta-label cta-label-wrap-sm cta-primary type-button w-full sm:w-fit"
               >
                 {headerCta.label}
               </Link>

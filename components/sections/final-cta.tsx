@@ -81,7 +81,7 @@ export function FinalCta() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/map"
-              className="cta-label inline-flex h-12 items-center justify-center gap-2 px-8 type-button bg-white text-baikal hover:bg-white/90 transition-colors duration-200 active:scale-[0.98] group"
+              className="cta-label cta-on-dark-primary type-button group"
             >
               Смотреть маршруты
               <ArrowRight
@@ -91,7 +91,7 @@ export function FinalCta() {
             </Link>
             <Link
               href="/contact?intent=walk&sourceBlock=final-cta#lead-form"
-              className="cta-label cta-label-wrap-sm inline-flex h-12 items-center justify-center px-8 type-button border border-white/30 text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.98]"
+              className="cta-label cta-label-wrap-sm cta-on-dark-secondary type-button"
             >
               Подобрать мне прогулку
             </Link>

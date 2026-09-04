@@ -172,7 +172,7 @@ export function RoutesPageClient({
                 </button>
               </div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                 {filteredExperiences.map((experience) => (
                   <ExperienceCard
                     key={experience.id}

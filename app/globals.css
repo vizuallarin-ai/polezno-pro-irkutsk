@@ -2,18 +2,18 @@
 
 /* ─── Design Tokens ─────────────────────────────────────────────── */
 :root {
-  /* Neutrals */
-  --background: #FAF9F7;
-  --foreground: #1C1C1E;
-  --card: #F4F3F0;
-  --card-foreground: #1C1C1E;
-  --popover: #FFFFFF;
-  --popover-foreground: #1C1C1E;
-  --muted: #E8E6E3;
-  --muted-foreground: #6B6B6B;
-  --border: #D8D6D2;
-  --input: #D8D6D2;
-  --ring: #1C1C1E;
+  /* Neutrals — calm paper / ink (premium hospitality, not marketplace white) */
+  --background: #F7F5F1;
+  --foreground: #1A1A1A;
+  --card: #F1EEE8;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFEFC;
+  --popover-foreground: #1A1A1A;
+  --muted: #E6E2DB;
+  --muted-foreground: #5E5A54;
+  --border: #DDD8CF;
+  --input: #DDD8CF;
+  --ring: #1A1A1A;
 
   /* Brand accents */
   --baikal: #0B3D5C;
@@ -22,31 +22,34 @@
   --amber: #C47A2E;
 
   /* Semantic */
-  --primary: #1C1C1E;
-  --primary-foreground: #FAF9F7;
-  --secondary: #E8E6E3;
-  --secondary-foreground: #1C1C1E;
+  --primary: #1A1A1A;
+  --primary-foreground: #F7F5F1;
+  --secondary: #E6E2DB;
+  --secondary-foreground: #1A1A1A;
   --accent: #0B3D5C;
-  --accent-foreground: #FAF9F7;
+  --accent-foreground: #F7F5F1;
   --destructive: #C0392B;
-  --destructive-foreground: #FAF9F7;
+  --destructive-foreground: #F7F5F1;
 
-  /* Radius */
-  --radius: 0.25rem;
-  --radius-card: 0.25rem;
+  /* Radius — quiet, editorial (not pill marketplace) */
+  --radius: 0.125rem;
+  --radius-card: 0.125rem;
 
   /* City visual system */
-  --color-city-paper: #FAF9F7;
-  --color-city-ink: #1C1C1E;
-  --color-city-stone: #E8E6E3;
+  --color-city-paper: #F7F5F1;
+  --color-city-ink: #1A1A1A;
+  --color-city-stone: #E6E2DB;
   --color-city-wood: #8B6F47;
-  --color-city-muted: #6B6B6B;
+  --color-city-muted: #5E5A54;
   --color-city-accent: #0B3D5C;
-  --shadow-soft: 0 4px 24px -4px rgb(28 28 30 / 0.08);
+  --shadow-soft: 0 8px 40px -12px rgb(26 26 26 / 0.1);
+  --shadow-lift: 0 16px 48px -16px rgb(26 26 26 / 0.14);
+  --ease-out-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-premium: 220ms;
   --image-overlay-soft: linear-gradient(
     to top,
-    rgb(28 28 30 / 0.78) 0%,
-    rgb(28 28 30 / 0.25) 45%,
+    rgb(26 26 26 / 0.82) 0%,
+    rgb(26 26 26 / 0.28) 48%,
     transparent 100%
   );
 
@@ -66,19 +69,21 @@
   --text-caption: 0.75rem;
   --text-ui-label: 0.8125rem;
   --text-button: 0.875rem;
-  --text-nav: 0.9375rem;
-  --text-nav-secondary: 0.875rem;
+  --text-nav: 0.875rem;
+  --text-nav-secondary: 0.8125rem;
   --text-meta: 0.75rem;
+  --text-brand: 0.9375rem;
 
-  --leading-display: 1.1;
-  --leading-heading: 1.2;
-  --leading-body: 1.6;
-  --leading-ui: 1.35;
+  --leading-display: 1.08;
+  --leading-heading: 1.18;
+  --leading-body: 1.65;
+  --leading-ui: 1.4;
 
-  --tracking-display: -0.02em;
-  --tracking-heading: -0.015em;
-  --tracking-ui: 0;
-  --tracking-meta: 0.04em;
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.018em;
+  --tracking-ui: 0.01em;
+  --tracking-meta: 0.06em;
+  --tracking-brand: 0.16em;
 }
 
 /* ─── Tailwind v4 theme extension ───────────────────────────────── */
@@ -161,6 +166,7 @@ body {
   font-weight: 300;
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
+  font-feature-settings: "liga" 1, "kern" 1;
   text-wrap: balance;
 }
 
@@ -170,7 +176,17 @@ body {
   font-weight: 300;
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
+  font-feature-settings: "liga" 1, "kern" 1;
   text-wrap: balance;
+}
+
+.type-brand {
+  font-family: var(--font-sans);
+  font-size: var(--text-brand);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-brand);
+  text-transform: uppercase;
 }
 
 /* UI headings (Onest) — catalog / page chrome */
@@ -255,7 +271,7 @@ body {
   font-size: var(--text-nav);
   font-weight: 500;
   line-height: var(--leading-ui);
-  letter-spacing: var(--tracking-ui);
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -264,7 +280,7 @@ body {
   font-size: var(--text-nav-secondary);
   font-weight: 400;
   line-height: var(--leading-ui);
-  letter-spacing: var(--tracking-ui);
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -310,6 +326,149 @@ html.lenis {
   overscroll-behavior: contain;
 }
 
+/* ─── Premium CTA surface (labels stay UX.C canonical) ──────────── */
+.cta-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  height: 2.75rem;
+  padding-inline: 1.75rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  transition:
+    background-color var(--duration-premium) var(--ease-out-premium),
+    transform var(--duration-premium) var(--ease-out-premium),
+    opacity var(--duration-premium) var(--ease-out-premium);
+}
+.cta-primary:hover {
+  background: color-mix(in srgb, var(--primary) 88%, white);
+}
+.cta-primary:active {
+  transform: scale(0.985);
+}
+
+.cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  height: 2.75rem;
+  padding-inline: 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
+  background: transparent;
+  color: var(--foreground);
+  transition:
+    background-color var(--duration-premium) var(--ease-out-premium),
+    border-color var(--duration-premium) var(--ease-out-premium),
+    transform var(--duration-premium) var(--ease-out-premium);
+}
+.cta-secondary:hover {
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  border-color: color-mix(in srgb, var(--foreground) 38%, transparent);
+}
+.cta-secondary:active {
+  transform: scale(0.985);
+}
+
+.cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding-inline: 0.25rem;
+  color: var(--foreground);
+  transition: color var(--duration-premium) var(--ease-out-premium);
+}
+.cta-ghost:hover {
+  color: var(--baikal);
+}
+
+.cta-on-dark-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  height: 3rem;
+  padding-inline: 2rem;
+  background: var(--primary-foreground);
+  color: var(--primary);
+  transition:
+    background-color var(--duration-premium) var(--ease-out-premium),
+    transform var(--duration-premium) var(--ease-out-premium);
+}
+.cta-on-dark-primary:hover {
+  background: color-mix(in srgb, var(--primary-foreground) 90%, transparent);
+}
+.cta-on-dark-primary:active {
+  transform: scale(0.985);
+}
+
+.cta-on-dark-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  height: 3rem;
+  padding-inline: 2rem;
+  border: 1px solid color-mix(in srgb, var(--primary-foreground) 35%, transparent);
+  color: var(--primary-foreground);
+  transition:
+    background-color var(--duration-premium) var(--ease-out-premium),
+    border-color var(--duration-premium) var(--ease-out-premium),
+    transform var(--duration-premium) var(--ease-out-premium);
+}
+.cta-on-dark-secondary:hover {
+  background: color-mix(in srgb, var(--primary-foreground) 10%, transparent);
+  border-color: color-mix(in srgb, var(--primary-foreground) 55%, transparent);
+}
+.cta-on-dark-secondary:active {
+  transform: scale(0.985);
+}
+
+/* ─── Editorial card / section rhythm ───────────────────────────── */
+.editorial-card {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  transition: opacity var(--duration-premium) var(--ease-out-premium);
+}
+.editorial-card:hover {
+  opacity: 0.96;
+}
+
+.editorial-card-media {
+  position: relative;
+  overflow: hidden;
+  background: var(--muted);
+}
+
+.surface-quiet {
+  background: var(--background);
+}
+
+.surface-recessed {
+  background: var(--card);
+}
+
+.section-pad {
+  padding-block: clamp(4.5rem, 8vw, 7.5rem);
+}
+
+.section-pad-lg {
+  padding-block: clamp(5.5rem, 10vw, 9rem);
+}
+
+.hairline-y {
+  border-block: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
 /* ─── City visual utilities ─────────────────────────────────────── */
 .city-card {
   border-radius: var(--radius-card);
@@ -352,11 +511,17 @@ html.lenis {
 
 .img-reveal img {
   transform-origin: center;
-  transition: transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 700ms var(--ease-out-premium);
 }
 
 .img-reveal:hover img {
-  transform: scale(1.04);
+  transform: scale(1.035);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img-reveal:hover img {
+    transform: none;
+  }
 }
 
 /* ─── Focus visible ─────────────────────────────────────────────── */

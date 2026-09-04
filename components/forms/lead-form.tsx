@@ -517,7 +517,7 @@ export function LeadForm({
       <button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="cta-label cta-label-wrap-sm inline-flex h-12 min-h-[44px] items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 type-button hover:bg-foreground/90 transition-colors duration-200 active:scale-[0.98] disabled:opacity-60 w-full sm:w-auto"
+        className="cta-label cta-label-wrap-sm cta-primary type-button disabled:opacity-60 w-full sm:w-auto"
       >
         {form.formState.isSubmitting ? (
           <Loader2 size={14} className="animate-spin" aria-hidden />

@@ -6,11 +6,10 @@ import {
   ROUTE_FORMAT_LABELS,
 } from "@/lib/data/routes";
 import { ROUTE_CATEGORY_LABELS } from "@/types/map";
-import { Badge } from "@/components/ui/badge";
 import { CityImage } from "./city-image";
 import { resolveVisualImage } from "@/lib/visual-assets";
 import { cn } from "@/lib/utils";
-import { routeContactHref } from "@/lib/cta-constants";
+import { routeContactHref, CTA } from "@/lib/cta-constants";
 
 function formatRouteDuration(minutes: number): string {
   if (minutes >= 240) return "полдня";
@@ -34,81 +33,64 @@ export function RouteVisualCard({ route, className }: RouteVisualCardProps) {
     place: route.tags[0],
   });
 
+  const meta = [
+    formatRouteDuration(route.duration),
+    `${route.distance} км`,
+    `${route.pointsCount} точек`,
+    ROUTE_DIFFICULTY_LABELS[route.difficulty],
+  ].join(" · ");
+
   return (
-    <article
-      className={cn(
-        "flex flex-col border border-border bg-background hover:border-foreground/30 transition-colors duration-200 city-card overflow-hidden",
-        className
-      )}
-    >
-      <div className="relative">
+    <article className={cn("editorial-card group", className)}>
+      <Link
+        href={`/map/${route.slug}`}
+        className="editorial-card-media img-reveal block"
+        aria-label={`Открыть маршрут: ${route.title}`}
+      >
         <CityImage
           src={visual.src}
           alt={visual.alt}
           aspectRatio="16/10"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <Badge variant={route.type === "free" ? "baikal" : "amber"}>
-            {route.type === "free" ? "Бесплатно" : "Платный"}
-          </Badge>
-        </div>
-      </div>
+      </Link>
 
-      <div className="flex flex-col flex-1 p-5 gap-3">
+      <div className="flex flex-col flex-1 pt-5 gap-3">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+          <p className="type-meta uppercase text-muted-foreground mb-2">
             {ROUTE_CATEGORY_LABELS[route.mapCategory]} ·{" "}
             {ROUTE_FORMAT_LABELS[route.format]}
+            {route.type === "free" ? " · Бесплатно" : ""}
           </p>
-          <h2 className="text-lg font-medium leading-snug text-foreground">
-            {route.title}
+          <h2 className="type-h3 text-foreground text-balance group-hover:text-baikal transition-colors duration-200">
+            <Link href={`/map/${route.slug}`}>{route.title}</Link>
           </h2>
         </div>
 
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 flex-1">
+        <p className="type-body-sm text-muted-foreground leading-relaxed line-clamp-2 flex-1">
           {route.description}
         </p>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Clock size={11} />
-            {formatRouteDuration(route.duration)}
+        <p className="type-meta text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="inline-flex items-center gap-1">
+            <Clock size={11} aria-hidden />
+            {meta}
           </span>
-          <span className="flex items-center gap-1">
-            <MapPin size={11} />
-            {route.distance} км
-          </span>
-          <span>{route.pointsCount} точек</span>
-          <span>{ROUTE_DIFFICULTY_LABELS[route.difficulty]}</span>
-        </div>
+        </p>
 
-        {route.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {route.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] uppercase tracking-wide px-2 py-0.5 bg-muted text-muted-foreground"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border">
-          <Link
-            href={`/map/${route.slug}`}
-            className="inline-flex h-10 flex-1 items-center justify-center gap-2 bg-foreground text-primary-foreground px-4 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
-          >
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1">
+          <Link href={`/map/${route.slug}`} className="cta-ghost type-ui-label">
             Открыть маршрут
-            <ArrowRight size={13} />
+            <ArrowRight
+              size={14}
+              className="transition-transform duration-200 group-hover:translate-x-0.5"
+            />
           </Link>
           <Link
             href={routeContactHref(route.slug, "route-card")}
-            className="inline-flex h-10 items-center justify-center border border-border px-4 text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
+            className="type-ui-label text-muted-foreground hover:text-foreground transition-colors duration-200 min-h-[44px] inline-flex items-center"
           >
-            Пройти с Алёной
+            {CTA.guided.label}
           </Link>
         </div>
       </div>

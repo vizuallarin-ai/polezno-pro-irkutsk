@@ -23,46 +23,38 @@ export function SouvenirVisualCard({ product }: { product: SouvenirProduct }) {
       className="group flex flex-col"
       aria-label={product.title}
     >
-      <div className="relative mb-4">
+      <div className="relative mb-5 overflow-hidden img-reveal">
         <CityImage
           src={visual.src}
           alt={visual.alt}
           aspectRatio="square"
           sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-          className="border border-border city-card"
-          imageClassName="transition-transform duration-700 group-hover:scale-[1.02]"
+          className="city-card overflow-hidden"
           rounded
         />
         {showStockBadge && (
-          <div className="absolute top-2 left-2 z-10">
-            <Badge variant="outline" className="text-xs bg-background/90">
+          <div className="absolute top-3 left-3 z-10">
+            <Badge variant="outline" className="type-caption bg-background/90">
               {product.stockLabel}
             </Badge>
           </div>
         )}
-        {!product.isOwnMerch && product.maker && (
-          <div className="absolute bottom-2 left-2 right-2 z-10">
-            <Badge
-              variant="secondary"
-              className="text-xs bg-background/90 truncate max-w-full"
-            >
-              {product.maker.title}
-            </Badge>
-          </div>
-        )}
       </div>
-      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+      <p className="type-meta uppercase text-muted-foreground mb-2">
         {product.categoryLabel}
+        {!product.isOwnMerch && product.maker
+          ? ` · ${product.maker.title}`
+          : ""}
       </p>
-      <p className="text-sm font-medium text-foreground leading-snug mb-2 group-hover:text-baikal transition-colors duration-200">
+      <p className="type-h3 text-foreground leading-snug mb-2 group-hover:text-baikal transition-colors duration-200">
         {product.title}
       </p>
       {product.shortDescription && (
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+        <p className="type-body-sm text-muted-foreground line-clamp-2 mb-3">
           {product.shortDescription}
         </p>
       )}
-      <p className="text-sm font-medium mt-auto">
+      <p className="type-ui-label mt-auto">
         {formatProductPrice(product)}
       </p>
     </Link>

@@ -51,53 +51,54 @@ export function BusinessPageContent({
   return (
     <main className="pt-24 min-h-screen">
       {/* Hero */}
-      <section className="py-16 lg:py-24 border-b border-border">
+      <section className="section-pad border-b border-border/70">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
+              <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-5">
                 B2B-направление Иркпортала
               </p>
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light tracking-tight text-foreground mb-6">
-                Для <span className="font-serif italic">бизнеса</span>
+              <h1 className="type-display-xl text-foreground mb-6 max-w-[12ch]">
+                Для <em className="italic">бизнеса</em>
               </h1>
-              <p className="text-muted-foreground leading-relaxed max-w-lg text-lg">
+              <p className="type-body-lg text-muted-foreground max-w-lg mb-8">
                 Программы для компаний, отелей, ресторанов и турпроектов в
                 Иркутске — с авторским взглядом Алёны Ямщиковой и базой
                 маршрутов Иркпортала.
               </p>
-            </div>
-            <div className="flex flex-col gap-6">
-              <CityImage
-                src={CURATED_FALLBACKS.business}
-                alt="Иркутск — деталь города для деловых программ"
-                aspectRatio="16/10"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="border border-border city-card"
-                rounded
-                caption="Иркутск для делегаций и команд"
-                place="Иркутск"
-              />
-              <div className="flex flex-col gap-4">
-              {[
-                "Делегации и корпоративные гости",
-                "Сопровождение турпроектов",
-                "Обучение персонала отелей и ресторанов",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-baikal shrink-0" />
-                  <span className="text-muted-foreground">{item}</span>
-                </div>
-              ))}
+              <ul className="flex flex-col gap-3 mb-10">
+                {[
+                  "Делегации и корпоративные гости",
+                  "Сопровождение турпроектов",
+                  "Обучение персонала отелей и ресторанов",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3 type-body-sm text-muted-foreground">
+                    <span className="mt-2 w-1 h-1 rounded-full bg-baikal shrink-0" aria-hidden />
+                    {item}
+                  </li>
+                ))}
+              </ul>
               <Link
                 href="#business-form"
-                className="inline-flex h-11 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors w-fit mt-4"
+                className="cta-primary type-button group"
               >
-                Обсудить задачу
-                <ArrowRight size={14} />
+                Обсудить программу
+                <ArrowRight
+                  size={14}
+                  className="transition-transform duration-200 group-hover:translate-x-1"
+                />
               </Link>
-              </div>
             </div>
+            <CityImage
+              src={CURATED_FALLBACKS.business}
+              alt="Иркутск — деталь города для деловых программ"
+              aspectRatio="3/4"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="city-card overflow-hidden"
+              rounded
+              caption="Иркутск для делегаций и команд"
+              place="Иркутск"
+            />
           </div>
         </div>
       </section>

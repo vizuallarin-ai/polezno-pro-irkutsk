@@ -92,7 +92,7 @@ export function CityHeroVisual({
           alt={imageAlt}
           aspectRatio="auto"
           className="h-full w-full"
-          imageClassName="opacity-75"
+          imageClassName="opacity-80 scale-105"
           sizes="100vw"
           priority
           overlay
@@ -104,19 +104,21 @@ export function CityHeroVisual({
         />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-city-ink/90 via-city-ink/35 to-city-ink/20" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-24 lg:px-8 lg:pb-32">
         <div className="max-w-3xl">
-          <p className="mb-4 type-caption uppercase tracking-[0.2em] text-primary-foreground/60">
+          <p className="mb-5 type-caption uppercase tracking-[0.22em] text-primary-foreground/55">
             {badge}
           </p>
           <h1 className="type-display-xl text-primary-foreground max-w-[16ch] sm:max-w-[18ch] md:max-w-none">
             {renderTitle(title)}
           </h1>
-          <p className="mt-6 max-w-lg type-body-lg font-light text-primary-foreground/75">
+          <p className="mt-7 max-w-md type-body-lg font-light text-primary-foreground/72">
             {subtitle}
           </p>
           {ctas.length > 0 && (
-            <div className="mt-10 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+            <div className="mt-11 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
               {ctas.map((cta) => (
                 <Link
                   key={cta.href + cta.label}
@@ -134,8 +136,8 @@ export function CityHeroVisual({
                   }}
                   className={
                     cta.variant === "primary"
-                      ? "cta-label cta-label-wrap-sm inline-flex h-12 min-h-[44px] items-center justify-center px-8 type-button bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-colors duration-200 active:scale-[0.98]"
-                      : "cta-label cta-label-wrap-sm inline-flex h-12 min-h-[44px] items-center justify-center px-8 type-button border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-200 active:scale-[0.98]"
+                      ? "cta-label cta-label-wrap-sm cta-on-dark-primary type-button"
+                      : "cta-label cta-label-wrap-sm cta-on-dark-secondary type-button"
                   }
                 >
                   {cta.label}
@@ -151,11 +153,11 @@ export function CityHeroVisual({
         onClick={() =>
           window.scrollBy({ top: window.innerHeight, behavior: "smooth" })
         }
-        className="absolute bottom-8 right-8 z-10 hidden sm:flex flex-col items-center gap-2 text-primary-foreground/50 hover:text-primary-foreground transition-colors duration-200"
+        className="absolute bottom-8 right-8 z-10 hidden md:flex flex-col items-center gap-2 text-primary-foreground/40 hover:text-primary-foreground/80 transition-colors duration-300"
         aria-label="Прокрутить вниз"
       >
-        <span className="type-caption uppercase tracking-widest">Смотреть</span>
-        <ArrowDown size={16} className="animate-bounce" />
+        <span className="type-caption uppercase tracking-[0.2em]">Смотреть</span>
+        <ArrowDown size={14} className="opacity-80" />
       </button>
     </section>
   );
