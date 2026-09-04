@@ -90,8 +90,11 @@ for ($i = 0; $i -lt 90; $i++) {
     $h = Invoke-RestMethod "http://127.0.0.1:$SmokePort/api/health" -TimeoutSec 5
     if ($h.commitSha -eq $TargetSha -and $h.identityComplete -eq $true) {
       $home = (Invoke-WebRequest "http://127.0.0.1:$SmokePort/" -TimeoutSec 20).Content
-      if ($home -notmatch 'Смотреть маршруты') {
-        throw 'served HTML missing discovery CTA; refusing stale/mismatched server'
+      if ($home -notmatch 'min-h-\[44px\]') {
+        throw 'served HTML missing min-h-[44px]; refusing stale/mismatched server'
+      }
+      if ($home -notmatch '/map') {
+        throw 'served HTML missing /map discovery destination'
       }
       if ($home -match 'inline-flex h-9 items-center[^>]+href="/business"') {
         throw 'served HTML still has legacy h-9 /business header CTA'
@@ -100,7 +103,7 @@ for ($i = 0; $i -lt 90; $i++) {
       break
     }
   } catch {
-    if ($_.Exception.Message -match 'legacy header CTA|discovery CTA') { throw $_ }
+    if ($_.Exception.Message -match 'legacy header CTA|discovery destination|min-h-') { throw $_ }
     Start-Sleep -Seconds 2
   }
 }
