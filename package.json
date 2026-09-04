@@ -27,6 +27,8 @@
     "check:phase15": "npx tsx scripts/phase15-checks.ts",
     "check:gate-c": "npx tsx scripts/gate-c-audit.mjs",
     "test:leads": "npx tsx scripts/test-leads-security.ts",
+    "test:readiness": "npx tsx scripts/test-content-readiness-surfaces.ts",
+    "test:lead-privacy": "npx tsx scripts/test-lead-notification-privacy.ts",
     "typecheck": "tsc --noEmit",
     "og:default": "node scripts/generate-og-default.mjs",
     "build:release": "node scripts/build-release.mjs",

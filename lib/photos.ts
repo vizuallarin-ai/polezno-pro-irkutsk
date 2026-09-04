@@ -23,6 +23,8 @@ function isReadyPhoto(p: PublicPhoto): boolean {
     title: p.title,
     slug: p.slug,
     moderationStatus: "approved",
+    altTexts: [p.imageAlt],
+    mediaUrls: [p.imageUrl, p.thumbnailUrl],
   });
 }
 

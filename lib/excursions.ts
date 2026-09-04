@@ -1,5 +1,8 @@
 import { PUBLISHED_STATUS_WHERE } from "@/lib/cms-filters";
-import { isPublicPublishedReady } from "@/lib/content-readiness";
+import {
+  commercialInputFromDoc,
+  isPublicPublishedReady,
+} from "@/lib/content-readiness";
 
 export const EXCURSION_FORMAT_LABELS: Record<string, string> = {
   walking: "Пешая",
@@ -55,6 +58,8 @@ export async function getPublishedExcursions(): Promise<ExcursionDoc[]> {
           title: e.title,
           slug: e.slug,
           shortDescription: e.shortDescription,
+          altTexts: [e.cover?.alt],
+          mediaUrls: [e.cover?.url, e.coverUrl],
         })
       );
   } catch {
@@ -87,6 +92,8 @@ export async function getExcursionBySlug(
         title: mapped.title,
         slug: mapped.slug,
         shortDescription: mapped.shortDescription,
+        altTexts: [mapped.cover?.alt],
+        mediaUrls: [mapped.cover?.url, mapped.coverUrl],
       })
     ) {
       return null;
@@ -160,6 +167,9 @@ export async function getExcursionForRoute(
     });
     const doc = result.docs[0];
     if (!doc) return null;
+    if (!isPublicPublishedReady(commercialInputFromDoc("excursion", doc as Record<string, unknown>))) {
+      return null;
+    }
     return {
       id: doc.id,
       slug: String(doc.slug),

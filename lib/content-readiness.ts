@@ -42,6 +42,20 @@ export type CommercialRecordInput = {
   isDemo?: boolean | null;
   /** Preview/admin context — draft-preview may be shown */
   allowPreview?: boolean;
+  /** Media alt texts — seed placeholders often mark demo here, not in title */
+  altTexts?: Array<string | null | undefined>;
+  /** Media filenames — seed files use seed-/demo- prefixes */
+  mediaFilenames?: Array<string | null | undefined>;
+  /** Media URLs — may contain seed-placeholder path segments */
+  mediaUrls?: Array<string | null | undefined>;
+};
+
+export type PublicSurfaceDecision = {
+  state: ContentReadiness;
+  listing: boolean;
+  detail: boolean;
+  sitemap: boolean;
+  indexable: boolean;
 };
 
 const DEMO_SLUG_EXACT = new Set([
@@ -51,6 +65,38 @@ const DEMO_SLUG_EXACT = new Set([
   "demo-ar",
   "test-baseline",
 ]);
+
+const GUIDE_PLACEHOLDER_TITLES = new Set([
+  "имя гида",
+  "гид",
+  "name",
+  "guide",
+  "placeholder",
+]);
+
+const GUIDE_PLACEHOLDER_SLUGS = new Set([
+  "slug",
+  "guide",
+  "placeholder",
+  "имя-гида",
+  "name",
+  "test",
+  "demo-guide",
+]);
+
+const OWN_MEDIA_KEYS = [
+  "image",
+  "cover",
+  "coverImage",
+  "postcardImage",
+  "photo",
+  "gallery",
+  "seo",
+  "animationPosterImage",
+  "animationPoster",
+  "avatar",
+  "poster",
+] as const;
 
 export function isDemoPublicMarker(value: string): boolean {
   const lower = value.toLowerCase();
@@ -93,23 +139,42 @@ function isPublishedStatus(input: CommercialRecordInput): boolean {
   return true;
 }
 
+function collectSignalTexts(input: CommercialRecordInput): string[] {
+  const values = [
+    displayTitle(input),
+    input.slug,
+    input.shortDescription,
+    input.description,
+    ...(input.altTexts ?? []),
+    ...(input.mediaFilenames ?? []),
+    ...(input.mediaUrls ?? []),
+  ];
+  return values.filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+}
+
 function hasDemoSignals(input: CommercialRecordInput): boolean {
   if (input.isDemo === true) return true;
-  const title = displayTitle(input);
-  const slug = (input.slug ?? "").trim();
-  return (
-    (title.length > 0 && isDemoPublicMarker(title)) ||
-    (slug.length > 0 && isDemoPublicMarker(slug))
-  );
+  return collectSignalTexts(input).some((value) => isDemoPublicMarker(value));
+}
+
+function isGuidePlaceholder(input: CommercialRecordInput): boolean {
+  if (input.kind !== "guide") return false;
+  const title = displayTitle(input).toLowerCase();
+  const slug = (input.slug ?? "").trim().toLowerCase();
+  if (title.length > 0 && GUIDE_PLACEHOLDER_TITLES.has(title)) return true;
+  if (slug.length > 0 && GUIDE_PLACEHOLDER_SLUGS.has(slug)) return true;
+  return false;
 }
 
 function hasMinimumFields(input: CommercialRecordInput): boolean {
   const title = displayTitle(input);
   const slug = (input.slug ?? "").trim();
 
+  if (input.kind === "guide") {
+    return title.length > 0 && slug.length > 0 && !isGuidePlaceholder(input);
+  }
+
   switch (input.kind) {
-    case "guide":
-      return title.length > 0 && title !== "Имя Гида";
     case "route":
       return title.length > 0 && slug.length > 0;
     case "excursion":
@@ -122,9 +187,7 @@ function hasMinimumFields(input: CommercialRecordInput): boolean {
     case "ar_postcard":
     case "maker":
     case "event":
-      return title.length > 0 && slug.length > 0;
     case "photo":
-      return title.length > 0 && slug.length > 0;
     case "article":
       return title.length > 0 && slug.length > 0;
     default:
@@ -186,6 +249,106 @@ export function catalogReadiness(
   count: number
 ): Extract<ContentReadiness, "empty" | "published-ready"> {
   return count > 0 ? "published-ready" : "empty";
+}
+
+/** Section listing pages stay reachable even when the catalog is empty. */
+export function isSectionPagePublic(): true {
+  return true;
+}
+
+/**
+ * One decision for listing / public detail / sitemap / indexability.
+ * Admin preview is a separate allowPreview path and is not indexable.
+ */
+export function publicSurfacesForRecord(
+  input: CommercialRecordInput
+): PublicSurfaceDecision {
+  const publicInput = { ...input, allowPreview: false };
+  const state = classifyCommercialRecord(publicInput);
+  const listing = isPublicPublishedReady(publicInput);
+  const detail = mayRenderPublicDetail(publicInput);
+  const sitemap = isSitemapEligible(publicInput);
+  return {
+    state,
+    listing,
+    detail,
+    sitemap,
+    indexable: listing && detail && sitemap,
+  };
+}
+
+type MediaSignals = {
+  alts: string[];
+  filenames: string[];
+  urls: string[];
+};
+
+function collectMediaSignals(
+  value: unknown,
+  acc: MediaSignals,
+  depth: number
+): void {
+  if (depth > 3 || value == null || typeof value !== "object") return;
+  if (Array.isArray(value)) {
+    for (const item of value) collectMediaSignals(item, acc, depth + 1);
+    return;
+  }
+  const rec = value as Record<string, unknown>;
+  if (typeof rec.alt === "string" && rec.alt.trim()) acc.alts.push(rec.alt);
+  if (typeof rec.filename === "string" && rec.filename.trim()) {
+    acc.filenames.push(rec.filename);
+  }
+  if (typeof rec.url === "string" && rec.url.trim()) acc.urls.push(rec.url);
+  if ("image" in rec) collectMediaSignals(rec.image, acc, depth + 1);
+}
+
+export function extractOwnMediaSignals(doc: Record<string, unknown>): MediaSignals {
+  const acc: MediaSignals = { alts: [], filenames: [], urls: [] };
+  for (const key of OWN_MEDIA_KEYS) {
+    if (key in doc) collectMediaSignals(doc[key], acc, 0);
+  }
+  return acc;
+}
+
+function asOptionalString(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+/** Build the canonical readiness input from a CMS document (own media only). */
+export function commercialInputFromDoc(
+  kind: CommercialKind,
+  doc: Record<string, unknown>,
+  extras: Partial<CommercialRecordInput> = {}
+): CommercialRecordInput {
+  const media = extractOwnMediaSignals(doc);
+  return {
+    kind,
+    status: asOptionalString(doc.status),
+    _status: asOptionalString(doc._status),
+    title: asOptionalString(doc.title),
+    name: asOptionalString(doc.name),
+    slug: asOptionalString(doc.slug),
+    shortDescription: asOptionalString(doc.shortDescription),
+    description: asOptionalString(doc.description),
+    isActive: typeof doc.isActive === "boolean" ? doc.isActive : null,
+    moderationStatus: asOptionalString(doc.moderationStatus),
+    placementStatus: asOptionalString(doc.placementStatus),
+    price: typeof doc.price === "number" ? doc.price : null,
+    priceOnRequest:
+      typeof doc.priceOnRequest === "boolean" ? doc.priceOnRequest : null,
+    isDemo: doc.isDemo === true,
+    altTexts: media.alts,
+    mediaFilenames: media.filenames,
+    mediaUrls: media.urls,
+    ...extras,
+  };
+}
+
+export function isCmsDocPublicReady(
+  kind: CommercialKind,
+  doc: Record<string, unknown>
+): boolean {
+  return isPublicPublishedReady(commercialInputFromDoc(kind, doc));
 }
 
 /** @deprecated Prefer classifyCommercialRecord — kept for phase15-checks compat */

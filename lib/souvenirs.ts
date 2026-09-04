@@ -2,7 +2,10 @@ import {
   MAKER_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
-import { isPublicPublishedReady } from "@/lib/content-readiness";
+import {
+  isCmsDocPublicReady,
+  isPublicPublishedReady,
+} from "@/lib/content-readiness";
 import {
   mapMakerRef,
   mapProductDoc,
@@ -22,6 +25,8 @@ function isReadyProduct(p: SouvenirProduct): boolean {
     status: "published",
     title: p.title,
     slug: p.slug,
+    altTexts: [p.imageAlt, ...p.gallery.map((item) => item.alt)],
+    mediaUrls: [p.imageUrl, ...p.gallery.map((item) => item.url)],
   });
 }
 
@@ -124,7 +129,9 @@ export async function getMakerBySlug(slug: string): Promise<SouvenirMaker | null
     depth: 1,
   });
   const doc = result.docs[0];
-  return doc ? mapMakerRef(doc) : null;
+  if (!doc) return null;
+  const mapped = mapMakerRef(doc);
+  return mapped && isReadyMaker(mapped) ? mapped : null;
 }
 
 export async function getProductsByMaker(makerId: string): Promise<SouvenirProduct[]> {
@@ -139,7 +146,9 @@ export async function getProductsByMaker(makerId: string): Promise<SouvenirProdu
     limit: 50,
     depth: 1,
   });
-  return result.docs.map((doc) => mapProductDoc(doc as Record<string, unknown>));
+  return result.docs
+    .map((doc) => mapProductDoc(doc as Record<string, unknown>))
+    .filter(isReadyProduct);
 }
 
 export async function getProductsForRoute(
@@ -175,7 +184,9 @@ export async function getProductsForRoute(
     limit,
     depth: 1,
   });
-  return result.docs.map((doc) => mapProductDoc(doc as Record<string, unknown>));
+  return result.docs
+    .map((doc) => mapProductDoc(doc as Record<string, unknown>))
+    .filter(isReadyProduct);
 }
 
 export async function getProductsForArticle(
@@ -211,7 +222,9 @@ export async function getProductsForArticle(
     limit,
     depth: 1,
   });
-  return result.docs.map((doc) => mapProductDoc(doc as Record<string, unknown>));
+  return result.docs
+    .map((doc) => mapProductDoc(doc as Record<string, unknown>))
+    .filter(isReadyProduct);
 }
 
 export async function getPublishedProductSlugs(): Promise<string[]> {
@@ -223,9 +236,11 @@ export async function getPublishedProductSlugs(): Promise<string[]> {
       collection: "products",
       where: PUBLISHED_STATUS_WHERE,
       limit: 1000,
-      depth: 0,
+      depth: 1,
     });
-    return result.docs.map((doc) => String(doc.slug));
+    return result.docs
+      .filter((doc) => isCmsDocPublicReady("product", doc as Record<string, unknown>))
+      .map((doc) => String(doc.slug));
   } catch {
     return [];
   }
@@ -240,9 +255,11 @@ export async function getPublishedMakerSlugs(): Promise<string[]> {
       collection: "makers",
       where: MAKER_PUBLISHED_WHERE,
       limit: 1000,
-      depth: 0,
+      depth: 1,
     });
-    return result.docs.map((doc) => String(doc.slug));
+    return result.docs
+      .filter((doc) => isCmsDocPublicReady("maker", doc as Record<string, unknown>))
+      .map((doc) => String(doc.slug));
   } catch {
     return [];
   }

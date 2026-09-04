@@ -110,44 +110,8 @@ export async function sendReviewRequest({
   });
 }
 
-export async function sendLeadNotification({
-  name,
-  email,
-  serviceType,
-  message,
-  to,
-}: {
-  name: string;
-  email: string;
-  serviceType?: string;
-  message?: string;
-  to?: string;
-}) {
-  const client = getResend();
-  if (!client) return;
-
-  const adminEmail = to || process.env.EMAIL_TO || "info@irkportal.ru";
-  const safeName = escapeHtml(name);
-  const safeEmail = escapeHtml(email);
-  const safeType = escapeHtml(serviceType || "—");
-  const safeMessage = message
-    ? escapeHtml(message).replace(/\n/g, "<br>")
-    : "";
-
-  await client.emails.send({
-    from: `CRM ${BRAND_NAME} <${FROM}>`,
-    to: adminEmail,
-    subject: `Новая заявка от ${name.replace(/[\r\n]/g, " ").slice(0, 120)}`,
-    html: `
-<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;background:#f9f9f7;">
-  <h2 style="margin:0 0 16px;font-size:20px;font-weight:400;color:#1C1C1E;">Новая заявка</h2>
-  <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;width:120px;">Имя</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;">${safeName}</td></tr>
-    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;">Email</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;"><a href="mailto:${safeEmail}">${safeEmail}</a></td></tr>
-    <tr><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;color:#6B6B6B;font-size:13px;">Тип</td><td style="padding:8px 0;border-bottom:1px solid #e8e6e3;font-size:14px;color:#1C1C1E;">${safeType}</td></tr>
-    ${safeMessage ? `<tr><td style="padding:8px 0;color:#6B6B6B;font-size:13px;vertical-align:top;">Сообщение</td><td style="padding:8px 0;font-size:14px;color:#1C1C1E;">${safeMessage}</td></tr>` : ""}
-  </table>
-  <p style="margin:20px 0 0;font-size:13px;color:#9CA3AF;">Посмотреть в CMS: <a href="${SITE_URL}/admin/collections/leads">открыть</a></p>
-</div>`,
-  });
-}
+/** Gate C.1: lead alerts must not include PII — see lib/lead-notification.ts */
+export {
+  sendLeadNotification,
+  notifySavedLead,
+} from "@/lib/lead-notification";

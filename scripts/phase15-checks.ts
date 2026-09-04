@@ -73,7 +73,13 @@ import {
   isPublicPublishedReady,
   mayRenderPublicDetail,
   catalogReadiness,
+  publicSurfacesForRecord,
 } from "../lib/content-readiness";
+import {
+  buildLeadNotificationEmail,
+  buildLeadNotificationPayload,
+  payloadContainsForbiddenPiiKeys,
+} from "../lib/lead-notification";
 
 import {
   CTA,
@@ -1031,6 +1037,39 @@ test("content readiness fail-closed for demo and incomplete", () => {
   );
   assert.equal(catalogReadiness(0), "empty");
   assert.equal(catalogReadiness(2), "published-ready");
+  const seedLike = publicSurfacesForRecord({
+    kind: "product",
+    status: "published",
+    title: "Мини-гид «Иркутск за 3 дня»",
+    slug: "mini-guide-3-days",
+    altTexts: ["Демо-сувенир Иркпортала"],
+    mediaFilenames: ["seed-placeholder-souvenir.svg"],
+  });
+  assert.equal(seedLike.state, "demo");
+  assert.equal(seedLike.listing, false);
+  assert.equal(seedLike.detail, false);
+  assert.equal(seedLike.sitemap, false);
+  assert.equal(
+    classifyCommercialRecord({
+      kind: "guide",
+      name: "Алёна",
+      slug: "Slug",
+      isActive: true,
+    }),
+    "incomplete"
+  );
+});
+
+test("lead notification payload excludes PII keys", () => {
+  const payload = buildLeadNotificationPayload({
+    leadId: "lead_1",
+    createdAt: "2026-09-04T00:00:00.000Z",
+    sourceType: "contact",
+  });
+  assert.deepEqual(payloadContainsForbiddenPiiKeys(payload as unknown as Record<string, unknown>), []);
+  const email = buildLeadNotificationEmail(payload);
+  assert.equal(email.html.includes("Иван"), false);
+  assert.equal(email.html.includes("ivan@"), false);
 });
 
 test("CTA B2C and B2B destinations stay separated", () => {

@@ -6,8 +6,13 @@ import {
   classifyCommercialRecord,
   mayRenderPublicDetail,
   isSitemapEligible,
+  commercialInputFromDoc,
+  publicSurfacesForRecord,
+  isSectionPagePublic,
+  catalogReadiness,
   type ContentReadiness,
   type CommercialRecordInput,
+  type PublicSurfaceDecision,
 } from "@/lib/content-readiness";
 
 export {
@@ -17,8 +22,12 @@ export {
   classifyCommercialRecord,
   mayRenderPublicDetail,
   isSitemapEligible,
+  commercialInputFromDoc,
+  publicSurfacesForRecord,
+  isSectionPagePublic,
+  catalogReadiness,
 };
-export type { ContentReadiness, CommercialRecordInput };
+export type { ContentReadiness, CommercialRecordInput, PublicSurfaceDecision };
 
 export function shouldUseDemoFallback(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env

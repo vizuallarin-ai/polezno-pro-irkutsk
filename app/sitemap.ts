@@ -10,13 +10,18 @@ import {
   PHOTO_PUBLISHED_WHERE,
   PUBLISHED_STATUS_WHERE,
 } from "@/lib/cms-filters";
-import { isSitemapEligible } from "@/lib/content-readiness";
+import {
+  commercialInputFromDoc,
+  isSitemapEligible,
+  type CommercialKind,
+} from "@/lib/content-readiness";
 import { logSitemapCmsError } from "@/lib/sitemap-contract";
 
 const BASE_URL = getSiteUrl();
 
 function eligibleDoc(
-  kind:
+  kind: Extract<
+    CommercialKind,
     | "article"
     | "event"
     | "product"
@@ -24,19 +29,11 @@ function eligibleDoc(
     | "route"
     | "excursion"
     | "photo"
-    | "ar_postcard",
-  doc: { status?: string | null; _status?: string | null; title?: string | null; slug?: string | null; name?: string | null; moderationStatus?: string | null; placementStatus?: string | null; shortDescription?: string | null }
+    | "ar_postcard"
+  >,
+  doc: Record<string, unknown>
 ): boolean {
-  return isSitemapEligible({
-    kind,
-    status: doc.status ?? "published",
-    _status: doc._status,
-    title: doc.title ?? doc.name,
-    slug: doc.slug,
-    shortDescription: doc.shortDescription,
-    moderationStatus: doc.moderationStatus,
-    placementStatus: doc.placementStatus,
-  });
+  return isSitemapEligible(commercialInputFromDoc(kind, doc));
 }
 
 async function getCmsUrls() {
@@ -64,7 +61,7 @@ async function getCmsUrls() {
         collection: "products",
         where: PUBLISHED_STATUS_WHERE,
         limit: 1000,
-        depth: 0,
+        depth: 1,
       }),
       payload.find({
         collection: "makers",
@@ -88,20 +85,18 @@ async function getCmsUrls() {
         collection: "photos",
         where: PHOTO_PUBLISHED_WHERE,
         limit: 1000,
-        depth: 0,
+        depth: 1,
       }),
       payload.find({
         collection: "ar-postcards",
         where: AR_POSTCARD_PUBLISHED_WHERE,
         limit: 1000,
-        depth: 0,
+        depth: 1,
       }),
     ]);
 
     const articleUrls = articles.docs
-      .filter((a) =>
-        eligibleDoc("article", a as { status?: string; _status?: string; title?: string; slug?: string })
-      )
+      .filter((a) => eligibleDoc("article", a as Record<string, unknown>))
       .map((a) => ({
       url: `${BASE_URL}/explore/${a.slug}`,
       lastModified: new Date(String(a.updatedAt)),
@@ -110,9 +105,7 @@ async function getCmsUrls() {
     }));
 
     const eventUrls = events.docs
-      .filter((e) =>
-        eligibleDoc("event", e as { status?: string; title?: string; slug?: string })
-      )
+      .filter((e) => eligibleDoc("event", e as Record<string, unknown>))
       .map((e) => ({
       url: `${BASE_URL}/events/${e.slug}`,
       lastModified: new Date(String(e.updatedAt)),
@@ -121,9 +114,7 @@ async function getCmsUrls() {
     }));
 
     const productUrls = products.docs
-      .filter((p) =>
-        eligibleDoc("product", p as { status?: string; title?: string; slug?: string })
-      )
+      .filter((p) => eligibleDoc("product", p as Record<string, unknown>))
       .map((p) => ({
       url: `${BASE_URL}/souvenirs/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),
@@ -132,12 +123,7 @@ async function getCmsUrls() {
     }));
 
     const makerUrls = makersRes.docs
-      .filter((m) =>
-        eligibleDoc("maker", {
-          ...(m as { status?: string; name?: string; slug?: string; placementStatus?: string }),
-          title: (m as { name?: string }).name,
-        })
-      )
+      .filter((m) => eligibleDoc("maker", m as Record<string, unknown>))
       .map((m) => ({
       url: `${BASE_URL}/souvenirs/makers/${m.slug}`,
       lastModified: new Date(String(m.updatedAt)),
@@ -146,9 +132,7 @@ async function getCmsUrls() {
     }));
 
     const cmsRouteUrls = routesRes.docs
-      .filter((r) =>
-        eligibleDoc("route", r as { status?: string; title?: string; slug?: string })
-      )
+      .filter((r) => eligibleDoc("route", r as Record<string, unknown>))
       .map((r) => ({
       url: `${BASE_URL}/map/${r.slug}`,
       lastModified: new Date(String(r.updatedAt)),
@@ -157,9 +141,7 @@ async function getCmsUrls() {
     }));
 
     const excursionUrls = excursionsRes.docs
-      .filter((e) =>
-        eligibleDoc("excursion", e as { status?: string; title?: string; slug?: string; shortDescription?: string })
-      )
+      .filter((e) => eligibleDoc("excursion", e as Record<string, unknown>))
       .map((e) => ({
       url: `${BASE_URL}/excursions/${e.slug}`,
       lastModified: new Date(String(e.updatedAt)),
@@ -168,9 +150,7 @@ async function getCmsUrls() {
     }));
 
     const photoUrls = photosRes.docs
-      .filter((p) =>
-        eligibleDoc("photo", p as { status?: string; title?: string; slug?: string; moderationStatus?: string })
-      )
+      .filter((p) => eligibleDoc("photo", p as Record<string, unknown>))
       .map((p) => ({
       url: `${BASE_URL}/explore/photos/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),
@@ -179,9 +159,7 @@ async function getCmsUrls() {
     }));
 
     const arPostcardUrls = arPostcardsRes.docs
-      .filter((p) =>
-        eligibleDoc("ar_postcard", p as { status?: string; title?: string; slug?: string })
-      )
+      .filter((p) => eligibleDoc("ar_postcard", p as Record<string, unknown>))
       .map((p) => ({
       url: `${BASE_URL}/ar-postcards/${p.slug}`,
       lastModified: new Date(String(p.updatedAt)),

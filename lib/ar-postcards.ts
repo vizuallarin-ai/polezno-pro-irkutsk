@@ -1,5 +1,8 @@
 import { AR_POSTCARD_PUBLISHED_WHERE } from "@/lib/cms-filters";
-import { isPublicPublishedReady } from "@/lib/content-readiness";
+import {
+  isCmsDocPublicReady,
+  isPublicPublishedReady,
+} from "@/lib/content-readiness";
 import { mapArPostcardDoc } from "@/lib/ar-postcard-adapter";
 import type { PublicArPostcard } from "@/types/ar-postcards";
 
@@ -19,6 +22,8 @@ function isReadyAr(p: PublicArPostcard): boolean {
     status: "published",
     title: p.title,
     slug: p.slug,
+    altTexts: [p.coverImageAlt, p.postcardImageAlt],
+    mediaUrls: [p.coverImageUrl, p.postcardImageUrl],
   });
 }
 
@@ -126,7 +131,9 @@ export async function getArPostcardForProduct(
     });
 
     const doc = result.docs[0];
-    return doc ? mapArPostcardDoc(doc as Record<string, unknown>) : null;
+    if (!doc) return null;
+    const mapped = mapArPostcardDoc(doc as Record<string, unknown>);
+    return isReadyAr(mapped) ? mapped : null;
   } catch {
     return null;
   }
@@ -152,7 +159,9 @@ export async function getArPostcardForPhoto(
     });
 
     const doc = result.docs[0];
-    return doc ? mapArPostcardDoc(doc as Record<string, unknown>) : null;
+    if (!doc) return null;
+    const mapped = mapArPostcardDoc(doc as Record<string, unknown>);
+    return isReadyAr(mapped) ? mapped : null;
   } catch {
     return null;
   }
@@ -186,8 +195,12 @@ export async function getArPostcardByProductRelation(
           id,
           depth: 1,
         });
-        if (doc && doc.status === "published") {
-          return mapArPostcardDoc(doc as Record<string, unknown>);
+        if (
+          doc &&
+          isCmsDocPublicReady("ar_postcard", doc as Record<string, unknown>)
+        ) {
+          const mapped = mapArPostcardDoc(doc as Record<string, unknown>);
+          return isReadyAr(mapped) ? mapped : null;
         }
       } catch {
         // fall through

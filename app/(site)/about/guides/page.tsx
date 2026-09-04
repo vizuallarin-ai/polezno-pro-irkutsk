@@ -56,6 +56,8 @@ async function getGuides(): Promise<Guide[]> {
         name: g.name,
         slug: g.slug,
         isActive: true,
+        altTexts: [g.photo?.alt],
+        mediaUrls: [g.photo?.url],
       })
     );
   } catch {

@@ -1,7 +1,10 @@
 import { DEMO_ROUTES, type Route } from "@/lib/data/routes";
 import { PUBLISHED_STATUS_WHERE } from "@/lib/cms-filters";
 import { allowDemoFallback } from "@/lib/demo-fallback";
-import { isPublicPublishedReady } from "@/lib/content-readiness";
+import {
+  commercialInputFromDoc,
+  isPublicPublishedReady,
+} from "@/lib/content-readiness";
 import {
   payloadRouteToRoute,
   isPublishedRoute,
@@ -58,19 +61,10 @@ async function cmsHasAnyRoutes(): Promise<boolean> {
   }
 }
 
-function isReadyRouteDoc(doc: {
-  status?: string;
-  title?: string;
-  slug?: string;
-}): boolean {
+function isReadyRouteDoc(doc: Record<string, unknown>): boolean {
   return (
     isPublishedRoute(doc) &&
-    isPublicPublishedReady({
-      kind: "route",
-      status: doc.status,
-      title: doc.title,
-      slug: doc.slug,
-    })
+    isPublicPublishedReady(commercialInputFromDoc("route", doc))
   );
 }
 
@@ -89,9 +83,7 @@ async function fetchPublishedCmsRoutes(): Promise<Route[]> {
 
     return result.docs
       .filter((doc) =>
-        isReadyRouteDoc(
-          doc as { status?: string; title?: string; slug?: string }
-        )
+        isReadyRouteDoc(doc as Record<string, unknown>)
       )
       .map((doc) =>
         payloadRouteToRoute(doc as Parameters<typeof payloadRouteToRoute>[0])
@@ -156,7 +148,7 @@ export async function getRoutePageData(slug: string): Promise<{
             })
           | undefined;
 
-        if (!doc || !isReadyRouteDoc(doc)) {
+        if (!doc || !isReadyRouteDoc(doc as Record<string, unknown>)) {
           const published = await fetchPublishedCmsRoutes();
           return {
             route: null,

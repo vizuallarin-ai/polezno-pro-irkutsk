@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { sendLeadNotification } from "@/lib/email";
+import { notifySavedLead } from "@/lib/lead-notification";
 import { businessLeadSchema } from "@/lib/leads-business";
 import {
   makerPlacementLeadSchema,
@@ -106,26 +106,22 @@ function isUnifiedLead(body: Record<string, unknown>): boolean {
   return typeof body.contact === "string" && body.contact.length > 0;
 }
 
-async function notifyLead(input: {
-  name: string;
-  email?: string;
-  contact?: string;
-  serviceType?: string;
-  message?: string;
-  pageUrl?: string;
-}) {
-  const settings = await getSiteSettings();
-  if (!settings.leadSettings.leadNotificationEnabled) return;
-
-  sendLeadNotification({
-    name: input.name,
-    email: input.email || input.contact || "—",
-    serviceType: input.serviceType,
-    message: [input.message, input.pageUrl ? `Страница: ${input.pageUrl}` : ""]
-      .filter(Boolean)
-      .join("\n"),
-    to: settings.leadSettings.leadNotificationEmail,
-  }).catch((err) => console.error("Lead notification error:", err));
+async function notifyLead(lead: { id: unknown; createdAt?: unknown }, sourceType?: string) {
+  try {
+    const settings = await getSiteSettings();
+    if (!settings.leadSettings.leadNotificationEnabled) return;
+    await notifySavedLead({
+      leadId: String(lead.id),
+      createdAt:
+        typeof lead.createdAt === "string" || lead.createdAt instanceof Date
+          ? lead.createdAt
+          : new Date().toISOString(),
+      sourceType,
+      trustedRecipient: settings.leadSettings.leadNotificationEmail,
+    });
+  } catch {
+    // Email must never fail the saved lead or return a false client error.
+  }
 }
 
 function withTracking(
@@ -221,13 +217,7 @@ export async function POST(request: NextRequest) {
         ),
       });
 
-      await notifyLead({
-        name: data.name,
-        email: data.email || data.contact,
-        serviceType: `B2B: ${data.taskType}`,
-        message: `[${data.company}] ${data.message}`,
-        pageUrl: sanitizeLeadText(body.pageUrl) || referer || undefined,
-      });
+      await notifyLead(lead, "business");
 
       return NextResponse.json({ ok: true, id: lead.id });
     }
@@ -275,13 +265,7 @@ export async function POST(request: NextRequest) {
         ),
       });
 
-      await notifyLead({
-        name: data.name,
-        email: data.email,
-        serviceType: `AR-открытка: ${data.arPostcardTitle}`,
-        message: data.message,
-        pageUrl: sanitizeLeadText(body.pageUrl) || referer || undefined,
-      });
+      await notifyLead(lead, leadSource);
 
       return NextResponse.json({ ok: true, id: lead.id });
     }
@@ -323,13 +307,7 @@ export async function POST(request: NextRequest) {
           ),
         });
 
-        await notifyLead({
-          name: data.name,
-          email: data.email || data.contact,
-          serviceType: "Размещение мастера",
-          message: data.shortDescription,
-          pageUrl: sanitizeLeadText(body.pageUrl) || referer || undefined,
-        });
+        await notifyLead(lead, "maker_placement");
 
         return NextResponse.json({ ok: true, id: lead.id });
       }
@@ -379,13 +357,7 @@ export async function POST(request: NextRequest) {
         ),
       });
 
-      await notifyLead({
-        name: data.name,
-        email: data.email,
-        serviceType: `Сувенир: ${data.productTitle || "заявка"}`,
-        message: data.message,
-        pageUrl: sanitizeLeadText(body.pageUrl) || referer || undefined,
-      });
+      await notifyLead(lead, leadSource);
 
       return NextResponse.json({ ok: true, id: lead.id });
     }
@@ -406,14 +378,7 @@ export async function POST(request: NextRequest) {
         data: leadData,
       });
 
-      await notifyLead({
-        name: leadData.name,
-        email: leadData.email,
-        contact: leadData.contact,
-        serviceType: leadData.requestType,
-        message: leadData.message,
-        pageUrl: leadData.pageUrl,
-      });
+      await notifyLead(lead, leadData.sourceType || leadData.requestType || source);
 
       return NextResponse.json({ ok: true, id: lead.id });
     }
@@ -459,13 +424,7 @@ export async function POST(request: NextRequest) {
       ),
     });
 
-    await notifyLead({
-      name: data.name,
-      email: data.email,
-      serviceType: data.serviceType,
-      message: data.message,
-      pageUrl: sanitizeLeadText(body.pageUrl) || referer || undefined,
-    });
+    await notifyLead(lead, source);
 
     return NextResponse.json({ ok: true, id: lead.id });
   } catch (error) {
