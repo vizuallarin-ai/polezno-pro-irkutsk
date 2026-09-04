@@ -2,10 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getFeaturedPhotos } from "@/lib/photos";
 import { EditorialPhotoGrid } from "@/components/visual/editorial-photo-grid";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
 
 export async function PhotosPreviewSection() {
   const photos = await getFeaturedPhotos(4);
-  if (photos.length < 3) return null;
 
   return (
     <section className="border-t border-border bg-background">
@@ -31,7 +31,11 @@ export async function PhotosPreviewSection() {
             <ArrowRight size={14} />
           </Link>
         </div>
-        <EditorialPhotoGrid photos={photos} columns={4} />
+        {photos.length >= 1 ? (
+          <EditorialPhotoGrid photos={photos} columns={4} />
+        ) : (
+          <PrelaunchState surface="photos" compact />
+        )}
       </div>
     </section>
   );

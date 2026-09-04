@@ -59,7 +59,7 @@ For each:
 
 ## Rollback
 
-Set status → `draft` on the new docs. Nav/sitemap gates hide empty catalogs automatically.
+Set status → `draft` on the new docs. Empty catalogs stay visible in nav with PrelaunchState (client-review mode).
 
 ## Blocked without owner
 

@@ -42,8 +42,37 @@ export async function ExplorePhotoSection() {
     );
   }
 
-  // No published photos yet — do not tease an empty archive.
-  return null;
+  return <ExplorePhotoPlaceholder />;
+}
+
+export function ExplorePhotoPlaceholder() {
+  return (
+    <section
+      className="mb-24 border border-border bg-card p-10 lg:p-14"
+      aria-labelledby="explore-photos-heading"
+    >
+      <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
+        Фотоархив
+      </p>
+      <h2
+        id="explore-photos-heading"
+        className="text-2xl font-light tracking-tight mb-3"
+      >
+        Фото Иркутска
+      </h2>
+      <p className="text-muted-foreground max-w-lg leading-relaxed mb-6">
+        Старые и современные снимки улиц, дворов и деталей города — с фильтрами
+        по периоду и месту. Можно предложить своё фото.
+      </p>
+      <Link
+        href="/explore/photos"
+        className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:opacity-80 transition-opacity"
+      >
+        Смотреть фото
+        <ArrowRight size={14} />
+      </Link>
+    </section>
+  );
 }
 
 export function ExploreBottomCta() {

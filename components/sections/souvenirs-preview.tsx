@@ -2,10 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/souvenirs/product-card";
 import { getFeaturedProducts } from "@/lib/souvenirs";
+import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
 
 export async function SouvenirsPreviewSection() {
   const products = await getFeaturedProducts(4);
-  if (products.length < 2) return null;
 
   return (
     <section className="border-t border-border bg-background">
@@ -31,11 +31,15 @@ export async function SouvenirsPreviewSection() {
             <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {products.length >= 1 ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <PrelaunchState surface="souvenirs" compact />
+        )}
       </div>
     </section>
   );

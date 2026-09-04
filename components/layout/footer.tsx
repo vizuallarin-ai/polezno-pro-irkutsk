@@ -25,15 +25,11 @@ const footerNav = {
 interface FooterProps {
   settings?: SiteSettingsData;
   contact?: SiteContacts;
-  showEvents?: boolean;
-  showSouvenirs?: boolean;
 }
 
 export function Footer({
   settings,
   contact: contactProp,
-  showEvents = false,
-  showSouvenirs = false,
 }: FooterProps) {
   const projectName = settings?.projectName || "Иркпортал";
   const tagline = settings?.footerTagline || "Авторский навигатор по Иркутску";
@@ -154,13 +150,7 @@ export function Footer({
               Ещё
             </p>
             <ul className="flex flex-col gap-3">
-              {footerNav.more
-                .filter((link) => {
-                  if (link.href === "/events") return showEvents;
-                  if (link.href === "/souvenirs") return showSouvenirs;
-                  return true;
-                })
-                .map((link) => (
+              {footerNav.more.map((link) => (
                 <li key={`${link.href}-${link.label}`}>
                   {"external" in link && link.external ? (
                     <a

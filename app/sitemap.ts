@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { DEMO_EXPLORE_MATERIALS } from "@/lib/data/explore-materials";
 import { EXPLORE_CATEGORIES } from "@/lib/explore-constants";
-import { getSecondaryCatalogFlags } from "@/lib/navigation";
 import { getRoutesForMap } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site-url";
 import {
@@ -207,8 +206,6 @@ async function getCmsUrls() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const flags = await getSecondaryCatalogFlags();
-
   const exploreCategoryUrls = EXPLORE_CATEGORIES.map((cat) => ({
     url: `${BASE_URL}/explore/${cat.slug}`,
     lastModified: new Date(),
@@ -220,22 +217,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE_URL, priority: 1.0, changeFrequency: "daily" as const },
     { url: `${BASE_URL}/map`, priority: 0.9, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/explore`, priority: 0.9, changeFrequency: "daily" as const },
-    ...(flags.showPhotos
-      ? [{ url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const }]
-      : []),
-    ...(flags.showEvents
-      ? [{ url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const }]
-      : []),
-    ...(flags.showSouvenirs
-      ? [{ url: `${BASE_URL}/souvenirs`, priority: 0.8, changeFrequency: "weekly" as const }]
-      : []),
-    ...(flags.showAr
-      ? [{ url: `${BASE_URL}/ar-postcards`, priority: 0.75, changeFrequency: "weekly" as const }]
-      : []),
+    { url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const },
+    { url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const },
+    { url: `${BASE_URL}/souvenirs`, priority: 0.8, changeFrequency: "weekly" as const },
+    { url: `${BASE_URL}/ar-postcards`, priority: 0.75, changeFrequency: "weekly" as const },
     { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },
-    ...(flags.showGuides
-      ? [{ url: `${BASE_URL}/about/guides`, priority: 0.55, changeFrequency: "monthly" as const }]
-      : []),
+    { url: `${BASE_URL}/about/guides`, priority: 0.55, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/business`, priority: 0.9, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/contact`, priority: 0.7, changeFrequency: "monthly" as const },
     { url: `${BASE_URL}/privacy`, priority: 0.3, changeFrequency: "yearly" as const },

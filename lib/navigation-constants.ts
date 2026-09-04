@@ -11,8 +11,8 @@ export const PRIMARY_NAV_LINKS: NavItem[] = [
 ];
 
 /**
- * Secondary nav. Catalog modules (photos / AR / souvenirs) are gated in
- * `getNavigation()` — shown only when CMS has published-ready content.
+ * Secondary nav — always listed (pre-launch / client review).
+ * Empty catalogs show PrelaunchState on their pages.
  */
 export const MORE_NAV_LINKS: NavItem[] = [
   { href: "/events", label: "События" },

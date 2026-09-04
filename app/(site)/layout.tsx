@@ -6,7 +6,7 @@ import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { FloatingContact } from "@/components/contact/floating-contact";
 import { YandexMetrikaHead, YandexMetrikaNoscript } from "@/components/analytics/yandex-metrika";
 import { LenisProvider } from "@/components/layout/lenis-provider";
-import { getNavigation, getSecondaryCatalogFlags } from "@/lib/navigation";
+import { getNavigation } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
 import { contactsForDisplay } from "@/lib/contact-display";
 import { getSiteUrl } from "@/lib/site-url";
@@ -88,10 +88,9 @@ export default async function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [nav, settings, catalogFlags] = await Promise.all([
+  const [nav, settings] = await Promise.all([
     getNavigation(),
     getSiteSettings(),
-    getSecondaryCatalogFlags(),
   ]);
   const contact = contactsForDisplay(settings.contact);
   const sameAs = [
@@ -142,12 +141,7 @@ export default async function SiteLayout({
             contact={contact}
           />
           <main id="main-content">{children}</main>
-          <Footer
-            settings={settings}
-            contact={contact}
-            showEvents={catalogFlags.showEvents}
-            showSouvenirs={catalogFlags.showSouvenirs}
-          />
+          <Footer settings={settings} contact={contact} />
           <FloatingContact
             contact={contact}
             label={settings.leadSettings.contactCtaLabel}
