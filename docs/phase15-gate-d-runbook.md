@@ -1,67 +1,38 @@
 # Gate D — Production deploy + email + health
 
-**Status:** EXECUTE AWAITING OWNER (SSH + offsite backup + Resend DNS)
+**Status:** CODE DEPLOYED `99d7bc8` (2026-09-04) — Resend E2E and Metrika cabinet still PENDING
 
-Code prerequisites from Phase 15 Gate B are in-repo. Do not switch production without backup.
+## Done on 2026-09-04
 
-## Prerequisites
+- [x] Offsite DB backup: `20260904T062525Z` (VPS `/var/backups/polezno/` + local `.deploy-artifacts/backups/`, SHA256 `c0d24a56…b7c8`)
+- [x] Schema: `media.visibility` column added
+- [x] Immutable release `/var/www/polezno-releases/99d7bc8…` switched; previous `ae3d003…`
+- [x] `GET /api/health` → `commitSha=99d7bc830a67e1f9fff37119dff05aedb1fefc02`
+- [x] Smoke 200: `/`, `/map`, `/explore`, `/business`, `/contact`, `/admin`, sitemap, robots, `/icon`
 
-- [ ] Offsite DB backup completed (not same-host only) — currently **BLOCKED** until owner confirms
-- [ ] Same-host backup exists (see Gate B report)
-- [ ] Branch `phase15-commercial-core-launch` (or merge target) built with:
-  - `GIT_COMMIT_SHA=$(git rev-parse HEAD)`
-  - `BUILD_TIMESTAMP` ISO
-- [ ] `PAYLOAD_SECRET`, `DATABASE_URL`, `NEXT_PUBLIC_SERVER_URL=https://irkportal.ru` on VPS
-- [ ] Optional but recommended: `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TO`
+## Still open
 
-## Deploy sequence
+- [ ] Resend DNS + E2E test lead → email (env keys may still be missing on VPS)
+- [ ] Metrika goals in cabinet (`docs/metrika-goals.md`)
+- [ ] Gate C content (owner materials)
+
+## Rollback
 
 ```bash
-# Local / CI identity
-npm run build:release
-
-# On VPS — dry-run first
-npm run deploy:immutable   # follow docs/immutable-release-deploy.md
-
-# After switch
-curl -sS https://irkportal.ru/api/health
-# expect: commitSha === expected SHA (not "unknown")
-
-EXPECTED_GIT_SHA=<sha> npm run check:prod
+ln -sfn /var/www/polezno-releases/ae3d00353ef7704a91a212491d3bae598cad5cb8 /var/www/polezno-current.new
+mv -Tf /var/www/polezno-current.new /var/www/polezno-current
+cd /var/www/polezno-current && pm2 restart polezno
 ```
 
 ## Resend E2E
 
 1. Verify sender domain in Resend dashboard (SPF/DKIM)
-2. Set `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TO` on VPS
-3. In CMS Site Settings: enable lead notifications + admin-only email field
-4. Submit test lead from `/contact` with honeypot empty
-5. Confirm email arrives within 2 minutes; lead appears in `/admin/collections/leads`
+2. Set `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TO` in `/var/www/polezno-shared/.env.production`
+3. `pm2 restart polezno`
+4. In CMS Site Settings: enable lead notifications
+5. Submit test lead from `/contact`
+6. Confirm email + row in `/admin/collections/leads`
 
 ## Metrika goals (cabinet)
 
-Code emits goals via `lib/analytics-events.ts`. In Yandex Metrika create goals matching:
-
-| Goal name (suggested) | Trigger |
-|-----------------------|---------|
-| `lead_submit` | reachGoal on successful lead |
-| `lead_submit_business` | B2B form success |
-| `cta_contact_click` | primary CTA / messenger |
-| `route_view` | route detail view |
-| `excursion_view` | excursion detail view |
-
-Mark cabinet verification: **DONE** only after test events appear in Metrika reports.
-
-## Definition of Done
-
-- [ ] `/api/health` returns expected SHA
-- [ ] `check:prod` passes with `EXPECTED_GIT_SHA`
-- [ ] Test lead → email + CMS
-- [ ] Rollback path documented (symlink previous release)
-- [ ] Metrika goals created (events verified)
-
-## Stop if
-
-- Offsite backup missing
-- Health SHA unknown after deploy
-- Lead form returns 5xx on production
+See `docs/metrika-goals.md`.
