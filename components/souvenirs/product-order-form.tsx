@@ -72,7 +72,9 @@ export function ProductOrderForm({
     try {
       const payload = {
         ...values,
-        email: values.contact.includes("@") ? values.contact : values.email,
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.contact)
+          ? values.contact
+          : values.email,
       };
       const res = await fetch("/api/leads", {
         method: "POST",

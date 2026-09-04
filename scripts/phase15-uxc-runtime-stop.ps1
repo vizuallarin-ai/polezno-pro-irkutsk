@@ -9,8 +9,24 @@ $BaselineRoleHash = '3ed2674f6fec329463acb5c4fc438ac4'
 $ExpectedProdHead = '3631094e14616c6f816bbd6308701e201ed69309'
 $ExpectedBuildId = 'zOvFS1L8wUwIeQ5wVB9ij'
 $TargetSha = (& git -c "safe.directory=$Repo" -C $Repo rev-parse HEAD).Trim()
-$ArtDir = Join-Path $Repo ".deploy-artifacts/phase15-uxc-runtime/$TargetSha"
+$ArtRoot = Join-Path $Repo ".deploy-artifacts/phase15-uxc-runtime"
+$ArtDir = Join-Path $ArtRoot $TargetSha
 $StateFile = Join-Path $ArtDir 'server-state.json'
+if (-not (Test-Path $StateFile)) {
+  $fallback = Get-ChildItem -Path $ArtRoot -Directory -ErrorAction SilentlyContinue |
+    ForEach-Object {
+      $candidate = Join-Path $_.FullName 'server-state.json'
+      if (Test-Path $candidate) {
+        Get-Item $candidate
+      }
+    } |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+  if (-not $fallback) { throw "missing state under $ArtRoot (expected $StateFile)" }
+  $StateFile = $fallback.FullName
+  $ArtDir = Split-Path $StateFile -Parent
+  Write-Host "Using fallback state $StateFile"
+}
 if (-not (Test-Path $StateFile)) { throw "missing state $StateFile" }
 $st = Get-Content $StateFile -Raw | ConvertFrom-Json
 

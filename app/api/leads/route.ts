@@ -13,6 +13,8 @@ import {
   buildConsentFields,
   buildTrackingFields,
   buildUnifiedLeadData,
+  deriveEmailFromContact,
+  deriveTelegramFromContact,
   resolveRequestType,
 } from "@/lib/leads-api-helpers";
 import {
@@ -244,11 +246,9 @@ export async function POST(request: NextRequest) {
           {
             name: data.name,
             contact: data.contact,
-            email:
-              data.email ||
-              (data.contact.includes("@") ? data.contact : undefined),
+            email: deriveEmailFromContact(data.contact, data.email),
             phone: data.phone || undefined,
-            telegram: data.telegram || undefined,
+            telegram: deriveTelegramFromContact(data.contact, data.telegram),
             message: sanitizeLeadText(data.message, 5000),
             quantity: data.quantity || undefined,
             status: "new",
@@ -338,11 +338,9 @@ export async function POST(request: NextRequest) {
           {
             name: data.name,
             contact: data.contact,
-            email:
-              data.email ||
-              (data.contact.includes("@") ? data.contact : undefined),
+            email: deriveEmailFromContact(data.contact, data.email),
             phone: data.phone || undefined,
-            telegram: data.telegram || undefined,
+            telegram: deriveTelegramFromContact(data.contact, data.telegram),
             message: sanitizeLeadText(data.message, 5000),
             quantity: data.quantity || undefined,
             status: "new",

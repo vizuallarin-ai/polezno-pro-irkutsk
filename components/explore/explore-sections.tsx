@@ -100,7 +100,7 @@ export function ExploreBottomCta() {
         })}
         className="inline-flex h-11 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors shrink-0"
       >
-        Спланировать визит
+        Подобрать мне прогулку
         <ArrowRight size={14} />
       </Link>
     </section>

@@ -851,6 +851,31 @@ test("lead payload validation preserves route context", () => {
 
   assert.equal(unified.routeSlug, "center-walk");
 
+  const telegramLead = buildUnifiedLeadData(
+    compactLeadSchema.parse({
+      name: "Тест",
+      contact: "@alena_irk",
+      consentAccepted: true,
+      sourceType: "contact",
+      requestType: "route_request",
+    }),
+    "contacts",
+    "https://irkportal.ru/contact"
+  );
+  assert.equal(telegramLead.email, undefined);
+  assert.equal(telegramLead.telegram, "@alena_irk");
+  assert.equal(telegramLead.contact, "@alena_irk");
+
+  const emailLead = buildUnifiedLeadData(
+    compactLeadSchema.parse({
+      name: "Тест",
+      contact: "guest@example.com",
+      consentAccepted: true,
+    }),
+    "contacts",
+    null
+  );
+  assert.equal(emailLead.email, "guest@example.com");
 });
 
 

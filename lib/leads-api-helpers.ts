@@ -67,6 +67,34 @@ export function resolveRequestType(body: Record<string, unknown>): RequestType {
   });
 }
 
+export function looksLikeEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export function looksLikeTelegramHandle(value: string): boolean {
+  return value.startsWith("@") || /^t\.me\//i.test(value);
+}
+
+export function deriveEmailFromContact(
+  contact: string,
+  email?: string | null
+): string | undefined {
+  const explicit = sanitizeLeadText(email ?? undefined);
+  if (explicit) return explicit;
+  const c = sanitizeLeadText(contact) || "";
+  return looksLikeEmail(c) ? c : undefined;
+}
+
+export function deriveTelegramFromContact(
+  contact: string,
+  telegram?: string | null
+): string | undefined {
+  const explicit = sanitizeLeadText(telegram ?? undefined);
+  if (explicit) return explicit;
+  const c = sanitizeLeadText(contact) || "";
+  return looksLikeTelegramHandle(c) ? c : undefined;
+}
+
 export function buildUnifiedLeadData(
   data: CompactLeadInput & { consentAccepted?: boolean },
   source: string,
@@ -77,11 +105,9 @@ export function buildUnifiedLeadData(
   const consent = buildConsentFields(data as Record<string, unknown>);
   const message = sanitizeLeadText(data.message, 5000);
   const contact = sanitizeLeadText(data.contact) || "";
-  const email =
-    sanitizeLeadText(data.email) ||
-    (contact.includes("@") ? contact : undefined);
+  const email = deriveEmailFromContact(contact, data.email);
   const phone = sanitizeLeadText(data.phone);
-  const telegram = sanitizeLeadText(data.telegram);
+  const telegram = deriveTelegramFromContact(contact, data.telegram);
 
   const priority = resolveLeadPriority({
     requestType,

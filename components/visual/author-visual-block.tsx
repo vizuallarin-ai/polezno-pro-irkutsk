@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { CityImage } from "./city-image";
 import { resolveVisualImage } from "@/lib/visual-assets";
 import { BRAND } from "@/lib/brand-constants";
+import { assistWalkHref } from "@/lib/cta-constants";
 
 export type AuthorVisualBlockProps = {
   name?: string;
@@ -72,10 +73,10 @@ export function AuthorVisualBlock({
                 />
               </Link>
               <Link
-                href="/contact"
+                href={assistWalkHref("cls-visual")}
                 className="inline-flex h-11 items-center justify-center px-6 text-sm font-medium border border-border hover:bg-muted transition-colors"
               >
-                Написать / Спланировать
+                Подобрать мне прогулку
               </Link>
             </div>
           </div>

@@ -127,7 +127,7 @@ export function PhotoDetailClient({ photo, similar, arPostcard }: PhotoDetailCli
               })}
               className="inline-flex h-11 items-center justify-center border border-border px-6 text-sm font-medium hover:bg-muted transition-colors"
             >
-              Спланировать прогулку
+              Подобрать мне прогулку
             </Link>
           </div>
         </div>
