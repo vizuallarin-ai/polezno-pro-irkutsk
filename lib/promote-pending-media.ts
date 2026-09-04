@@ -2,7 +2,12 @@ import fs from "fs/promises";
 import path from "path";
 import type { Payload } from "payload";
 
-const MEDIA_DIR = path.resolve(process.cwd(), "public/media");
+/** Runtime media dir — avoid static `public/media` literals that Turbopack traces through deploy symlinks. */
+function mediaDir(): string {
+  const fromEnv = process.env.PAYLOAD_MEDIA_DIR?.trim();
+  if (fromEnv) return fromEnv;
+  return path.join(process.cwd(), "public", "media");
+}
 
 /**
  * Mark media public and rename pending-* files so middleware no longer blocks them.
@@ -52,9 +57,10 @@ export async function promotePendingMedia(
     }
   }
 
+  const dir = mediaDir();
   for (const { from, to } of renames) {
-    const fromPath = path.join(MEDIA_DIR, from);
-    const toPath = path.join(MEDIA_DIR, to);
+    const fromPath = path.join(dir, from);
+    const toPath = path.join(dir, to);
     try {
       await fs.rename(fromPath, toPath);
     } catch (err) {
