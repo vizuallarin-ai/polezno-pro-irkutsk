@@ -106,19 +106,19 @@ export function CityHeroVisual({
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-city-ink/90 via-city-ink/35 to-city-ink/20" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-24 lg:px-8 lg:pb-32">
-        <div className="max-w-3xl">
-          <p className="mb-5 type-caption uppercase tracking-[0.22em] text-primary-foreground/55">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-28 pt-8 lg:px-8 lg:pb-36 lg:pt-12">
+        <div className="max-w-[min(100%,42rem)]">
+          <p className="mb-6 type-eyebrow text-primary-foreground/55">
             {badge}
           </p>
-          <h1 className="type-display-xl text-primary-foreground max-w-[16ch] sm:max-w-[18ch] md:max-w-none">
+          <h1 className="type-display-xl text-primary-foreground max-w-[var(--measure-display)] sm:max-w-[16ch] md:max-w-[18ch]">
             {renderTitle(title)}
           </h1>
-          <p className="mt-7 max-w-md type-body-lg font-light text-primary-foreground/72">
+          <p className="mt-8 max-w-lg type-lead text-primary-foreground/75">
             {subtitle}
           </p>
           {ctas.length > 0 && (
-            <div className="mt-11 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+            <div className="mt-12 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
               {ctas.map((cta) => (
                 <Link
                   key={cta.href + cta.label}

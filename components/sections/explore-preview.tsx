@@ -21,7 +21,7 @@ export async function ExplorePreviewSection({ limit = 3 }: { limit?: number }) {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 lg:mb-12">
           <div className="max-w-2xl">
-            <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-3">
+            <p className="type-eyebrow text-muted-foreground mb-3">
               Исследовать Иркутск
             </p>
             <h2

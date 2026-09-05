@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { getSiteSettings } from "@/lib/site-settings";
 import { ContactForm } from "@/components/forms/contact-form";
@@ -27,7 +26,7 @@ function resolveContactChrome(input: {
   articleSlug?: string;
 }): {
   eyebrow: string;
-  title: ReactNode;
+  title: string;
   description: string;
   requestType: RequestType;
   submitLabel: string;
@@ -40,11 +39,7 @@ function resolveContactChrome(input: {
   if (productType === "excursion" || intent === "excursion") {
     return {
       eyebrow: CTA.guided.label,
-      title: (
-        <>
-          Пройти с <span className="font-serif italic">Алёной</span>
-        </>
-      ),
+      title: "Пройти с Алёной",
       description:
         "Оставьте имя и контакт — маршрут уже понятен из запроса. При желании уточните даты и компанию.",
       requestType: "guided_route",
@@ -58,11 +53,7 @@ function resolveContactChrome(input: {
   if (productType === "route" || intent === "route") {
     return {
       eyebrow: CTA.guided.label,
-      title: (
-        <>
-          Пройти этот маршрут с <span className="font-serif italic">Алёной</span>
-        </>
-      ),
+      title: "Пройти этот маршрут с Алёной",
       description:
         "Контекст маршрута уже сохранён. Нужны только имя и способ связи — детали можно уточнить ниже.",
       requestType: "guided_route",
@@ -76,11 +67,7 @@ function resolveContactChrome(input: {
   if (intent === "walk") {
     return {
       eyebrow: CTA.assist.label,
-      title: (
-        <>
-          Подобрать <span className="font-serif italic">прогулку</span>
-        </>
-      ),
+      title: "Подобрать прогулку",
       description:
         "Расскажите, как с вами связаться — подберём самостоятельный маршрут или формат с Алёной. Длинное сообщение не обязательно.",
       requestType: "route_request",
@@ -94,11 +81,7 @@ function resolveContactChrome(input: {
   if (intent === "souvenir") {
     return {
       eyebrow: "Сувениры",
-      title: (
-        <>
-          Узнать о <span className="font-serif italic">коллекции</span>
-        </>
-      ),
+      title: "Узнать о коллекции",
       description:
         "Оставьте контакт — уточним наличие или сообщим о запуске. Название позиции передаётся автоматически, если вы пришли со страницы товара.",
       requestType: "souvenir_general",
@@ -112,11 +95,7 @@ function resolveContactChrome(input: {
   if (intent === "ar") {
     return {
       eyebrow: "AR-открытки",
-      title: (
-        <>
-          Вопрос по <span className="font-serif italic">открытке</span>
-        </>
-      ),
+      title: "Вопрос по открытке",
       description:
         "Контекст открытки сохраняется автоматически. Достаточно имени и контакта.",
       requestType: "ar_postcard_preorder",
@@ -130,11 +109,7 @@ function resolveContactChrome(input: {
   if (intent === "photo") {
     return {
       eyebrow: "Фотоархив",
-      title: (
-        <>
-          Вопрос по <span className="font-serif italic">кадру</span>
-        </>
-      ),
+      title: "Вопрос по кадру",
       description:
         "Можно спросить о месте на фото или предложить свой снимок — сначала оставьте контакт.",
       requestType: "photo_submission_question",
@@ -148,11 +123,7 @@ function resolveContactChrome(input: {
   if (intent === "explore" || articleSlug) {
     return {
       eyebrow: "Исследовать",
-      title: (
-        <>
-          Вопрос о <span className="font-serif italic">городе</span>
-        </>
-      ),
+      title: "Вопрос о городе",
       description:
         "Если материал навёл на мысль о маршруте — напишите. Ссылку на статью сохраним в заявке.",
       requestType: "content_question",
@@ -165,11 +136,7 @@ function resolveContactChrome(input: {
 
   return {
     eyebrow: CTA.assist.label,
-    title: (
-      <>
-        Напишите <span className="font-serif italic">Алёне</span>
-      </>
-    ),
+    title: "Напишите Алёне",
     description:
       "Оставьте имя и контакт — подберём самостоятельный маршрут или формат с Алёной. Длинное сообщение не обязательно.",
     requestType: "general_contact",
@@ -229,13 +196,13 @@ export default async function ContactPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
           <div className="lg:sticky lg:top-32 lg:self-start flex flex-col gap-10">
             <div>
-              <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
+              <p className="type-eyebrow text-muted-foreground mb-4">
                 {chrome.eyebrow}
               </p>
-              <h1 className="type-display-l text-foreground mb-6 max-w-[14ch]">
+              <h1 className="type-page-title text-foreground mb-6 max-w-[14ch]">
                 {chrome.title}
               </h1>
-              <p className="type-body text-muted-foreground mb-4 max-w-sm text-pretty">
+              <p className="type-lead text-muted-foreground mb-4 max-w-sm text-pretty">
                 {chrome.description}
               </p>
               <p className="type-body-sm text-muted-foreground mb-8 max-w-sm text-pretty">
@@ -249,7 +216,7 @@ export default async function ContactPage({
                 .
               </p>
               <div className="flex flex-col gap-3">
-                <p className="type-caption uppercase tracking-widest text-muted-foreground">
+                <p className="type-eyebrow text-muted-foreground">
                   Или напишите напрямую
                 </p>
                 <MessengerLinks

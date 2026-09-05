@@ -53,37 +53,50 @@
     transparent 100%
   );
 
-  /* Typography */
-  --font-sans: var(--font-onest), "Helvetica Neue", Arial, sans-serif;
-  --font-serif: var(--font-cormorant), Georgia, serif;
+  /* Typography — UX.D.2: Prata (display) + Golos Text (body/UI) */
+  --font-display: var(--font-prata), "Iowan Old Style", "Times New Roman", serif;
+  --font-body: var(--font-golos), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
 
-  /* Semantic type scale (rem) */
-  --text-display-xl: clamp(2.75rem, 5vw + 1rem, 5rem);
-  --text-display-l: clamp(2.25rem, 3.5vw + 1rem, 3.75rem);
-  --text-h1: clamp(1.875rem, 2vw + 1rem, 2.5rem);
-  --text-h2: clamp(1.5rem, 1.2vw + 0.9rem, 2rem);
-  --text-h3: clamp(1.125rem, 0.5vw + 1rem, 1.25rem);
-  --text-body-lg: 1.125rem;
-  --text-body: 1rem;
-  --text-body-sm: 0.875rem;
+  /* Aggressive editorial scale — must read differently from Cormorant/Onest */
+  --text-display-xl: clamp(2.625rem, 6.5vw + 0.75rem, 6rem); /* 42→96 */
+  --text-display-l: clamp(2.375rem, 4vw + 0.85rem, 4.25rem); /* 38→68 */
+  --text-page-title: clamp(2.25rem, 3.5vw + 0.9rem, 4.25rem); /* 36→68 */
+  --text-section-editorial: clamp(2rem, 2.8vw + 0.75rem, 3.25rem); /* 32→52 */
+  --text-section-system: clamp(1.375rem, 1vw + 1rem, 2rem); /* 22→32 */
+  --text-editorial: clamp(1.5rem, 1.4vw + 0.9rem, 2.125rem); /* 24→34 cards */
+  --text-h1: clamp(1.75rem, 1.5vw + 1rem, 2.25rem);
+  --text-h2: clamp(1.375rem, 0.9vw + 0.95rem, 1.75rem);
+  --text-h3: clamp(1.0625rem, 0.4vw + 0.95rem, 1.25rem);
+  --text-lead: clamp(1.25rem, 0.55vw + 1.05rem, 1.5rem); /* 20→24 */
+  --text-body-lg: 1.125rem; /* 18 */
+  --text-body: 1.0625rem; /* 17 */
+  --text-body-sm: 0.9375rem; /* 15 */
   --text-caption: 0.75rem;
   --text-ui-label: 0.8125rem;
   --text-button: 0.875rem;
   --text-nav: 0.875rem;
   --text-nav-secondary: 0.8125rem;
   --text-meta: 0.75rem;
+  --text-eyebrow: 0.6875rem;
   --text-brand: 0.9375rem;
 
-  --leading-display: 1.08;
-  --leading-heading: 1.18;
+  --leading-display: 0.96;
+  --leading-heading: 1.12;
+  --leading-lead: 1.45;
   --leading-body: 1.65;
   --leading-ui: 1.4;
 
-  --tracking-display: -0.025em;
-  --tracking-heading: -0.018em;
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.015em;
   --tracking-ui: 0.01em;
-  --tracking-meta: 0.06em;
-  --tracking-brand: 0.16em;
+  --tracking-meta: 0.04em;
+  --tracking-eyebrow: 0.08em;
+  --tracking-brand: 0.12em;
+
+  --measure-prose: 40rem; /* ~62–72ch at 17–18px */
+  --measure-display: 14ch;
 }
 
 /* ─── Tailwind v4 theme extension ───────────────────────────────── */
@@ -150,20 +163,24 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
-  line-height: 1.6;
+  font-family: var(--font-body);
+  line-height: var(--leading-body);
 }
 
-/* ─── Typography scale helpers ───────────────────────────────────── */
+/* ─── Typography scale helpers (UX.D.2 role system) ─────────────── */
 .font-serif {
   font-family: var(--font-serif);
 }
 
-/* Editorial (Cormorant) — H1 / key H2 / accents only */
+/*
+  SERIF (Prata) = story / meaning / editorial emphasis
+  SANS (Golos)  = system / navigation / information / action
+*/
+
 .type-display-xl {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: var(--text-display-xl);
-  font-weight: 300;
+  font-weight: 400;
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
   font-feature-settings: "liga" 1, "kern" 1;
@@ -171,17 +188,69 @@ body {
 }
 
 .type-display-l {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: var(--text-display-l);
-  font-weight: 300;
+  font-weight: 400;
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
   font-feature-settings: "liga" 1, "kern" 1;
   text-wrap: balance;
 }
 
+.type-page-title {
+  font-family: var(--font-display);
+  font-size: var(--text-page-title);
+  font-weight: 400;
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-wrap: balance;
+}
+
+/* Editorial section — emotional / story bands */
+.type-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-section-editorial);
+  font-weight: 400;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-wrap: balance;
+}
+
+/* System section — catalogs / utility (sans) */
+.type-section-system {
+  font-family: var(--font-body);
+  font-size: var(--text-section-system);
+  font-weight: 600;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+.type-editorial {
+  font-family: var(--font-display);
+  font-size: var(--text-editorial);
+  font-weight: 400;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-wrap: balance;
+}
+
+/* Prata has no italic — roman display quote */
+.type-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.2vw + 1rem, 1.875rem);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
 .type-brand {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-brand);
   font-weight: 600;
   line-height: 1.2;
@@ -189,27 +258,26 @@ body {
   text-transform: uppercase;
 }
 
-/* UI headings (Onest) — catalog / page chrome */
 .type-h1 {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-h1);
-  font-weight: 500;
+  font-weight: 600;
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 }
 
 .type-h2 {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-h2);
-  font-weight: 500;
+  font-weight: 600;
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 }
 
 .type-h3 {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-h3);
   font-weight: 500;
   line-height: var(--leading-heading);
@@ -217,8 +285,25 @@ body {
   text-wrap: balance;
 }
 
+.type-stat {
+  font-family: var(--font-body);
+  font-size: var(--text-display-l);
+  font-weight: 600;
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.type-lead {
+  font-family: var(--font-body);
+  font-size: var(--text-lead);
+  font-weight: 400;
+  line-height: var(--leading-lead);
+  text-wrap: pretty;
+}
+
 .type-body-lg {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-body-lg);
   font-weight: 400;
   line-height: var(--leading-body);
@@ -226,7 +311,7 @@ body {
 }
 
 .type-body {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-body);
   font-weight: 400;
   line-height: var(--leading-body);
@@ -234,7 +319,7 @@ body {
 }
 
 .type-body-sm {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-body-sm);
   font-weight: 400;
   line-height: var(--leading-body);
@@ -242,15 +327,24 @@ body {
 }
 
 .type-caption {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-caption);
   font-weight: 400;
   line-height: var(--leading-ui);
   letter-spacing: var(--tracking-meta);
 }
 
+.type-eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  line-height: var(--leading-ui);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
 .type-ui-label {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-ui-label);
   font-weight: 500;
   line-height: var(--leading-ui);
@@ -258,7 +352,7 @@ body {
 }
 
 .type-button {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-button);
   font-weight: 500;
   line-height: 1.25;
@@ -267,29 +361,70 @@ body {
 }
 
 .type-nav {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-nav);
   font-weight: 500;
   line-height: var(--leading-ui);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.015em;
   white-space: nowrap;
 }
 
 .type-nav-secondary {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-nav-secondary);
   font-weight: 400;
   line-height: var(--leading-ui);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.015em;
   white-space: nowrap;
 }
 
 .type-meta {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-meta);
-  font-weight: 400;
+  font-weight: 500;
   line-height: var(--leading-ui);
   letter-spacing: var(--tracking-meta);
+}
+
+.prose-editorial {
+  font-family: var(--font-body);
+  font-size: var(--text-body-lg);
+  font-weight: 400;
+  line-height: 1.7;
+  max-width: var(--measure-prose);
+  text-wrap: pretty;
+}
+
+.prose-editorial > * + * {
+  margin-top: 1.2em;
+}
+
+.prose-editorial a {
+  color: var(--baikal);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+.prose-editorial a:hover {
+  color: var(--baikal-light);
+}
+
+.prose-editorial ul,
+.prose-editorial ol {
+  padding-inline-start: 1.25em;
+}
+
+.prose-editorial li + li {
+  margin-top: 0.4em;
+}
+
+.prose-editorial blockquote {
+  border-inline-start: 2px solid var(--baikal);
+  padding-inline-start: 1.25rem;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 1.25rem;
+  line-height: 1.4;
 }
 
 /* Wrapping utilities */

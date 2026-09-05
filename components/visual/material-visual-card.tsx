@@ -38,15 +38,15 @@ export function MaterialVisualCard({
           </div>
         )}
       </div>
-      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
+      <p className="type-meta text-muted-foreground mb-2">
         {exploreCategoryLabel(material.category)}
         {material.readTime ? ` · ${material.readTime} мин` : ""}
       </p>
-      <h3 className="text-base font-medium leading-snug text-foreground group-hover:text-baikal transition-colors duration-200">
+      <h3 className="type-editorial text-foreground group-hover:text-baikal transition-colors duration-200">
         {material.title}
       </h3>
       {material.excerpt && (
-        <p className="text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+        <p className="type-body-sm text-muted-foreground mt-2 line-clamp-2">
           {material.excerpt}
         </p>
       )}

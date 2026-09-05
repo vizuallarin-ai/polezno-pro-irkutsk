@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Onest, Cormorant_Garamond } from "next/font/google";
+import { Golos_Text, Prata } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
@@ -16,20 +16,29 @@ import "../globals.css";
 
 const siteUrl = getSiteUrl();
 
-/** UI sans — Cyrillic-first (Onest). Replaces Geist latin→Arial fallback. */
-const onest = Onest({
-  variable: "--font-onest",
+/**
+ * UX.D.2 — Golos Text: body / UI / system (Paratype, Cyrillic-first).
+ * Weights limited to real usage.
+ */
+const golos = Golos_Text({
+  variable: "--font-golos",
   subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext"],
+  weight: ["400", "500", "600"],
   display: "swap",
+  adjustFontFallback: true,
 });
 
-/** Editorial display — limited to H1 / key H2 / accents. */
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
+/**
+ * UX.D.2 — Prata: display / editorial (high-contrast cultural serif).
+ * Single weight 400 — strength via size, measure, and composition.
+ * No italic available; quotes use Prata roman at display scale.
+ */
+const prata = Prata({
+  variable: "--font-prata",
+  weight: "400",
+  subsets: ["cyrillic", "cyrillic-ext", "latin"],
   display: "swap",
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -106,7 +115,7 @@ export default async function SiteLayout({
   return (
     <html
       lang="ru"
-      className={`${onest.variable} ${cormorant.variable}`}
+      className={`${golos.variable} ${prata.variable}`}
     >
       <head>
         <YandexMetrikaHead />

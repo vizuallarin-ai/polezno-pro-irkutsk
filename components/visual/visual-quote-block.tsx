@@ -18,11 +18,11 @@ export function VisualQuoteBlock({
         className
       )}
     >
-      <p className="font-serif text-xl lg:text-2xl font-light italic leading-relaxed text-foreground">
+      <p className="type-quote text-foreground">
         {quote}
       </p>
       {attribution && (
-        <footer className="mt-3 text-sm text-muted-foreground">
+        <footer className="mt-3 type-meta text-muted-foreground">
           — {attribution}
         </footer>
       )}

@@ -89,7 +89,7 @@ export async function ContactCtaSection({
           )}
         >
           <div>
-            <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-5">
+            <p className="type-eyebrow text-muted-foreground mb-5">
               {variant === "business"
                 ? "Для бизнеса"
                 : variant === "route" || variant === "route_detail"
@@ -98,17 +98,17 @@ export async function ContactCtaSection({
             </p>
             <h2
               id={`cta-${resolvedSourceType}`}
-              className="type-display-l text-foreground mb-5 max-w-[14ch]"
+              className="type-section-title text-foreground mb-5 max-w-[14ch]"
             >
               {resolvedTitle}
             </h2>
-            <p className="type-body text-muted-foreground mb-8 max-w-md text-pretty">
+            <p className="type-lead text-muted-foreground mb-8 max-w-md text-pretty">
               {resolvedDescription}
             </p>
 
             {showMessengers && (
               <div className="flex flex-col gap-3">
-                <p className="type-caption uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="type-eyebrow text-muted-foreground">
                   Или напишите напрямую
                 </p>
                 <MessengerLinks

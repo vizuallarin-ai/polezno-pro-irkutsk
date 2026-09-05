@@ -106,7 +106,7 @@ export function ExperienceCard({ experience, className }: ExperienceCardProps) {
             {experience.kind === "route" ? "Маршрут" : "Экскурсия"}
             {experience.priceLabel ? ` · ${experience.priceLabel}` : ""}
           </p>
-          <h2 className="type-h3 text-foreground text-balance group-hover:text-baikal transition-colors duration-200">
+          <h2 className="type-editorial text-foreground text-balance group-hover:text-baikal transition-colors duration-200">
             <Link href={experience.href} className="outline-none">
               {experience.title}
             </Link>
