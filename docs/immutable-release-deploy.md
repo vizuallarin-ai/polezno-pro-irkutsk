@@ -75,7 +75,7 @@ Related preflight (no switch): `npm run deploy:preflight` → `scripts/deploy-pr
 9. Pre-switch health must report exact SHA, `identitySource=artifact`, `identityComplete=true`, `worktreeDirty=false`.
 10. Post-switch smoke failure triggers **automatic rollback** to previous current.
 11. If current already points at the expected SHA, exit success after verification (idempotent).
-12. **Retention cleanup is not included** in this gate.
+12. **Retention cleanup is not included** in this gate’s execute path. Operational retention after successful deploys: `scripts/ops-release-retention.sh` + [OPS_1_PRODUCTION_RUNBOOK.md](./OPS_1_PRODUCTION_RUNBOOK.md) (OPS.1: keep current + 1 previous).
 
 ## Modules
 
