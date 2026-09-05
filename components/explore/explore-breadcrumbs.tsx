@@ -43,11 +43,14 @@ export function ExploreSimilarMaterials({
 }) {
   if (materials.length === 0) return null;
 
+  const allSameCategory = materials.every((m) => m.category === category);
+  const heading = allSameCategory
+    ? `Ещё в разделе «${exploreCategoryLabel(category)}»`
+    : "Читать дальше";
+
   return (
     <aside className="mt-16 pt-10 border-t border-border">
-      <h2 className="text-lg font-medium mb-6">
-        Ещё в разделе «{exploreCategoryLabel(category)}»
-      </h2>
+      <h2 className="text-lg font-medium mb-6">{heading}</h2>
       <ul className="flex flex-col gap-4">
         {materials.map((item) => (
           <li key={item.slug}>

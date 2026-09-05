@@ -1,4 +1,8 @@
 import { ARTICLE_PUBLISHED_WHERE } from "@/lib/cms-filters";
+import {
+  commercialInputFromDoc,
+  isPublicPublishedReady,
+} from "@/lib/content-readiness";
 import { allowDemoFallback } from "@/lib/demo-fallback";
 import {
   getDemoExploreMaterial,
@@ -72,7 +76,15 @@ function coverFromDoc(doc: {
   return "/images/placeholder.svg";
 }
 
-function mapCmsDoc(doc: CmsArticleDoc): ExploreMaterialView {
+function isReadyCmsArticle(doc: CmsArticleDoc): boolean {
+  return isPublicPublishedReady(
+    commercialInputFromDoc("article", doc as unknown as Record<string, unknown>)
+  );
+}
+
+function mapCmsDoc(doc: CmsArticleDoc): ExploreMaterialView | null {
+  if (!isReadyCmsArticle(doc)) return null;
+
   const relatedRoute =
     doc.relatedRoute && typeof doc.relatedRoute === "object" && "slug" in doc.relatedRoute
       ? {
@@ -155,7 +167,10 @@ export async function getExploreMaterial(
         depth: 2,
       });
       const doc = result.docs[0] as CmsArticleDoc | undefined;
-      if (doc) return mapCmsDoc(doc);
+      if (doc) {
+        const mapped = mapCmsDoc(doc);
+        if (mapped) return mapped;
+      }
     } catch {
       /* fallback below */
     }
@@ -187,6 +202,7 @@ export async function getExploreMaterialsByCategory(
       });
       for (const doc of result.docs as CmsArticleDoc[]) {
         const mapped = mapCmsDoc(doc);
+        if (!mapped) continue;
         seen.add(mapped.slug);
         merged.push(mapped);
       }
@@ -240,6 +256,7 @@ export async function getFeaturedExploreMaterials(
 
       for (const doc of pool as CmsArticleDoc[]) {
         const mapped = mapCmsDoc(doc);
+        if (!mapped) continue;
         if (!seen.has(mapped.slug)) {
           seen.add(mapped.slug);
           merged.push(mapped);
@@ -262,11 +279,31 @@ export async function getFeaturedExploreMaterials(
   return merged.slice(0, limit);
 }
 
+/**
+ * Related reading for article footers.
+ * Prefer same category; if the cluster is thin, fill from other featured materials.
+ */
 export async function getSimilarExploreMaterials(
   slug: string,
   category: string,
   limit = 3
 ): Promise<ExploreMaterialView[]> {
-  const inCategory = await getExploreMaterialsByCategory(category);
-  return inCategory.filter((m) => m.slug !== slug).slice(0, limit);
+  const inCategory = (await getExploreMaterialsByCategory(category)).filter(
+    (m) => m.slug !== slug
+  );
+  if (inCategory.length >= limit) {
+    return inCategory.slice(0, limit);
+  }
+
+  const seen = new Set(inCategory.map((m) => m.slug));
+  seen.add(slug);
+  const filled = [...inCategory];
+  const pool = await getFeaturedExploreMaterials(Math.max(limit * 4, 12));
+  for (const item of pool) {
+    if (filled.length >= limit) break;
+    if (seen.has(item.slug)) continue;
+    seen.add(item.slug);
+    filled.push(item);
+  }
+  return filled.slice(0, limit);
 }

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { HeroCinematic } from "@/components/sections/hero-cinematic";
 import { ScenarioPicker } from "@/components/sections/scenario-picker";
 import { AuthorBlock } from "@/components/sections/author-block";
-import { SocialProof, type Stat, type Review } from "@/components/sections/social-proof";
+import { SocialProof, type Stat } from "@/components/sections/social-proof";
+import { ExplorePreviewSection } from "@/components/sections/explore-preview";
 import { BusinessPreviewSection } from "@/components/sections/business-preview";
 import { FinalCta } from "@/components/sections/final-cta";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
@@ -10,6 +11,8 @@ import { PhotosPreviewSection } from "@/components/sections/photos-preview";
 import { SouvenirsPreviewSection } from "@/components/sections/souvenirs-preview";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getFeaturedPhotos } from "@/lib/photos";
+import { getFeaturedPublicReviews } from "@/lib/public-reviews";
+import { hasPublicExperiences } from "@/lib/experiences";
 import { CURATED_FALLBACKS } from "@/lib/visual-assets";
 import { formatPhotoPlaceLabel, formatPhotoYearLabel } from "@/lib/photo-adapter";
 import { BRAND } from "@/lib/brand-constants";
@@ -29,53 +32,55 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function getHomeData() {
+async function getHomeStats(): Promise<Stat[] | undefined> {
   try {
-    if (!process.env.DATABASE_URL) return null;
+    if (!process.env.DATABASE_URL) return undefined;
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
-
-    const [reviewsRes, settings] = await Promise.all([
-      payload.find({
-        collection: "reviews",
-        where: { isFeatured: { equals: true } },
-        limit: 3,
-        depth: 1,
-      }),
-      payload.findGlobal({ slug: "site-settings" }),
-    ]);
-
-    const stats: Stat[] = Array.isArray(settings?.stats)
-      ? (settings.stats as Stat[])
-      : [];
-
-    const reviews: Review[] = reviewsRes.docs.map((r) => ({
-      id: String(r.id),
-      text: String(r.text),
-      author: String(r.author),
-      city: r.city ? String(r.city) : undefined,
-      photo:
-        r.photo && typeof r.photo === "object" && "url" in r.photo
-          ? { url: String((r.photo as { url: string }).url) }
-          : undefined,
-    }));
-
-    return { stats, reviews };
+    const settings = await payload.findGlobal({ slug: "site-settings" });
+    return Array.isArray(settings?.stats) ? (settings.stats as Stat[]) : [];
   } catch {
-    return { stats: undefined, reviews: undefined };
+    return undefined;
   }
 }
 
 export default async function HomePage() {
-  const [settings, homeData, featuredPhotos] = await Promise.all([
-    getSiteSettings(),
-    getHomeData(),
-    getFeaturedPhotos(1),
-  ]);
+  const [settings, stats, reviews, featuredPhotos, catalogReady] =
+    await Promise.all([
+      getSiteSettings(),
+      getHomeStats(),
+      getFeaturedPublicReviews(3),
+      getFeaturedPhotos(1),
+      hasPublicExperiences(),
+    ]);
 
-  const stats = homeData?.stats;
-  const reviews = homeData?.reviews;
   const heroPhoto = featuredPhotos[0];
+
+  const heroCtas = catalogReady
+    ? [
+        {
+          label: CTA.discovery.label,
+          href: CTA.discovery.href,
+          variant: "primary" as const,
+        },
+        {
+          label: CTA.assist.label,
+          href: assistWalkHref("hero"),
+          variant: "secondary" as const,
+        },
+      ]
+    : [
+        {
+          label: CTA.mapExplore.label,
+          href: CTA.mapExplore.href,
+          variant: "primary" as const,
+        },
+        {
+          label: CTA.assist.label,
+          href: assistWalkHref("hero"),
+          variant: "secondary" as const,
+        },
+      ];
 
   return (
     <>
@@ -89,20 +94,10 @@ export default async function HomePage() {
         credit={heroPhoto?.authorName}
         year={heroPhoto ? formatPhotoYearLabel(heroPhoto) : undefined}
         place={heroPhoto ? formatPhotoPlaceLabel(heroPhoto) : undefined}
-        ctas={[
-          {
-            label: CTA.discovery.label,
-            href: CTA.discovery.href,
-            variant: "primary",
-          },
-          {
-            label: CTA.assist.label,
-            href: assistWalkHref("hero"),
-            variant: "secondary",
-          },
-        ]}
+        ctas={heroCtas}
       />
       <ScenarioPicker />
+      <ExplorePreviewSection limit={3} />
       <AuthorBlock
         name={settings.authorName}
         role={settings.authorRole}
@@ -113,8 +108,22 @@ export default async function HomePage() {
       <PhotosPreviewSection />
       <SouvenirsPreviewSection />
       <BusinessPreviewSection />
-      <ContactCtaSection variant="default" sourceType="home" sourceBlock="home-cta" />
-      <FinalCta />
+      <ContactCtaSection
+        variant="default"
+        sourceType="home"
+        sourceBlock="home-cta"
+      />
+      <FinalCta
+        primaryHref={catalogReady ? CTA.discovery.href : CTA.mapExplore.href}
+        primaryLabel={
+          catalogReady ? CTA.discovery.label : CTA.mapExplore.label
+        }
+        supportText={
+          catalogReady
+            ? "Выберите маршрут на карте или напишите — соберём программу под ваши даты."
+            : "Можно начать с материалов о городе или сразу написать — соберём программу под ваши даты."
+        }
+      />
     </>
   );
 }

@@ -16,7 +16,8 @@ export type Review = {
   photo?: { url?: string };
 };
 
-const GUEST_HIGHLIGHTS = [
+/** Trust without reviews: product approach, not invented guest quotes. */
+const APPROACH_HIGHLIGHTS = [
   "Маршруты без «топ-10» и сувенирных штампов",
   "Живые истории за фасадами деревянных домов",
   "Программы под даты, темп и состав группы",
@@ -28,10 +29,7 @@ interface SocialProofProps {
   reviews?: Review[];
 }
 
-export function SocialProof({
-  stats,
-  reviews,
-}: SocialProofProps) {
+export function SocialProof({ stats, reviews }: SocialProofProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const hasReviews = reviews && reviews.length > 0;
   const displayStats = stats && stats.length > 0 ? stats : [];
@@ -74,9 +72,9 @@ export function SocialProof({
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h2
           id="social-proof-heading"
-          className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-12 lg:mb-14"
+          className="type-eyebrow text-muted-foreground mb-12 lg:mb-14"
         >
-          {hasReviews ? "Отзывы гостей" : "Что обычно отмечают гости"}
+          {hasReviews ? "Отзывы гостей" : "Как устроен подход"}
         </h2>
 
         <div
@@ -88,7 +86,7 @@ export function SocialProof({
         >
           {displayStats.map((stat) => (
             <div key={stat.label} className="stat-item">
-              <p className="type-display-l tabular-nums text-foreground mb-2">
+              <p className="type-stat text-foreground mb-2">
                 {stat.value}
               </p>
               <p className="type-body-sm text-muted-foreground">{stat.label}</p>
@@ -109,26 +107,34 @@ export function SocialProof({
                 <figcaption>
                   <p className="type-ui-label">{review.author}</p>
                   {review.city && (
-                    <p className="type-meta text-muted-foreground mt-1">{review.city}</p>
+                    <p className="type-meta text-muted-foreground mt-1">
+                      {review.city}
+                    </p>
                   )}
                 </figcaption>
               </figure>
             ))}
           </div>
         ) : (
-          <ul className="highlights-grid grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 max-w-3xl">
-            {GUEST_HIGHLIGHTS.map((item) => (
-              <li
-                key={item}
-                className="highlight-item flex items-start gap-4 type-body-sm text-muted-foreground text-pretty"
-              >
-                <span className="text-baikal mt-1 select-none" aria-hidden>
-                  —
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <ul className="highlights-grid grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 max-w-3xl">
+              {APPROACH_HIGHLIGHTS.map((item) => (
+                <li
+                  key={item}
+                  className="highlight-item flex items-start gap-4 type-body-sm text-muted-foreground text-pretty"
+                >
+                  <span className="text-baikal mt-1 select-none" aria-hidden>
+                    —
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="type-meta text-muted-foreground mt-8 max-w-xl">
+              Именные отзывы гостей появятся здесь, когда будут собраны с
+              разрешением на публикацию — без выдуманных цитат.
+            </p>
+          </div>
         )}
       </div>
     </section>
