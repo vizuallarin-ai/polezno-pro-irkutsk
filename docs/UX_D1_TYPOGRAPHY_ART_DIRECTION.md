@@ -2,9 +2,10 @@
 
 **Final Status:** `UX.D.1 CLOSED / TYPOGRAPHY ART DIRECTION ESTABLISHED`
 
-**Branch:** `ux-d1-typography-art-direction`  
+**Branch:** `ux-d1-typography-art-direction` (local) → pushed as `origin/ux-d1-typography-source-golos`  
+**Commit:** `62b376742b874fdb04880a45a3c1e5ba3361b202`  
 **Baseline HEAD:** `e4fd356` (`feat: refine premium visual direction`)  
-**Parallel safety:** does not merge `phase15-ux-funnel-hardening` (UX.F); UX.F tip remains `cec2718`.
+**Parallel safety:** does not merge `phase15-ux-funnel-hardening` (UX.F @ `cec2718`). Note: remote name `ux-d1-typography-art-direction` was briefly contaminated with UX.F tip — use `ux-d1-typography-source-golos` for cherry-pick.
 
 ---
 
