@@ -85,14 +85,14 @@ export function ScenarioPicker() {
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="scenario-header mb-14 lg:mb-16">
-          <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-4">
+          <p className="type-eyebrow text-muted-foreground mb-4">
             С чего начать
           </p>
           <h2
             id="scenario-heading"
-            className="type-display-l text-foreground max-w-xl"
+            className="type-section-title text-foreground max-w-xl"
           >
-            Что вы хотите <em className="italic">сделать</em>
+            Что вы хотите сделать
           </h2>
         </div>
 

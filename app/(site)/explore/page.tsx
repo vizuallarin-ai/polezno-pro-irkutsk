@@ -86,7 +86,7 @@ export default async function ExplorePage() {
           <section className="mb-24" aria-labelledby="explore-featured-heading">
             <h2
               id="explore-featured-heading"
-              className="type-h2 text-foreground mb-10"
+              className="type-section-system text-foreground mb-10"
             >
               Избранные материалы
             </h2>

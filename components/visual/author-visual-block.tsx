@@ -44,18 +44,18 @@ export function AuthorVisualBlock({
           />
 
           <div className="flex flex-col gap-6">
-            <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground">
+            <p className="type-eyebrow text-muted-foreground">
               Кто показывает вам Иркутск
             </p>
 
             <h2
               id="author-heading"
-              className="type-display-l text-foreground"
+              className="type-section-title text-foreground"
             >
               {name}
             </h2>
 
-            <p className="type-meta uppercase text-muted-foreground">
+            <p className="type-meta text-muted-foreground">
               {role}
             </p>
 
