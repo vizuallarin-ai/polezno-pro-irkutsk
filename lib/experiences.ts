@@ -159,3 +159,9 @@ export async function getExperienceCatalog(): Promise<{
 
   return { experiences, mapRoutes, source };
 }
+
+/** True when at least one publish-ready route or excursion exists for public desire/book paths. */
+export async function hasPublicExperiences(): Promise<boolean> {
+  const { experiences } = await getExperienceCatalog();
+  return experiences.length > 0;
+}

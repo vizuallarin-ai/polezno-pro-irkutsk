@@ -114,14 +114,15 @@ export function ArticleCtaBlock({
   relatedRouteSlug,
   relatedExcursionSlug,
   articleSlug,
+  hasExperiences = false,
 }: {
   ctaText?: string | null;
   ctaLink?: string | null;
   relatedRouteSlug?: string | null;
   relatedExcursionSlug?: string | null;
   articleSlug?: string | null;
+  hasExperiences?: boolean;
 }) {
-  const text = ctaText?.trim() || "Хотите увидеть это вживую?";
   const resolved = resolveExploreCommercialHref({
     relatedRouteSlug,
     relatedExcursionSlug,
@@ -129,21 +130,44 @@ export function ArticleCtaBlock({
     ctaLink,
   });
 
+  const isDesire =
+    resolved.kind === "route" || resolved.kind === "excursion";
+  const text =
+    ctaText?.trim() ||
+    (isDesire
+      ? "Хотите увидеть это вживую?"
+      : hasExperiences
+        ? "Готовы подобрать прогулку под ваш визит?"
+        : "Хотите пройти Иркутск с автором навигатора?");
+  const support = isDesire
+    ? "Откройте связанный опыт или оставьте заявку на прогулку с Алёной."
+    : hasExperiences
+      ? "Можно сначала посмотреть маршруты — или сразу попросить подобрать формат."
+      : "Маршруты на сайте ещё наполняются. Заявка поможет согласовать индивидуальную прогулку.";
+
   return (
     <div className="mt-16 bg-card p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       <div>
         <p className="text-sm font-medium mb-1">{text}</p>
-        <p className="text-sm text-muted-foreground">
-          Организуем экскурсию или программу под ваш визит.
-        </p>
+        <p className="text-sm text-muted-foreground">{support}</p>
       </div>
-      <Link
-        href={resolved.href}
-        className="inline-flex h-10 items-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200 shrink-0"
-      >
-        {resolved.label}
-        <ArrowRight size={14} />
-      </Link>
+      <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
+        {hasExperiences && !isDesire ? (
+          <Link
+            href="/map"
+            className="inline-flex h-10 items-center justify-center gap-2 border border-border px-6 text-sm font-medium hover:bg-muted transition-colors duration-200"
+          >
+            Смотреть маршруты
+          </Link>
+        ) : null}
+        <Link
+          href={resolved.href}
+          className="inline-flex h-10 items-center justify-center gap-2 bg-foreground text-primary-foreground px-6 text-sm font-medium hover:bg-foreground/90 transition-colors duration-200"
+        >
+          {resolved.label}
+          <ArrowRight size={14} />
+        </Link>
+      </div>
     </div>
   );
 }

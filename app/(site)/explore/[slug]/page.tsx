@@ -9,8 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { LexicalContent } from "@/components/cms/lexical-content";
 import {
   ArticleCtaBlock,
+  RelatedExcursionBlock,
   RelatedRouteBlock,
 } from "@/components/cms/related-blocks";
+import { ContentContinue } from "@/components/cms/content-continue";
 import { RelatedSouvenirsBlock } from "@/components/souvenirs/related-souvenirs-block";
 import {
   ExploreBreadcrumbs,
@@ -29,12 +31,15 @@ import {
   getExploreMaterialsByCategory,
   getSimilarExploreMaterials,
 } from "@/lib/explore";
+import { getExcursionBySlug } from "@/lib/excursions";
+import { hasPublicExperiences } from "@/lib/experiences";
 import { articleSchema, breadcrumbSchema } from "@/lib/jsonld";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteUrl } from "@/lib/site-url";
 import { getProductsForArticle } from "@/lib/souvenirs";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
+import { BRAND } from "@/lib/brand-constants";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -127,12 +132,15 @@ export default async function ExploreSlugPage({ params }: PageProps) {
   const article = await getExploreMaterial(slug);
   if (!article) notFound();
 
-  const similar = await getSimilarExploreMaterials(
-    slug,
-    article.category,
-    3
-  );
-  const relatedSouvenirs = await getProductsForArticle(slug);
+  const [similar, relatedSouvenirs, catalogReady, relatedExcursion] =
+    await Promise.all([
+      getSimilarExploreMaterials(slug, article.category, 3),
+      getProductsForArticle(slug),
+      hasPublicExperiences(),
+      article.relatedExcursionSlug
+        ? getExcursionBySlug(article.relatedExcursionSlug)
+        : Promise.resolve(null),
+    ]);
 
   const BASE_URL = getSiteUrl();
   const articleJsonLd = articleSchema({
@@ -219,11 +227,15 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           />
         )}
 
-        {article.authorName && (
-          <p className="text-sm text-muted-foreground mb-8">
-            Автор: {article.authorName}
-          </p>
-        )}
+        <p className="text-sm text-muted-foreground mb-8">
+          Автор:{" "}
+          <Link
+            href="/about"
+            className="underline underline-offset-4 hover:text-foreground transition-colors"
+          >
+            {String(article.authorName || BRAND.authorName)}
+          </Link>
+        </p>
 
         <LexicalContent
           data={article.content as never}
@@ -234,6 +246,18 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           <RelatedRouteBlock route={article.relatedRoute} />
         )}
 
+        {relatedExcursion ? (
+          <RelatedExcursionBlock
+            excursion={{
+              slug: relatedExcursion.slug,
+              title: relatedExcursion.title,
+              shortDescription: relatedExcursion.shortDescription,
+              coverUrl: relatedExcursion.coverUrl,
+              price: relatedExcursion.price,
+            }}
+          />
+        ) : null}
+
         <RelatedSouvenirsBlock products={relatedSouvenirs} />
 
         <ExploreSimilarMaterials
@@ -241,12 +265,19 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           category={article.category}
         />
 
+        <ContentContinue
+          articleSlug={String(article.slug)}
+          hasExperiences={catalogReady}
+          showAssist={false}
+        />
+
         <ArticleCtaBlock
           articleSlug={String(article.slug)}
-          relatedRouteSlug={article.relatedRoute?.slug ?? article.relatedRouteSlug}
+          relatedRouteSlug={article.relatedRoute?.slug}
           relatedExcursionSlug={article.relatedExcursionSlug}
           ctaText={article.ctaText}
           ctaLink={article.ctaLink}
+          hasExperiences={catalogReady}
         />
       </div>
 

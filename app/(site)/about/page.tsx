@@ -9,6 +9,9 @@ import { resolveVisualImage } from "@/lib/visual-assets";
 import { BRAND } from "@/lib/brand-constants";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { CTA, assistWalkHref } from "@/lib/cta-constants";
+import { getSiteSettings } from "@/lib/site-settings";
+import { getFeaturedExploreMaterials } from "@/lib/explore";
+import { ExploreMaterialCard } from "@/components/explore/explore-material-card";
 
 export const metadata: Metadata = {
   title: "О проекте — манифест Иркпортала",
@@ -40,39 +43,20 @@ const values = [
   },
 ];
 
-async function getSiteSettings() {
-  try {
-    const { getPayloadClient } = await import("@/lib/payload");
-    const payload = await getPayloadClient();
-    return await payload.findGlobal({ slug: "site-settings" });
-  } catch {
-    return null;
-  }
-}
-
 export default async function AboutPage() {
-  const settings = await getSiteSettings();
-
-  const founderPhoto = settings?.founderPhoto as
-    | { url?: string; alt?: string }
-    | undefined;
-  const authorPhoto = settings?.authorPhoto as
-    | { url?: string; alt?: string }
-    | undefined;
+  const [settings, featured] = await Promise.all([
+    getSiteSettings(),
+    getFeaturedExploreMaterials(3),
+  ]);
 
   const portrait = resolveVisualImage({
-    coverUrl: authorPhoto?.url || founderPhoto?.url,
+    coverUrl: settings.authorPhotoUrl,
     fallback: "author",
-    alt:
-      authorPhoto?.alt ||
-      founderPhoto?.alt ||
-      `${settings?.authorName || settings?.founderName || BRAND.authorName}`,
+    alt: settings.authorName || BRAND.authorName,
     place: "Иркутск",
   });
 
-  const authorName = String(
-    settings?.authorName || settings?.founderName || BRAND.authorName
-  );
+  const authorName = settings.authorName || BRAND.authorName;
 
   return (
     <main className="pt-24">
@@ -94,14 +78,14 @@ export default async function AboutPage() {
               <div className="mt-6">
                 <p className="font-medium">{authorName}</p>
                 <p className="text-sm text-muted-foreground">
-                  {settings?.authorRole || BRAND.authorRole}
+                  {settings.authorRole || BRAND.authorRole}
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col gap-12">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
+                <p className="type-eyebrow text-muted-foreground mb-6">
                   Манифест
                 </p>
                 <h1 className="sr-only">О проекте — манифест Иркпортала</h1>
@@ -109,7 +93,7 @@ export default async function AboutPage() {
                   quote="Иркутск — это город, который меняет тех, кто в нём остаётся"
                 />
 
-                <div className="flex flex-col gap-6 text-foreground/80 leading-relaxed">
+                <div className="prose-editorial text-foreground/80">
                   <p>
                     Мы начали этот проект, потому что устали видеть, как
                     Иркутск проходят мимо. Туристы приезжают, ставят галочку
@@ -129,24 +113,29 @@ export default async function AboutPage() {
                     встреча. Встреча с местом, с историей, с людьми. Именно
                     такие встречи мы организуем.
                   </p>
+                  {(settings.authorShortText || BRAND.authorShortText) && (
+                    <p className="text-foreground">
+                      {settings.authorShortText || BRAND.authorShortText}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <Separator />
 
               <div>
-                <h2 className="text-lg font-medium mb-8">Наши ценности</h2>
+                <h2 className="type-h2 text-foreground mb-8">Наши ценности</h2>
                 <div className="flex flex-col gap-8">
                   {values.map((value) => (
                     <div key={value.number} className="flex gap-6">
-                      <span className="text-2xl font-light text-muted-foreground/30 tabular-nums shrink-0 font-serif">
+                      <span className="type-meta text-muted-foreground/50 tabular-nums shrink-0">
                         {value.number}
                       </span>
                       <div>
-                        <p className="font-medium text-foreground mb-2">
+                        <p className="type-ui-label text-foreground mb-2">
                           {value.title}
                         </p>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="type-body-sm text-muted-foreground">
                           {value.text}
                         </p>
                       </div>
@@ -172,22 +161,13 @@ export default async function AboutPage() {
 
               <Separator />
 
-              <div id="guides" className="flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4">
                 <Link
-                  href="/about/guides"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 group w-fit"
+                  href={CTA.mapExplore.href}
+                  className="inline-flex h-12 items-center justify-center gap-2 border border-border px-8 text-sm font-medium hover:bg-muted transition-colors duration-200"
                 >
-                  <span>Познакомиться с нашими гидами</span>
-                  <ArrowRight
-                    size={13}
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  />
+                  {CTA.mapExplore.label}
                 </Link>
-              </div>
-
-              <Separator />
-
-              <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href={assistWalkHref("about")}
                   className="inline-flex h-12 items-center justify-center gap-2 bg-foreground text-primary-foreground px-8 type-button hover:bg-foreground/90 transition-colors duration-200 group"
@@ -210,8 +190,46 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <ContactCtaSection variant="about" sourceType="about" sourceBlock="about-bottom" />
+      {featured.length > 0 ? (
+        <section
+          className="pb-20 lg:pb-28"
+          aria-labelledby="about-explore-heading"
+        >
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+              <div>
+                <p className="type-eyebrow text-muted-foreground mb-3">
+                  От автора
+                </p>
+                <h2
+                  id="about-explore-heading"
+                  className="type-h2 text-foreground"
+                >
+                  Материалы, с которых можно начать
+                </h2>
+              </div>
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-2 text-sm font-medium hover:opacity-80"
+              >
+                Все материалы
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {featured.map((material) => (
+                <ExploreMaterialCard key={material.id} material={material} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <ContactCtaSection
+        variant="about"
+        sourceType="about"
+        sourceBlock="about-bottom"
+      />
     </main>
   );
 }
-
