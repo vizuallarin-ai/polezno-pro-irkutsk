@@ -24,13 +24,13 @@ export function CityDetailCard({
       )}
     >
       {meta && (
-        <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+        <p className="type-eyebrow text-muted-foreground mb-2">
           {meta}
         </p>
       )}
-      <h3 className="text-base font-medium text-foreground mb-2">{title}</h3>
+      <h3 className="type-h3 text-foreground mb-2">{title}</h3>
       {description && (
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="type-body-sm text-muted-foreground">
           {description}
         </p>
       )}

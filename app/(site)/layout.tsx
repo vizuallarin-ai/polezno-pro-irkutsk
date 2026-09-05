@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Onest, Cormorant_Garamond } from "next/font/google";
+import { Golos_Text, Source_Serif_4 } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ScrollToTop } from "@/components/layout/scroll-to-top";
@@ -16,20 +16,29 @@ import "../globals.css";
 
 const siteUrl = getSiteUrl();
 
-/** UI sans — Cyrillic-first (Onest). Replaces Geist latin→Arial fallback. */
-const onest = Onest({
-  variable: "--font-onest",
+/**
+ * UX.D.1 — Golos Text: Russian UI/body grotesk (Paratype).
+ * Weights limited to real usage: body / UI / emphasis.
+ */
+const golos = Golos_Text({
+  variable: "--font-golos",
   subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext"],
+  weight: ["400", "500", "600"],
   display: "swap",
+  adjustFontFallback: true,
 });
 
-/** Editorial display — limited to H1 / key H2 / accents. */
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["300", "400", "500"],
+/**
+ * UX.D.1 — Source Serif 4: editorial/cultural display + quotes.
+ * Meaning/story roles only — not luxury-hotel display.
+ */
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext"],
+  weight: ["400", "600"],
   style: ["normal", "italic"],
   display: "swap",
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -106,7 +115,7 @@ export default async function SiteLayout({
   return (
     <html
       lang="ru"
-      className={`${onest.variable} ${cormorant.variable}`}
+      className={`${golos.variable} ${sourceSerif.variable}`}
     >
       <head>
         <YandexMetrikaHead />

@@ -74,7 +74,7 @@ export function SocialProof({
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h2
           id="social-proof-heading"
-          className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-12 lg:mb-14"
+          className="type-eyebrow text-muted-foreground mb-12 lg:mb-14"
         >
           {hasReviews ? "Отзывы гостей" : "Что обычно отмечают гости"}
         </h2>
@@ -88,7 +88,7 @@ export function SocialProof({
         >
           {displayStats.map((stat) => (
             <div key={stat.label} className="stat-item">
-              <p className="type-display-l tabular-nums text-foreground mb-2">
+              <p className="type-stat text-foreground mb-2">
                 {stat.value}
               </p>
               <p className="type-body-sm text-muted-foreground">{stat.label}</p>

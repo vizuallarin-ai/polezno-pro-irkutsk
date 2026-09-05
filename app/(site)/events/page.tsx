@@ -163,11 +163,11 @@ export default async function EventsPage() {
     <main className="pt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <div className="mb-16">
-          <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
+          <p className="type-eyebrow text-muted-foreground mb-4">
             Событийный Иркутск
           </p>
-          <h1 className="type-display-l text-foreground max-w-[18ch]">
-            Что происходит <span className="font-serif italic">в городе</span>
+          <h1 className="type-page-title text-foreground max-w-[18ch]">
+            Что происходит в городе
           </h1>
         </div>
 

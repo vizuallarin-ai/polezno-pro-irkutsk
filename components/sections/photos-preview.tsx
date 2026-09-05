@@ -12,13 +12,13 @@ export async function PhotosPreviewSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14 lg:py-20">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
+            <p className="type-eyebrow text-muted-foreground mb-3">
               Фотоархив
             </p>
-            <h2 className="text-2xl lg:text-3xl font-medium tracking-tight mb-3">
+            <h2 className="type-h2 text-foreground mb-3">
               Фото Иркутска
             </h2>
-            <p className="text-muted-foreground max-w-xl leading-relaxed">
+            <p className="type-body text-muted-foreground max-w-xl">
               Старые и современные снимки города: улицы, фасады, дворы и детали,
               по которым видно, как менялся Иркутск.
             </p>

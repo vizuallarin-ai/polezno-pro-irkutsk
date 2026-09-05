@@ -89,7 +89,7 @@ export async function ContactCtaSection({
           )}
         >
           <div>
-            <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-5">
+            <p className="type-eyebrow text-muted-foreground mb-5">
               {variant === "business"
                 ? "Для бизнеса"
                 : variant === "route" || variant === "route_detail"
@@ -98,7 +98,7 @@ export async function ContactCtaSection({
             </p>
             <h2
               id={`cta-${resolvedSourceType}`}
-              className="type-display-l text-foreground mb-5 max-w-[14ch]"
+              className="type-section-title text-foreground mb-5 max-w-[14ch]"
             >
               {resolvedTitle}
             </h2>

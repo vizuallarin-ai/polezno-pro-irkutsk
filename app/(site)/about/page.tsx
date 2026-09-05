@@ -101,7 +101,7 @@ export default async function AboutPage() {
 
             <div className="flex flex-col gap-12">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
+                <p className="type-eyebrow text-muted-foreground mb-6">
                   Манифест
                 </p>
                 <h1 className="sr-only">О проекте — манифест Иркпортала</h1>
@@ -109,7 +109,7 @@ export default async function AboutPage() {
                   quote="Иркутск — это город, который меняет тех, кто в нём остаётся"
                 />
 
-                <div className="flex flex-col gap-6 text-foreground/80 leading-relaxed">
+                <div className="prose-editorial text-foreground/80">
                   <p>
                     Мы начали этот проект, потому что устали видеть, как
                     Иркутск проходят мимо. Туристы приезжают, ставят галочку
@@ -135,18 +135,18 @@ export default async function AboutPage() {
               <Separator />
 
               <div>
-                <h2 className="text-lg font-medium mb-8">Наши ценности</h2>
+                <h2 className="type-h2 text-foreground mb-8">Наши ценности</h2>
                 <div className="flex flex-col gap-8">
                   {values.map((value) => (
                     <div key={value.number} className="flex gap-6">
-                      <span className="text-2xl font-light text-muted-foreground/30 tabular-nums shrink-0 font-serif">
+                      <span className="type-meta text-muted-foreground/50 tabular-nums shrink-0">
                         {value.number}
                       </span>
                       <div>
-                        <p className="font-medium text-foreground mb-2">
+                        <p className="type-ui-label text-foreground mb-2">
                           {value.title}
                         </p>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="type-body-sm text-muted-foreground">
                           {value.text}
                         </p>
                       </div>

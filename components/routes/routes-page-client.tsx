@@ -81,10 +81,10 @@ export function RoutesPageClient({
       <>
         <section className="border-b border-border bg-background">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
-            <h1 className="type-h1 text-foreground mb-3">
+            <h1 className="type-page-title text-foreground mb-3">
               Маршруты по Иркутску
             </h1>
-            <p className="type-body text-muted-foreground max-w-2xl">
+            <p className="type-lead text-muted-foreground max-w-2xl">
               Авторские прогулки и экскурсии: самостоятельно по карте или с
               Алёной. Каталог готов к публикации — материалы появляются здесь
               после редакционной подготовки.
@@ -128,10 +128,10 @@ export function RoutesPageClient({
     <>
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10 lg:py-14">
-          <h1 className="type-h1 text-foreground mb-3">
+          <h1 className="type-page-title text-foreground mb-3">
             Маршруты по Иркутску
           </h1>
-          <p className="type-body text-muted-foreground max-w-2xl">
+          <p className="type-lead text-muted-foreground max-w-2xl">
             Готовые прогулки по Иркутску и авторские экскурсии с Алёной: точки на
             карте, форматы прохождения и запись на дату.
           </p>
@@ -234,13 +234,13 @@ export function RoutesPageClient({
       {guidedExcursions.length > 0 && (
         <section className="border-t border-border bg-muted/20">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12 lg:py-16">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
+            <p className="type-eyebrow text-muted-foreground mb-3">
               С гидом
             </p>
-            <h2 className="text-2xl lg:text-3xl font-medium text-foreground mb-4">
+            <h2 className="type-section-title text-foreground mb-4">
               С Алёной
             </h2>
-            <p className="text-sm lg:text-base text-muted-foreground max-w-2xl leading-relaxed mb-8">
+            <p className="type-body text-muted-foreground max-w-2xl mb-8">
               Авторские экскурсии по городу, гастро-маршруты и программы для
               групп — без шаблонных «обзорок». Выберите формат или напишите, и
               соберём день под вас.

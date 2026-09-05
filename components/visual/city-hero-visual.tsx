@@ -108,13 +108,13 @@ export function CityHeroVisual({
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-24 lg:px-8 lg:pb-32">
         <div className="max-w-3xl">
-          <p className="mb-5 type-caption uppercase tracking-[0.22em] text-primary-foreground/55">
+          <p className="mb-5 type-eyebrow text-primary-foreground/55">
             {badge}
           </p>
           <h1 className="type-display-xl text-primary-foreground max-w-[16ch] sm:max-w-[18ch] md:max-w-none">
             {renderTitle(title)}
           </h1>
-          <p className="mt-7 max-w-md type-body-lg font-light text-primary-foreground/72">
+          <p className="mt-7 max-w-md type-lead text-primary-foreground/72">
             {subtitle}
           </p>
           {ctas.length > 0 && (

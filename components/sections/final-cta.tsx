@@ -63,17 +63,16 @@ export function FinalCta() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         <div className="cta-content max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-6">
+          <p className="type-eyebrow text-white/45 mb-6">
             Следующий шаг
           </p>
           <h2
             id="cta-heading"
-            className="type-display-l text-white mb-8 max-w-[12ch]"
+            className="type-section-title text-white mb-8 max-w-[14ch]"
           >
-            Готовы{" "}
-            <span className="font-serif italic">гулять?</span>
+            Готовы гулять?
           </h2>
-          <p className="text-white/60 leading-relaxed mb-12 max-w-md text-base">
+          <p className="type-lead text-white/60 mb-12 max-w-md">
             Выберите маршрут на карте или напишите — соберём программу под ваши
             даты.
           </p>

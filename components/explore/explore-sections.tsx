@@ -15,16 +15,16 @@ export async function ExplorePhotoSection() {
       >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
+            <p className="type-eyebrow text-muted-foreground mb-3">
               Фотоархив
             </p>
             <h2
               id="explore-photos-heading"
-              className="text-2xl font-light tracking-tight"
+              className="type-h2 text-foreground"
             >
               Фото Иркутска
             </h2>
-            <p className="text-muted-foreground max-w-lg leading-relaxed mt-2">
+            <p className="type-body text-muted-foreground max-w-lg mt-2">
               Старые и современные снимки улиц, дворов и деталей города — с
               фильтрами по периоду и месту.
             </p>
@@ -51,16 +51,16 @@ export function ExplorePhotoPlaceholder() {
       className="mb-24 border border-border bg-card p-10 lg:p-14"
       aria-labelledby="explore-photos-heading"
     >
-      <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-3">
+      <p className="type-eyebrow text-muted-foreground mb-3">
         Фотоархив
       </p>
       <h2
         id="explore-photos-heading"
-        className="text-2xl font-light tracking-tight mb-3"
+        className="type-h2 text-foreground mb-3"
       >
         Фото Иркутска
       </h2>
-      <p className="text-muted-foreground max-w-lg leading-relaxed mb-6">
+      <p className="type-body text-muted-foreground max-w-lg mb-6">
         Старые и современные снимки улиц, дворов и деталей города — с фильтрами
         по периоду и месту. Можно предложить своё фото.
       </p>
@@ -84,11 +84,11 @@ export function ExploreBottomCta() {
       <div>
         <h2
           id="explore-cta-heading"
-          className="text-xl font-medium tracking-tight mb-2"
+          className="type-h2 text-foreground mb-2"
         >
           Хотите увидеть город с гидом?
         </h2>
-        <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+        <p className="type-body-sm text-muted-foreground max-w-md">
           Подберём маршрут, экскурсию или программу под ваш визит — без
           туристических штампов.
         </p>

@@ -39,16 +39,13 @@ export default async function ExplorePage() {
     <main className="pt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <header className="mb-16 max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
+          <p className="type-eyebrow text-muted-foreground mb-4">
             База знаний
           </p>
-          <h1 className="text-5xl lg:text-6xl font-light tracking-tight text-foreground mb-4">
-            {EXPLORE_H1.split(" ").slice(0, -1).join(" ")}{" "}
-            <span className="font-serif italic">
-              {EXPLORE_H1.split(" ").slice(-1)}
-            </span>
+          <h1 className="type-page-title text-foreground mb-4">
+            {EXPLORE_H1}
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className="type-lead text-muted-foreground">
             {EXPLORE_SUBTITLE}
           </p>
         </header>
@@ -89,7 +86,7 @@ export default async function ExplorePage() {
           <section className="mb-24" aria-labelledby="explore-featured-heading">
             <h2
               id="explore-featured-heading"
-              className="text-2xl font-light tracking-tight mb-10"
+              className="type-h2 text-foreground mb-10"
             >
               Избранные материалы
             </h2>

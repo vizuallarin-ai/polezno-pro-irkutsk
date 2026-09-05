@@ -150,7 +150,7 @@ function ContactDropdown({
   if (variant === "list") {
     return (
       <div className="flex flex-col gap-3">
-        <p className="type-caption uppercase tracking-widest text-muted-foreground">
+        <p className="type-eyebrow text-muted-foreground">
           {label}
         </p>
         {items.map((item) =>
@@ -511,7 +511,7 @@ export function Header({
               className="flex flex-col gap-5 mt-2"
               aria-label="Основные разделы"
             >
-              <p className="type-caption uppercase tracking-widest text-muted-foreground">
+              <p className="type-eyebrow text-muted-foreground">
                 Главное
               </p>
               {primaryLinks.map((link, i) => (
@@ -524,7 +524,7 @@ export function Header({
                 >
                   <NavLink
                     link={link}
-                    className="text-2xl sm:text-3xl font-medium tracking-tight text-foreground hover:text-baikal transition-colors duration-200 block"
+                    className="type-section-title text-foreground hover:text-baikal transition-colors duration-200 block"
                     onClick={() => setIsOpen(false)}
                   />
                 </motion.div>
@@ -535,7 +535,7 @@ export function Header({
               className="flex flex-col gap-4 mt-10"
               aria-label="Ещё разделы"
             >
-              <p className="type-caption uppercase tracking-widest text-muted-foreground">
+              <p className="type-eyebrow text-muted-foreground">
                 Ещё
               </p>
               {moreLinks.map((link, i) => (
@@ -548,7 +548,7 @@ export function Header({
                 >
                   <NavLink
                     link={link}
-                    className="text-lg font-normal text-foreground/85 hover:text-baikal transition-colors duration-200 block"
+                    className="type-h3 text-foreground/85 hover:text-baikal transition-colors duration-200 block"
                     onClick={() => setIsOpen(false)}
                   />
                 </motion.div>

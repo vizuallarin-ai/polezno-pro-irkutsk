@@ -19,16 +19,16 @@ export function BusinessPreviewSection() {
               aria-hidden
             />
             <div className="flex flex-col gap-3 max-w-xl">
-              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              <p className="type-eyebrow text-muted-foreground">
                 B2B
               </p>
               <h2
                 id="business-preview-heading"
-                className="text-2xl lg:text-3xl font-light tracking-tight"
+                className="type-section-title text-foreground"
               >
-                Для <span className="font-serif italic">бизнеса</span>
+                Для бизнеса
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="type-body-sm text-muted-foreground">
                 Программы для отелей, ресторанов, турпроектов и делегаций —
                 с авторским взглядом на Иркутск.
               </p>

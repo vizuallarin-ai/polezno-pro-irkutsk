@@ -95,13 +95,13 @@ export default async function ExploreSlugPage({ params }: PageProps) {
           </Link>
 
           <header className="mb-16 max-w-2xl">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
+            <p className="type-eyebrow text-muted-foreground mb-4">
               Исследовать Иркутск
             </p>
-            <h1 className="text-5xl lg:text-6xl font-light tracking-tight text-foreground mb-4">
+            <h1 className="type-page-title text-foreground mb-4">
               {categoryMeta.label}
             </h1>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="type-lead text-muted-foreground">
               {categoryMeta.description}
             </p>
           </header>
@@ -194,12 +194,12 @@ export default async function ExploreSlugPage({ params }: PageProps) {
             )}
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-light tracking-tight leading-[1.15] mb-6">
+          <h1 className="type-page-title text-foreground mb-6">
             {String(article.title)}
           </h1>
 
           {article.excerpt && (
-            <p className="text-lg text-muted-foreground leading-relaxed font-serif italic">
+            <p className="type-lead text-muted-foreground">
               {String(article.excerpt)}
             </p>
           )}
@@ -227,7 +227,7 @@ export default async function ExploreSlugPage({ params }: PageProps) {
 
         <LexicalContent
           data={article.content as never}
-          className="prose prose-neutral max-w-none text-foreground leading-relaxed"
+          className="prose-editorial text-foreground"
         />
 
         {article.relatedRoute && (
