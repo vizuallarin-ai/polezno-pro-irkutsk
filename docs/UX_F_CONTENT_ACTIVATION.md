@@ -4,6 +4,7 @@
 
 **Branch:** `phase15-ux-funnel-hardening`  
 **Baseline SHA (pre-UX.F):** `3d8c3002440bc89542fb519709368acbfde53be6`  
+**UX.F tip / production:** `d6c31b69304cdc213500bf8ff261b64cf5b78ac1`  
 **Canonical prior gate:** `docs/UX_E_CONTENT_EXPERIENCE_ARCHITECTURE.md`  
 **Owner pack:** `docs/phase15-gate-c-owner-content-pack.md`
 
@@ -276,20 +277,19 @@ Uses existing mobile-first section/grid patterns (375–1440). Post-deploy smoke
 
 ## 21. Deployment
 
-Immutable release of UX.F tip SHA to `polezno-current` (see post-deploy notes). Rollback: previous release dir retained.
+- Immutable release: `/var/www/polezno-releases/d6c31b6…` → `polezno-current`
+- Rollback kept: `3d8c300…` (and older `4930129…` still on disk)
+- Media symlink after build (Turbopack workaround) unchanged
+- Disk after deploy: ~85% (`12G/14G`, ~2.1G free) — monitor retention
 
 ---
 
 ## 22. Production Smoke
 
-After deploy verify:
+Verified 2026-09-05:
 
-- `/api/health` → new SHA, identityComplete  
-- `/` explore rail + approach trust  
-- `/explore`, `/explore/irkutsk-history` related + continue  
-- `/about` featured materials  
-- `/contact` form  
-- `/map` Prelaunch (honest empty)
+- `/api/health` → `d6c31b6…`, identityComplete=true, worktreeDirty=false  
+- `/`, `/explore`, `/explore/irkutsk-history`, `/about`, `/contact`, `/map` → 200
 
 ---
 
