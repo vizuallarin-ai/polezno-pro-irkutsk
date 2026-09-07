@@ -49,7 +49,7 @@ export function BusinessPageContent({
   fallbackEmail,
 }: BusinessPageContentProps) {
   return (
-    <main className="pt-24 min-h-screen">
+    <div className="pt-24 min-h-screen">
       {/* Hero */}
       <section className="section-pad border-b border-border/70">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -59,7 +59,7 @@ export function BusinessPageContent({
                 B2B-направление Иркпортала
               </p>
               <h1 className="type-display-xl text-foreground mb-6 max-w-[12ch]">
-                Для <em className="italic">бизнеса</em>
+                Для бизнеса
               </h1>
               <p className="type-body-lg text-muted-foreground max-w-lg mb-8">
                 Программы для компаний, отелей, ресторанов и турпроектов в
@@ -112,9 +112,9 @@ export function BusinessPageContent({
             </p>
             <h2
               id="directions-heading"
-              className="text-3xl lg:text-4xl font-light tracking-tight text-foreground max-w-xl"
+              className="type-section-title text-foreground max-w-xl"
             >
-              Три формата <span className="font-serif italic">работы</span>
+              Три формата работы
             </h2>
           </div>
 
@@ -140,7 +140,7 @@ export function BusinessPageContent({
                     <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
                       {direction.subtitle}
                     </p>
-                    <h3 className="text-2xl lg:text-3xl font-light tracking-tight">
+                    <h3 className="type-editorial">
                       {direction.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed max-w-md">
@@ -194,8 +194,8 @@ export function BusinessPageContent({
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Для кого
           </p>
-          <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-10">
-            С кем мы <span className="font-serif italic">работаем</span>
+          <h2 className="type-section-title mb-10">
+            С кем мы работаем
           </h2>
           <div className="flex flex-wrap gap-3">
             {BUSINESS_AUDIENCES.map((item) => (
@@ -216,8 +216,8 @@ export function BusinessPageContent({
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Примеры задач
           </p>
-          <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-10 max-w-lg">
-            Что обычно <span className="font-serif italic">приходят решать</span>
+          <h2 className="type-section-title mb-10 max-w-lg">
+            Что обычно приходят решать
           </h2>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {BUSINESS_TASK_EXAMPLES.map((task) => (
@@ -239,8 +239,8 @@ export function BusinessPageContent({
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Процесс
           </p>
-          <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-12">
-            Как проходит <span className="font-serif italic">работа</span>
+          <h2 className="type-section-title mb-12">
+            Как проходит работа
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {BUSINESS_WORKFLOW_STEPS.map((step) => (
@@ -264,8 +264,8 @@ export function BusinessPageContent({
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Экспертиза
           </p>
-          <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-12 max-w-lg">
-            Почему с <span className="font-serif italic">Алёной</span>
+          <h2 className="type-section-title mb-12 max-w-lg">
+            Почему с&nbsp;Алёной
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
             {BUSINESS_WHY_POINTS.map((point) => (
@@ -286,8 +286,8 @@ export function BusinessPageContent({
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Форматы
           </p>
-          <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-10">
-            Как можем <span className="font-serif italic">подключиться</span>
+          <h2 className="type-section-title mb-10">
+            Как можем подключиться
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {BUSINESS_FORMATS.map((format) => (
@@ -314,8 +314,8 @@ export function BusinessPageContent({
                 <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
                   Маршруты
                 </p>
-                <h2 className="text-2xl lg:text-3xl font-light tracking-tight">
-                  Корпоративные <span className="font-serif italic">маршруты</span>
+                <h2 className="type-section-title">
+                  Корпоративные маршруты
                 </h2>
               </div>
               <Link
@@ -349,8 +349,8 @@ export function BusinessPageContent({
               <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
                 Заявка
               </p>
-              <h2 className="text-3xl lg:text-4xl font-light tracking-tight mb-6">
-                Расскажите о <span className="font-serif italic">задаче</span>
+              <h2 className="type-section-title mb-6">
+                Расскажите о&nbsp;задаче
               </h2>
               <p className="text-muted-foreground leading-relaxed max-w-sm mb-8">
                 Опишите контекст — вернёмся с вопросами и предложением формата.
@@ -383,8 +383,8 @@ export function BusinessPageContent({
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             FAQ
           </p>
-          <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-10">
-            Частые <span className="font-serif italic">вопросы</span>
+          <h2 className="type-section-title mb-10">
+            Частые вопросы
           </h2>
           <div className="flex flex-col divide-y divide-border border-y border-border">
             {BUSINESS_FAQ.map((item) => (
@@ -411,8 +411,8 @@ export function BusinessPageContent({
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
               Материалы
             </p>
-            <h2 className="text-2xl lg:text-3xl font-light tracking-tight mb-10">
-              Полезное для <span className="font-serif italic">бизнеса</span>
+            <h2 className="type-section-title mb-10">
+              Полезное для бизнеса
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {businessArticles.map((article) => (
@@ -463,8 +463,8 @@ export function BusinessPageContent({
       {/* Final CTA */}
       <section className="py-20 lg:py-28 bg-baikal text-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-light tracking-tight mb-6">
-            Готовы обсудить <span className="font-serif italic">проект</span>?
+          <h2 className="type-section-title mb-6 text-white">
+            Готовы обсудить проект?
           </h2>
           <p className="text-white/70 max-w-md mx-auto mb-10">
             Оставьте заявку — или посмотрите маршруты, которые можно адаптировать
@@ -473,20 +473,20 @@ export function BusinessPageContent({
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="#business-form"
-              className="inline-flex h-12 items-center justify-center gap-2 px-8 text-sm font-medium bg-white text-baikal hover:bg-white/90 transition-colors"
+              className="cta-on-dark-primary type-button"
             >
               Оставить заявку
             </Link>
             <Link
               href="/map"
-              className="inline-flex h-12 items-center justify-center px-8 text-sm font-medium border border-white/30 hover:bg-white/10 transition-colors"
+              className="cta-on-dark-secondary type-button"
             >
               Смотреть маршруты
             </Link>
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 
@@ -531,7 +531,7 @@ function CorporateRouteCard({ route }: { route: Route }) {
           </Link>
           <Link
             href={`/business?${params.toString()}#business-form`}
-            className="inline-flex h-10 items-center justify-center border border-border text-sm font-medium hover:bg-muted transition-colors"
+            className="inline-flex min-h-10 items-center justify-center border border-border px-3 py-2 text-sm font-medium text-balance hover:bg-muted transition-colors"
           >
             Запросить корпоративный формат
           </Link>

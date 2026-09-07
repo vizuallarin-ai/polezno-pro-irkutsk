@@ -24,9 +24,9 @@ export function BusinessPreviewSection() {
               </p>
               <h2
                 id="business-preview-heading"
-                className="text-2xl lg:text-3xl font-light tracking-tight"
+                className="type-section-title"
               >
-                Для <span className="font-serif italic">бизнеса</span>
+                Для бизнеса
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Программы для отелей, ресторанов, турпроектов и делегаций —

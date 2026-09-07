@@ -134,7 +134,7 @@ export function BusinessForm({
           <Check size={24} className="text-baikal" />
         </div>
         <div>
-          <h2 className="text-2xl font-light mb-2">Заявка отправлена</h2>
+          <h2 className="type-h2 mb-2">Заявка отправлена</h2>
           <p className="text-muted-foreground max-w-sm text-pretty">
             Получили запрос по программе. Свяжемся по указанному контакту, чтобы
             уточнить задачу и предложить формат. Сейчас ничего дополнительно

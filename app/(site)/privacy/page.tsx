@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="pt-24 min-h-screen">
+    <div className="pt-24 min-h-screen">
       <div className="mx-auto max-w-3xl px-6 lg:px-8 py-16">
         <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
           Документ
         </p>
-        <h1 className="text-3xl lg:text-4xl font-light tracking-tight mb-8">
+        <h1 className="type-page-title mb-8">
           Политика обработки персональных данных
         </h1>
 
@@ -73,6 +73,6 @@ export default function PrivacyPage() {
           </p>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

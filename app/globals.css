@@ -59,13 +59,13 @@
   --font-sans: var(--font-body);
   --font-serif: var(--font-display);
 
-  /* Aggressive editorial scale — must read differently from Cormorant/Onest */
-  --text-display-xl: clamp(2.625rem, 6.5vw + 0.75rem, 6rem); /* 42→96 */
-  --text-display-l: clamp(2.375rem, 4vw + 0.85rem, 4.25rem); /* 38→68 */
-  --text-page-title: clamp(2.25rem, 3.5vw + 0.9rem, 4.25rem); /* 36→68 */
-  --text-section-editorial: clamp(2rem, 2.8vw + 0.75rem, 3.25rem); /* 32→52 */
+  /* Editorial scale — mobile-safe floors (UX.H), desktop still reaches display max */
+  --text-display-xl: clamp(2.25rem, 5.2vw + 1rem, 6rem); /* 36→96 */
+  --text-display-l: clamp(2rem, 3.4vw + 0.9rem, 4.25rem); /* 32→68 */
+  --text-page-title: clamp(1.875rem, 3vw + 0.9rem, 4.25rem); /* 30→68 */
+  --text-section-editorial: clamp(1.75rem, 2.5vw + 0.75rem, 3.25rem); /* 28→52 */
   --text-section-system: clamp(1.375rem, 1vw + 1rem, 2rem); /* 22→32 */
-  --text-editorial: clamp(1.5rem, 1.4vw + 0.9rem, 2.125rem); /* 24→34 cards */
+  --text-editorial: clamp(1.375rem, 1.2vw + 0.9rem, 2.125rem); /* 22→34 cards */
   --text-h1: clamp(1.75rem, 1.5vw + 1rem, 2.25rem);
   --text-h2: clamp(1.375rem, 0.9vw + 0.95rem, 1.75rem);
   --text-h3: clamp(1.0625rem, 0.4vw + 0.95rem, 1.25rem);
@@ -158,6 +158,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;
 }
 
 body {
@@ -357,7 +358,9 @@ body {
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: var(--tracking-ui);
-  white-space: nowrap;
+  white-space: normal;
+  text-wrap: balance;
+  text-align: center;
 }
 
 .type-nav {
@@ -436,15 +439,23 @@ body {
   text-wrap: pretty;
 }
 
+/* CTA labels may wrap on narrow viewports; prefer stacking over unreadably small type */
 .cta-label {
-  white-space: nowrap;
+  white-space: normal;
+  text-wrap: balance;
+  text-align: center;
 }
 
-@media (max-width: 379px) {
-  .cta-label-wrap-sm {
-    white-space: normal;
-    text-wrap: balance;
-    text-align: center;
+.cta-label-wrap-sm {
+  white-space: normal;
+  text-wrap: balance;
+  text-align: center;
+}
+
+/* Desktop nav CTA stays single-line when width allows */
+@media (min-width: 1024px) {
+  .cta-label:not(.cta-label-wrap-sm) {
+    white-space: nowrap;
   }
 }
 
@@ -461,14 +472,18 @@ html.lenis {
   overscroll-behavior: contain;
 }
 
-/* ─── Premium CTA surface (labels stay UX.C canonical) ──────────── */
+/* ─── Premium CTA surface (labels stay UX.C canonical) ────────────
+   Inside @layer components so Tailwind utilities (e.g. `hidden`) win. */
+@layer components {
 .cta-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   min-height: 44px;
-  height: 2.75rem;
+  height: auto;
+  min-block-size: 2.75rem;
+  padding-block: 0.65rem;
   padding-inline: 1.75rem;
   background: var(--primary);
   color: var(--primary-foreground);
@@ -490,7 +505,9 @@ html.lenis {
   justify-content: center;
   gap: 0.5rem;
   min-height: 44px;
-  height: 2.75rem;
+  height: auto;
+  min-block-size: 2.75rem;
+  padding-block: 0.65rem;
   padding-inline: 1.75rem;
   border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
   background: transparent;
@@ -528,7 +545,9 @@ html.lenis {
   justify-content: center;
   gap: 0.5rem;
   min-height: 44px;
-  height: 3rem;
+  height: auto;
+  min-block-size: 3rem;
+  padding-block: 0.75rem;
   padding-inline: 2rem;
   background: var(--primary-foreground);
   color: var(--primary);
@@ -549,7 +568,9 @@ html.lenis {
   justify-content: center;
   gap: 0.5rem;
   min-height: 44px;
-  height: 3rem;
+  height: auto;
+  min-block-size: 3rem;
+  padding-block: 0.75rem;
   padding-inline: 2rem;
   border: 1px solid color-mix(in srgb, var(--primary-foreground) 35%, transparent);
   color: var(--primary-foreground);
@@ -564,6 +585,7 @@ html.lenis {
 }
 .cta-on-dark-secondary:active {
   transform: scale(0.985);
+}
 }
 
 /* ─── Editorial card / section rhythm ───────────────────────────── */

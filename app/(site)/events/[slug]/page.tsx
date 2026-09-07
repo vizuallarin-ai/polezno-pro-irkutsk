@@ -103,7 +103,7 @@ export default async function EventPage({ params }: PageProps) {
             )}
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-light tracking-tight leading-[1.15] mb-6">
+          <h1 className="type-page-title mb-6">
             {String(event.title)}
           </h1>
 

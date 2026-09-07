@@ -32,15 +32,14 @@ export default async function SouvenirsPage() {
   const ownMerch = products.filter((p) => p.isOwnMerch);
 
   return (
-    <main className="pt-24">
+    <div className="pt-24">
       <section className="border-b border-border py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Сувениры
           </p>
-          <h1 className="text-4xl lg:text-6xl font-light tracking-tight text-foreground mb-6 max-w-3xl">
-            Память об Иркутске —{" "}
-            <span className="font-serif italic">не из сувенирной лавки</span>
+          <h1 className="type-page-title text-foreground mb-6 max-w-3xl">
+            Память об&nbsp;Иркутске — не&nbsp;из&nbsp;сувенирной лавки
           </h1>
           <p className="text-muted-foreground max-w-2xl leading-relaxed mb-8">
             Раздел сувениров и локальных изделий — часть архитектуры Иркпортала.
@@ -240,6 +239,6 @@ export default async function SouvenirsPage() {
       </section>
 
       <ContactCtaSection variant="souvenir" sourceType="souvenirs" sourceBlock="souvenirs-index" />
-    </main>
+    </div>
   );
 }

@@ -65,7 +65,7 @@ export default async function ArPostcardsLandingPage() {
   const grid = featured.length > 0 ? featured : all;
 
   return (
-    <main>
+    <div>
       <CityHeroVisual
         badge="AR-открытки"
         title="Ожившие открытки Иркутска"
@@ -208,8 +208,8 @@ export default async function ArPostcardsLandingPage() {
 
       <section>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14 lg:py-20 text-center">
-          <h2 className="text-2xl lg:text-3xl font-light mb-4">
-            Откройте Иркутск с открытки
+          <h2 className="type-section-title mb-4">
+            Откройте Иркутск с&nbsp;открытки
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Выберите сюжет в каталоге или загляните в раздел сувениров.
@@ -237,6 +237,6 @@ export default async function ArPostcardsLandingPage() {
         sourceType="ar_postcard"
         sourceBlock="ar-index"
       />
-    </main>
+    </div>
   );
 }

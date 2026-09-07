@@ -160,14 +160,14 @@ export default async function EventsPage() {
   const hasAny = upcoming.length > 0 || past.length > 0;
 
   return (
-    <main className="pt-24">
+    <div className="pt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <div className="mb-16">
           <p className="type-caption uppercase tracking-[0.2em] text-muted-foreground mb-4">
             Событийный Иркутск
           </p>
           <h1 className="type-display-l text-foreground max-w-[18ch]">
-            Что происходит <span className="font-serif italic">в городе</span>
+            Что происходит в&nbsp;городе
           </h1>
         </div>
 
@@ -177,7 +177,7 @@ export default async function EventsPage() {
           <>
             {upcoming.length > 0 && (
               <section className="mb-16">
-                <h2 className="text-xl font-light mb-6">Ближайшие</h2>
+                <h2 className="type-h2 mb-6">Ближайшие</h2>
                 <div className="flex flex-col gap-0">
                   {upcoming.map((event) => (
                     <EventRow key={event.id} event={event as never} />
@@ -188,7 +188,7 @@ export default async function EventsPage() {
 
             {past.length > 0 && (
               <section>
-                <h2 className="text-xl font-light mb-6 text-muted-foreground">
+                <h2 className="type-h2 mb-6 text-muted-foreground">
                   Прошедшие
                 </h2>
                 <div className="flex flex-col gap-0 opacity-80">
@@ -201,6 +201,6 @@ export default async function EventsPage() {
           </>
         )}
       </div>
-    </main>
+    </div>
   );
 }

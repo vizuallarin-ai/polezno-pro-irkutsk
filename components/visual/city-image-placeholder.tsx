@@ -23,7 +23,7 @@ export function CityImagePlaceholder({
       aria-hidden
     >
       <div className="flex flex-col items-center gap-2 px-6 text-center">
-        <span className="font-serif text-lg text-city-muted/50 italic">
+        <span className="font-serif text-lg text-city-muted/50">
           {label}
         </span>
         {place && (

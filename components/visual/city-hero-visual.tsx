@@ -28,41 +28,21 @@ export type CityHeroVisualProps = {
 };
 
 function renderTitle(title: string) {
-  if (title.includes("Иркутск")) {
-    const [before, ...rest] = title.split("Иркутск");
-    const after = rest.join("Иркутск");
-    return (
-      <>
-        {before}
-        <Link
-          href={CITY_HISTORY_HREF}
-          className="underline-offset-4 hover:underline"
-        >
-          Иркутск
-        </Link>
-        {after.includes("штампов") ? (
-          <>
-            {after.replace(/\s*штампов.*/, " ")}
-            <em className="italic">штампов</em>
-            {after.match(/штампов(.*)/)?.[1] ?? ""}
-          </>
-        ) : (
-          after
-        )}
-      </>
-    );
-  }
-  if (title.includes("без") && title.includes("штампов")) {
-    const parts = title.split(/\s+штампов/);
-    return (
-      <>
-        {parts[0]}{" "}
-        <em className="italic">штампов</em>
-        {parts[1] || ""}
-      </>
-    );
-  }
-  return title;
+  if (!title.includes("Иркутск")) return title;
+  const [before, ...rest] = title.split("Иркутск");
+  const after = rest.join("Иркутск");
+  return (
+    <>
+      {before}
+      <Link
+        href={CITY_HISTORY_HREF}
+        className="underline-offset-4 hover:underline"
+      >
+        Иркутск
+      </Link>
+      {after}
+    </>
+  );
 }
 
 export function CityHeroVisual({

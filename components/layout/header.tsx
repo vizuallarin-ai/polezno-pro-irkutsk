@@ -428,10 +428,10 @@ export function Header({
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex h-[4.25rem] lg:h-[4.5rem] items-center justify-between gap-4 lg:gap-8">
-            <div className="flex min-w-0 flex-col justify-center gap-1">
+            <div className="flex min-w-0 shrink-0 flex-col justify-center gap-1">
               <Link
                 href="/"
-                className="type-brand text-foreground hover:text-foreground/75 transition-colors duration-200 whitespace-nowrap"
+                className="type-brand shrink-0 text-foreground hover:text-foreground/75 transition-colors duration-200 whitespace-nowrap"
                 aria-label={`${projectName} — на главную`}
               >
                 {projectName}
@@ -446,7 +446,7 @@ export function Header({
                 </Link>{" "}
                 от Алёны Ямщиковой
               </p>
-              <p className="hidden md:block xl:hidden type-caption text-muted-foreground leading-snug whitespace-nowrap">
+              <p className="hidden md:block xl:hidden type-caption text-muted-foreground leading-snug max-w-[14rem] truncate">
                 Навигатор Алёны Ямщиковой
               </p>
               <span className="sr-only">{descriptor}</span>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function SouvenirsSuccessPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
       <div className="w-16 h-16 rounded-full bg-baikal/10 flex items-center justify-center mb-8">
         <Check size={26} className="text-baikal" />
       </div>
@@ -17,7 +17,7 @@ export default function SouvenirsSuccessPage() {
       <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-3">
         Заказ оформлен
       </p>
-      <h1 className="text-4xl md:text-5xl font-light tracking-tight text-foreground mb-4">
+      <h1 className="type-page-title text-foreground mb-4">
         Спасибо за покупку
       </h1>
       <p className="text-muted-foreground max-w-sm leading-relaxed mb-10">
@@ -43,6 +43,6 @@ export default function SouvenirsSuccessPage() {
           Смотреть маршруты
         </Link>
       </div>
-    </main>
+    </div>
   );
 }

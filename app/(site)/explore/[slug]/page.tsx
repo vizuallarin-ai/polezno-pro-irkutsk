@@ -89,7 +89,7 @@ export default async function ExploreSlugPage({ params }: PageProps) {
     const materials = await getExploreMaterialsByCategory(slug);
 
     return (
-      <main className="pt-24">
+      <div className="pt-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
           <Link
             href="/explore"
@@ -125,7 +125,7 @@ export default async function ExploreSlugPage({ params }: PageProps) {
             </div>
           )}
         </div>
-      </main>
+      </div>
     );
   }
 

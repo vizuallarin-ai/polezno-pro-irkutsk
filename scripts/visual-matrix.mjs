@@ -19,10 +19,13 @@ if (!outDir) {
 mkdirSync(path.join(outDir, "screenshots"), { recursive: true });
 
 const viewports = [
+  { id: "320x568", width: 320, height: 568 },
   { id: "360x800", width: 360, height: 800 },
+  { id: "375x812", width: 375, height: 812 },
   { id: "390x844", width: 390, height: 844 },
-  { id: "430x932", width: 430, height: 932 },
+  { id: "414x896", width: 414, height: 896 },
   { id: "768x1024", width: 768, height: 1024 },
+  { id: "1024x768", width: 1024, height: 768 },
   { id: "1280x800", width: 1280, height: 800 },
   { id: "1440x900", width: 1440, height: 900 },
 ];
@@ -38,6 +41,8 @@ const routes = [
   { id: "photos", path: "/explore/photos" },
   { id: "about", path: "/about" },
   { id: "guides", path: "/about/guides" },
+  { id: "events", path: "/events" },
+  { id: "privacy", path: "/privacy" },
 ];
 
 function classifyFindings(row) {

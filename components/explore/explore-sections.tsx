@@ -20,7 +20,7 @@ export async function ExplorePhotoSection() {
             </p>
             <h2
               id="explore-photos-heading"
-              className="text-2xl font-light tracking-tight"
+              className="type-section-title"
             >
               Фото Иркутска
             </h2>
@@ -56,7 +56,7 @@ export function ExplorePhotoPlaceholder() {
       </p>
       <h2
         id="explore-photos-heading"
-        className="text-2xl font-light tracking-tight mb-3"
+        className="type-section-title mb-3"
       >
         Фото Иркутска
       </h2>

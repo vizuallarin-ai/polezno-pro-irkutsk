@@ -151,7 +151,7 @@ export default async function SouvenirProductPage({ params }: PageProps) {
               )}
             </div>
 
-            <h1 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground mb-4 leading-snug">
+            <h1 className="type-page-title text-foreground mb-4">
               {product.title}
             </h1>
 
@@ -161,7 +161,7 @@ export default async function SouvenirProductPage({ params }: PageProps) {
               </p>
             )}
 
-            <p className="text-3xl font-light tracking-tight mb-4">
+            <p className="type-editorial mb-4">
               {formatProductPrice(product)}
             </p>
 

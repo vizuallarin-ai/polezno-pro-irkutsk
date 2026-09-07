@@ -15,7 +15,7 @@ export function ExploreRoutesPreview({ routes }: { routes: Route[] }) {
           </p>
           <h2
             id="explore-routes-heading"
-            className="text-2xl font-light tracking-tight"
+            className="type-section-title"
           >
             Прогулки по теме
           </h2>

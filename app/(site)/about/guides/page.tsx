@@ -69,7 +69,7 @@ export default async function GuidesPage() {
   const guides = await getGuides();
 
   return (
-    <main className="pt-24">
+    <div className="pt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <Link
           href="/about"
@@ -83,8 +83,8 @@ export default async function GuidesPage() {
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
             Команда
           </p>
-          <h1 className="text-5xl lg:text-6xl font-light tracking-tight text-foreground">
-            Наши <span className="font-serif italic">гиды</span>
+          <h1 className="type-page-title text-foreground">
+            Наши гиды
           </h1>
           <p className="mt-4 text-muted-foreground leading-relaxed max-w-md">
             Автор проекта — {BRAND.authorName}. Дополнительные профили гидов
@@ -133,7 +133,7 @@ export default async function GuidesPage() {
                   </div>
 
                   {guide.quote ? (
-                    <p className="text-sm font-serif italic text-muted-foreground leading-relaxed border-l-2 border-baikal/30 pl-3">
+                    <p className="type-quote text-muted-foreground border-l-2 border-baikal/30 pl-3 text-[1.05rem]">
                       «{guide.quote}»
                     </p>
                   ) : null}
@@ -185,6 +185,6 @@ export default async function GuidesPage() {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

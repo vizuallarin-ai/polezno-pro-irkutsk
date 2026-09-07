@@ -36,7 +36,7 @@ export default async function ExplorePage() {
   const routePreview = routes.slice(0, 4);
 
   return (
-    <main className="pt-24">
+    <div className="pt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
         <header className="mb-16 max-w-3xl">
           <p className="type-eyebrow text-muted-foreground mb-4">
@@ -117,6 +117,6 @@ export default async function ExplorePage() {
         <ExploreBottomCta />
         <ContactCtaSection variant="explore" sourceType="explore" sourceBlock="explore-index" />
       </div>
-    </main>
+    </div>
   );
 }

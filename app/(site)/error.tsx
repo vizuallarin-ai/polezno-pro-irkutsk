@@ -19,7 +19,7 @@ export default function SiteError({
       <p className="mb-3 text-xs uppercase tracking-[0.25em] text-muted-foreground">
         Ошибка
       </p>
-      <h1 className="font-serif text-3xl font-light text-foreground sm:text-4xl">
+      <h1 className="type-page-title text-foreground">
         Что-то пошло не так
       </h1>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">

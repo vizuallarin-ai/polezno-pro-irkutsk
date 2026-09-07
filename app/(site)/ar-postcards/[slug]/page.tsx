@@ -107,7 +107,7 @@ export default async function ArPostcardDetailPage({ params }: PageProps) {
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
               {effectTypeLabel(postcard.effectType)}
             </p>
-            <h1 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground mb-4 leading-snug">
+            <h1 className="type-page-title text-foreground mb-4">
               {postcard.title}
             </h1>
             {postcard.shortDescription && (

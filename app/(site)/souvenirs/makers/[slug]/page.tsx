@@ -90,7 +90,7 @@ export default async function MakerDetailPage({ params }: PageProps) {
                 <Badge variant="secondary">Партнёрское размещение</Badge>
               )}
             </div>
-            <h1 className="text-3xl lg:text-4xl font-light mb-4">{maker.title}</h1>
+            <h1 className="type-page-title mb-4">{maker.title}</h1>
             <p className="text-muted-foreground leading-relaxed mb-6">
               {maker.shortDescription}
             </p>
