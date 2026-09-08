@@ -1,0 +1,16 @@
+{
+  "packVersion": null,
+  "receivedAt": null,
+  "source": null,
+  "ownerConfirmedAt": null,
+  "isTestFixture": false,
+  "status": "NOT_RECEIVED",
+  "excursions": [],
+  "routes": [],
+  "reviews": [],
+  "guide": null,
+  "siteSettings": null,
+  "media": [],
+  "pricingAndBooking": null,
+  "cmsIdMapping": {}
+}

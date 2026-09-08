@@ -48,3 +48,10 @@ payload-types.ts
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Owner content private binaries / PII (CONTENT.0+)
+/owner-content-private/**
+!/owner-content-private/README.md
+docs/owner-content/private/
+docs/owner-content/**/raw/
+*.owner-pack.local.json
