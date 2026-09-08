@@ -68,6 +68,8 @@ import {
 
 } from "../lib/public-content-contract";
 
+import { allowDemoFallback } from "../lib/demo-fallback";
+
 import {
   classifyCommercialRecord,
   isPublicPublishedReady,
@@ -804,6 +806,48 @@ test("demo fallback disabled on production with DATABASE_URL", () => {
     }),
 
     false
+
+  );
+
+});
+
+
+
+test("demo fallback fail-closed in production without DATABASE_URL", () => {
+
+  assert.equal(
+
+    demoFallbackContractOk({
+
+      NODE_ENV: "production",
+
+    }),
+
+    true
+
+  );
+
+  assert.equal(
+
+    allowDemoFallback({
+
+      NODE_ENV: "production",
+
+    }),
+
+    false
+
+  );
+
+  assert.equal(
+
+    allowDemoFallback({
+
+      NODE_ENV: "development",
+
+    }),
+
+    true
 
   );
 

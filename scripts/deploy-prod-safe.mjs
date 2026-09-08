@@ -27,11 +27,25 @@ if (args.has("--execute")) {
   process.exit(1);
 }
 
-const ROLLBACK_SHA = "3631094e14616c6f816bbd6308701e201ed69309";
-const ROLLBACK_BUILD_ID = "zOvFS1L8wUwIeQ5wVB9ij";
+// OPS.1 proven previous (update after each successful production switch)
+const ROLLBACK_SHA =
+  process.env.ROLLBACK_SHA?.trim() ||
+  "d6c31b69304cdc213500bf8ff261b64cf5b78ac1";
+const ROLLBACK_BUILD_ID =
+  process.env.ROLLBACK_BUILD_ID?.trim() || "NOT_VERIFIED_ON_THIS_HOST";
 
 function sh(cmd) {
-  return execSync(cmd, { cwd: root, encoding: "utf8" }).trim();
+  return execSync(cmd, {
+    cwd: root,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      // Avoid dubious-ownership failures without writing global git config
+      GIT_CONFIG_COUNT: "1",
+      GIT_CONFIG_KEY_0: "safe.directory",
+      GIT_CONFIG_VALUE_0: root,
+    },
+  }).trim();
 }
 
 function capturePackageLockDrift() {
@@ -87,7 +101,10 @@ function main() {
 
   console.log("\nLIMITATIONS:");
   console.log("- This script does NOT perform atomic release switching.");
-  console.log("- deploy-prod.mjs still builds in-place — high risk until symlink migration.");
+  console.log(
+    "- Legacy scripts/deploy-prod.mjs is BLOCKED by default (ALLOW_LEGACY_INPLACE_DEPLOY + --confirm-legacy-inplace)."
+  );
+  console.log("- Prefer scripts/immutable-release-deploy.mjs for owner-approved execute.");
   console.log("- Do NOT run git checkout/restore on production package-lock.json drift.");
   console.log("\nPreflight complete — no production mutations.");
 }

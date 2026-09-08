@@ -32,15 +32,19 @@ export type { ContentReadiness, CommercialRecordInput, PublicSurfaceDecision };
 export function shouldUseDemoFallback(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env
 ): boolean {
-  if (!env.DATABASE_URL) return true;
-  return env.ALLOW_DEMO_FALLBACK === "true";
+  return allowDemoFallback(env);
 }
 
+/**
+ * Production must never silently run demo mode.
+ * Missing DATABASE_URL in production → demo OFF (fail-closed surfaces / health).
+ */
 export function demoFallbackContractOk(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env
 ): boolean {
-  if (env.NODE_ENV === "production" && env.DATABASE_URL) {
+  if (env.NODE_ENV === "production") {
+    if (env.ALLOW_DEMO_FALLBACK === "true") return false;
     return !shouldUseDemoFallback(env);
   }
-  return allowDemoFallback() === shouldUseDemoFallback(env);
+  return allowDemoFallback(env) === shouldUseDemoFallback(env);
 }
