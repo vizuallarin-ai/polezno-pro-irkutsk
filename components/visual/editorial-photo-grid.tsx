@@ -7,12 +7,15 @@ interface EditorialPhotoGridProps {
   photos: PublicPhoto[];
   className?: string;
   columns?: 2 | 3 | 4;
+  /** How many leading images get `priority` (0 for below-fold previews). */
+  priorityCount?: number;
 }
 
 export function EditorialPhotoGrid({
   photos,
   className,
   columns = 4,
+  priorityCount = 0,
 }: EditorialPhotoGridProps) {
   if (photos.length === 0) return null;
 
@@ -39,7 +42,7 @@ export function EditorialPhotoGrid({
                 ? "(max-width: 1024px) 50vw, 25vw"
                 : "(max-width: 768px) 50vw, 33vw"
             }
-            priority={index < 2}
+            priority={index < priorityCount}
             rounded
             className="border border-border city-card"
             imageClassName="transition-transform duration-300 group-hover:scale-[1.02]"

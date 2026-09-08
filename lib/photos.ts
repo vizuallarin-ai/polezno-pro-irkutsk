@@ -1,4 +1,5 @@
 import type { Where } from "payload";
+import { cache } from "react";
 import { PHOTO_PUBLISHED_WHERE } from "@/lib/cms-filters";
 import { isPublicPublishedReady } from "@/lib/content-readiness";
 import { DEMO_PHOTOS } from "@/lib/data/photos";
@@ -99,12 +100,14 @@ function buildWhere(filters?: PhotoFilters): Where {
 }
 
 export async function getPublishedPhotos(
-  filters?: PhotoFilters
+  filters?: PhotoFilters,
+  options?: { limit?: number }
 ): Promise<PublicPhoto[]> {
+  const limit = options?.limit ?? 200;
   const payload = await getPayloadSafe();
   if (!payload) {
     return allowDemoFallback()
-      ? applyClientFilters(DEMO_PHOTOS, filters)
+      ? applyClientFilters(DEMO_PHOTOS, filters).slice(0, limit)
       : [];
   }
 
@@ -113,7 +116,7 @@ export async function getPublishedPhotos(
       collection: "photos",
       where: buildWhere(filters),
       sort: "-publishedAt",
-      limit: 200,
+      limit,
       depth: 2,
     });
 
@@ -122,11 +125,11 @@ export async function getPublishedPhotos(
       .filter(isReadyPhoto);
     if (photos.length > 0) return photos;
     return allowDemoFallback()
-      ? applyClientFilters(DEMO_PHOTOS, filters)
+      ? applyClientFilters(DEMO_PHOTOS, filters).slice(0, limit)
       : [];
   } catch {
     return allowDemoFallback()
-      ? applyClientFilters(DEMO_PHOTOS, filters)
+      ? applyClientFilters(DEMO_PHOTOS, filters).slice(0, limit)
       : [];
   }
 }
@@ -163,10 +166,9 @@ export async function getPhotoBySlug(slug: string): Promise<PublicPhoto | null> 
   }
 }
 
-export async function getFeaturedPhotos(limit = 4): Promise<PublicPhoto[]> {
-  const photos = await getPublishedPhotos();
-  return photos.slice(0, limit);
-}
+export const getFeaturedPhotos = cache(async (limit = 4): Promise<PublicPhoto[]> => {
+  return getPublishedPhotos(undefined, { limit });
+});
 
 export async function getSimilarPhotos(
   photo: PublicPhoto,

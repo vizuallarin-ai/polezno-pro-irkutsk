@@ -33,6 +33,7 @@ export function FinalCta({
         duration: 0.9,
         stagger: 0.15,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 75%",

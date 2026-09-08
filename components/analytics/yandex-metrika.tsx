@@ -1,6 +1,13 @@
+import Script from "next/script";
+
 const YANDEX_METRIKA_ID =
   process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID ?? "109995467";
 
+/**
+ * Counter boot is deferred (`lazyOnload`) so it does not compete with LCP.
+ * Webvisor is off on first paint — session replay is a known main-thread cost;
+ * clickmap / bounce / links stay enabled for product analytics.
+ */
 const METRIKA_INIT = `
 (function(m,e,t,r,i,k,a){
     m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -9,16 +16,16 @@ const METRIKA_INIT = `
     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
 })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${YANDEX_METRIKA_ID}', 'ym');
 
-ym(${YANDEX_METRIKA_ID}, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+ym(${YANDEX_METRIKA_ID}, 'init', {ssr:true, webvisor:false, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 `.trim();
 
-/** Яндекс.Метрика — в <head> как можно ближе к началу страницы. */
+/** Яндекс.Метрика — отложенная загрузка после window load. */
 export function YandexMetrikaHead() {
+  if (!YANDEX_METRIKA_ID) return null;
   return (
-    <script
-      type="text/javascript"
-      dangerouslySetInnerHTML={{ __html: METRIKA_INIT }}
-    />
+    <Script id="yandex-metrika" strategy="lazyOnload">
+      {METRIKA_INIT}
+    </Script>
   );
 }
 

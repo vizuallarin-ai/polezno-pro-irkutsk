@@ -47,6 +47,7 @@ export function SocialProof({ stats, reviews }: SocialProofProps) {
         duration: 0.7,
         stagger: 0.1,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: { trigger: ".stats-row", start: "top 85%" },
       });
 
@@ -56,6 +57,7 @@ export function SocialProof({ stats, reviews }: SocialProofProps) {
         duration: 0.7,
         stagger: 0.1,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: { trigger: ".highlights-grid", start: "top 80%" },
       });
     },

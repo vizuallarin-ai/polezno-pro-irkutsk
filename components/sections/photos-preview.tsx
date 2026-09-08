@@ -3,9 +3,14 @@ import { ArrowRight } from "lucide-react";
 import { getFeaturedPhotos } from "@/lib/photos";
 import { EditorialPhotoGrid } from "@/components/visual/editorial-photo-grid";
 import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
+import type { PublicPhoto } from "@/types/photos";
 
-export async function PhotosPreviewSection() {
-  const photos = await getFeaturedPhotos(4);
+export async function PhotosPreviewSection({
+  photos: photosProp,
+}: {
+  photos?: PublicPhoto[];
+} = {}) {
+  const photos = photosProp ?? (await getFeaturedPhotos(4));
 
   return (
     <section className="border-t border-border bg-background">
@@ -32,7 +37,7 @@ export async function PhotosPreviewSection() {
           </Link>
         </div>
         {photos.length >= 1 ? (
-          <EditorialPhotoGrid photos={photos} columns={4} />
+          <EditorialPhotoGrid photos={photos} columns={4} priorityCount={0} />
         ) : (
           <PrelaunchState surface="photos" compact />
         )}

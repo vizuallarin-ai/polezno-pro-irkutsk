@@ -77,7 +77,7 @@ async function probeYandexMapsAccess(apiKey: string): Promise<void> {
       method: "GET",
       credentials: "omit",
       referrerPolicy: "strict-origin-when-cross-origin",
-      cache: "no-store",
+      cache: "force-cache",
     });
   } catch {
     // CORS или сеть — пробуем загрузку через <script>, как раньше.
@@ -150,7 +150,7 @@ async function injectYandexMapsScript(apiKey: string): Promise<Ymaps3Api> {
     const script = document.createElement("script");
     script.id = "yandex-maps-api-v3";
     script.src = ymapsScriptUrl(apiKey);
-    script.async = false;
+    script.async = true;
     script.referrerPolicy = "strict-origin-when-cross-origin";
 
     script.onerror = () => {

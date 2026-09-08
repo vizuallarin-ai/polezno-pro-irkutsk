@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { NavItem } from "@/types/navigation";
 import {
   PRIMARY_NAV_LINKS,
@@ -43,12 +44,12 @@ export async function getSecondaryCatalogFlags(): Promise<{
   };
 }
 
-export async function getNavigation(): Promise<{
+export const getNavigation = cache(async (): Promise<{
   primaryLinks: NavItem[];
   moreLinks: NavItem[];
   ctaLabel: string;
   ctaHref: string;
-}> {
+}> => {
   const moreLinks = MORE_NAV_LINKS;
 
   try {
@@ -70,4 +71,4 @@ export async function getNavigation(): Promise<{
       ctaHref: DEFAULT_CTA.href,
     };
   }
-}
+});

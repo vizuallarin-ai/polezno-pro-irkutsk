@@ -17,24 +17,39 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
 
     if (prefersReducedMotion) return;
 
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
+    let cancelled = false;
+    let tickerFn: ((time: number) => void) | null = null;
 
-    lenisRef.current = lenis;
+    const start = () => {
+      if (cancelled) return;
 
-    lenis.on("scroll", ScrollTrigger.update);
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      });
 
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
+      lenisRef.current = lenis;
+      lenis.on("scroll", ScrollTrigger.update);
 
-    gsap.ticker.lagSmoothing(0);
+      tickerFn = (time: number) => {
+        lenis.raf(time * 1000);
+      };
+      gsap.ticker.add(tickerFn);
+      gsap.ticker.lagSmoothing(0);
+    };
+
+    // Defer smooth-scroll init so it does not compete with LCP / hydration.
+    const ric = window.requestIdleCallback?.(start, { timeout: 1500 });
+    const timeoutId =
+      typeof ric === "number" ? undefined : window.setTimeout(start, 1);
 
     return () => {
-      lenis.destroy();
+      cancelled = true;
+      if (typeof ric === "number") window.cancelIdleCallback?.(ric);
+      if (timeoutId != null) window.clearTimeout(timeoutId);
+      if (tickerFn) gsap.ticker.remove(tickerFn);
+      lenisRef.current?.destroy();
       lenisRef.current = null;
     };
   }, []);

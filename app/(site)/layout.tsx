@@ -26,7 +26,7 @@ const siteUrl = getSiteUrl();
  */
 const golos = Golos_Text({
   variable: "--font-golos",
-  subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext"],
+  subsets: ["cyrillic", "cyrillic-ext", "latin"],
   weight: ["400", "500", "600"],
   display: "swap",
   adjustFontFallback: true,
@@ -116,7 +116,6 @@ export default async function SiteLayout({
       className={`${golos.variable} ${prata.variable}`}
     >
       <head>
-        <YandexMetrikaHead />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -131,6 +130,7 @@ export default async function SiteLayout({
         >
           Перейти к содержимому
         </a>
+        <YandexMetrikaHead />
         <YandexMetrikaNoscript />
         <LenisProvider>
           <Header

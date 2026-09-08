@@ -54,12 +54,12 @@ export default async function HomePage() {
       getSiteSettings(),
       getHomeStats(),
       getFeaturedPublicReviews(3),
-      getFeaturedPhotos(1),
+      getFeaturedPhotos(4),
       hasPublicExperiences(),
     ]);
 
   const heroPhoto = featuredPhotos[0];
-
+  const previewPhotos = featuredPhotos;
   const heroCtas = catalogReady
     ? [
         {
@@ -109,7 +109,7 @@ export default async function HomePage() {
         photoUrl={settings.authorPhotoUrl}
       />
       <SocialProof stats={stats} reviews={reviews} />
-      <PhotosPreviewSection />
+      <PhotosPreviewSection photos={previewPhotos} />
       <SouvenirsPreviewSection />
       <BusinessPreviewSection />
       <ContactCtaSection

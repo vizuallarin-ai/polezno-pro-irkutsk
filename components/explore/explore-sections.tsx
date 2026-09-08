@@ -37,7 +37,7 @@ export async function ExplorePhotoSection() {
             <ArrowRight size={14} />
           </Link>
         </div>
-        <EditorialPhotoGrid photos={photos} columns={3} />
+        <EditorialPhotoGrid photos={photos} columns={3} priorityCount={0} />
       </section>
     );
   }

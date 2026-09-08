@@ -56,6 +56,7 @@ export function ScenarioPicker() {
         y: 40,
         duration: 0.8,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: {
           trigger: ".scenario-header",
           start: "top 85%",
@@ -68,6 +69,7 @@ export function ScenarioPicker() {
         duration: 0.7,
         stagger: 0.08,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: {
           trigger: ".scenario-grid",
           start: "top 82%",

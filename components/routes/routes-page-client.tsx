@@ -102,17 +102,13 @@ export function RoutesPageClient({
                 <p className="type-eyebrow text-muted-foreground mb-3 hidden lg:block">
                   Карта города
                 </p>
-                <div className="h-[min(45vh,300px)] sm:h-[400px] lg:h-[min(70vh,560px)] border border-border overflow-hidden">
-                  <RouteMap
-                    mode="overview"
-                    mapRoutes={[]}
-                    activeRouteId={null}
-                    onRouteSelect={() =>
-                      trackAnalyticsEvent("map_interaction", {
-                        sourceBlock: "map-prelaunch",
-                      })
-                    }
-                  />
+                <div
+                  className="h-[min(45vh,300px)] sm:h-[400px] lg:h-[min(70vh,560px)] border border-border overflow-hidden bg-muted flex items-center justify-center"
+                  aria-hidden
+                >
+                  <p className="text-sm text-muted-foreground px-6 text-center">
+                    Карта появится вместе с опубликованными маршрутами
+                  </p>
                 </div>
               </div>
             </div>

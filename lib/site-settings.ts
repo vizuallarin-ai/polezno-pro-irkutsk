@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getPayloadClient } from "@/lib/payload";
 import { BRAND, DEFAULT_SOCIAL_DISCLAIMER } from "@/lib/brand-constants";
 import {
@@ -103,7 +104,7 @@ function mediaUrl(field: unknown): string | undefined {
   return undefined;
 }
 
-export async function getSiteSettings(): Promise<SiteSettingsData> {
+export const getSiteSettings = cache(async (): Promise<SiteSettingsData> => {
   if (!process.env.DATABASE_URL) return DEFAULTS;
 
   try {
@@ -211,4 +212,4 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
   } catch {
     return DEFAULTS;
   }
-}
+});
