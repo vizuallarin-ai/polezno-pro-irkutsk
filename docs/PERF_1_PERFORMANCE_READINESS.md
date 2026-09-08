@@ -6,7 +6,7 @@
 | --- | --- |
 | Branch | `phase15-ux-funnel-hardening` |
 | Starting SHA | `85bcaecaeff283c97e7e8148e27726c2e6c0a28c` |
-| Ending SHA | *(set after commit)* |
+| Ending SHA | `cfce88fe679cb88a268423441c800473343490bb` |
 | Live production SHA | `7a6d971e81ecccc781a91e95ade257090f94a08a` |
 | Deploy | **NO** |
 | Production DB mutation | **NO** |
