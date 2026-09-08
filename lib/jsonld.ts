@@ -4,6 +4,11 @@ import { BRAND } from "@/lib/brand-constants";
 
 const BASE_URL = getSiteUrl();
 
+/**
+ * Minimal Organization — only confirmed public facts.
+ * Do not emit LocalBusiness / TravelAgency street address, phone, hours, or priceRange
+ * until owner settings confirm them.
+ */
 export function organizationSchema(opts?: {
   name?: string;
   description?: string;
@@ -11,44 +16,41 @@ export function organizationSchema(opts?: {
   sameAs?: string[];
 }) {
   const sameAs = (opts?.sameAs ?? [TELEGRAM_URL, BOOSTY_URL]).filter(Boolean);
+  const email = opts?.email?.trim();
+
   return {
     "@context": "https://schema.org",
-    "@type": "TravelAgency",
-    name: opts?.name || BRAND.projectName,
+    "@type": "Organization",
+    name: opts?.name?.trim() || BRAND.projectName,
     url: BASE_URL,
     logo: `${BASE_URL}/icon`,
     description:
-      opts?.description ||
-      "Авторский навигатор по Иркутску: маршруты, экскурсии и программы для бизнеса.",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Иркутск",
-      addressRegion: "Иркутская область",
-      addressCountry: "RU",
-    },
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      ...(opts?.email ? { email: opts.email } : { email: "info@irkportal.ru" }),
-    },
-    sameAs,
+      opts?.description?.trim() ||
+      BRAND.projectDescriptor,
+    ...(sameAs.length > 0 ? { sameAs } : {}),
+    ...(email
+      ? {
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "customer service",
+            email,
+          },
+        }
+      : {}),
   };
 }
 
-export function touristDestinationSchema() {
+/** WebSite schema — no SearchAction until a real site search exists. */
+export function websiteSchema(opts?: { name?: string; description?: string }) {
   return {
     "@context": "https://schema.org",
-    "@type": "TouristDestination",
-    name: "Иркутск",
-    description:
-      "Иркутск — исторический город в Восточной Сибири на берегу реки Ангара, крупнейший туристический центр, ворота к озеру Байкал.",
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: 52.2978,
-      longitude: 104.2964,
-    },
+    "@type": "WebSite",
+    name: opts?.name?.trim() || BRAND.projectName,
     url: BASE_URL,
-    touristType: ["Культурный туризм", "Экотуризм", "Гастрономический туризм"],
+    inLanguage: "ru-RU",
+    ...(opts?.description?.trim()
+      ? { description: opts.description.trim() }
+      : {}),
   };
 }
 
@@ -59,6 +61,7 @@ export function articleSchema({
   imageUrl,
   publishedAt,
   updatedAt,
+  authorName,
 }: {
   title: string;
   description: string;
@@ -66,6 +69,7 @@ export function articleSchema({
   imageUrl?: string;
   publishedAt?: string;
   updatedAt?: string;
+  authorName?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -73,14 +77,30 @@ export function articleSchema({
     headline: title,
     description,
     url,
-    image: imageUrl,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    ...(imageUrl ? { image: imageUrl } : {}),
     publisher: {
       "@type": "Organization",
       name: BRAND.projectName,
       url: BASE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/icon`,
+      },
     },
-    datePublished: publishedAt,
-    dateModified: updatedAt,
+    ...(authorName?.trim()
+      ? {
+          author: {
+            "@type": "Person",
+            name: authorName.trim(),
+          },
+        }
+      : {}),
+    ...(publishedAt ? { datePublished: publishedAt } : {}),
+    ...(updatedAt ? { dateModified: updatedAt } : {}),
   };
 }
 
@@ -103,6 +123,11 @@ export function eventSchema({
   imageUrl?: string;
   offers?: { price: string; url?: string };
 }) {
+  const numericPrice =
+    offers?.price != null && /^\d+([.,]\d+)?$/.test(String(offers.price).trim())
+      ? String(offers.price).trim().replace(",", ".")
+      : undefined;
+
   return {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -110,8 +135,10 @@ export function eventSchema({
     description,
     url,
     startDate,
-    endDate,
-    image: imageUrl,
+    ...(endDate ? { endDate } : {}),
+    ...(imageUrl ? { image: imageUrl } : {}),
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
     location: {
       "@type": "Place",
       name: location,
@@ -126,15 +153,16 @@ export function eventSchema({
       name: BRAND.projectName,
       url: BASE_URL,
     },
-    offers: offers
+    ...(numericPrice
       ? {
-          "@type": "Offer",
-          price: offers.price,
-          priceCurrency: "RUB",
-          url: offers.url,
-          availability: "https://schema.org/InStock",
+          offers: {
+            "@type": "Offer",
+            price: numericPrice,
+            priceCurrency: "RUB",
+            ...(offers?.url ? { url: offers.url } : { url }),
+          },
         }
-      : undefined,
+      : {}),
   };
 }
 
@@ -155,30 +183,42 @@ export function productSchema({
   sku?: string;
   inStock?: boolean;
 }) {
+  const safePrice = Number.isFinite(price) && price > 0 ? price : undefined;
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: title,
     description,
     url,
-    image: imageUrl,
-    sku,
-    offers: {
-      "@type": "Offer",
-      price: price.toString(),
-      priceCurrency: "RUB",
-      availability: inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      url,
-      seller: {
-        "@type": "Organization",
-        name: BRAND.projectName,
-      },
-    },
+    ...(imageUrl ? { image: imageUrl } : {}),
+    ...(sku ? { sku } : {}),
+    ...(safePrice != null
+      ? {
+          offers: {
+            "@type": "Offer",
+            price: String(safePrice),
+            priceCurrency: "RUB",
+            availability:
+              inStock === false
+                ? "https://schema.org/OutOfStock"
+                : "https://schema.org/InStock",
+            url,
+            seller: {
+              "@type": "Organization",
+              name: BRAND.projectName,
+            },
+          },
+        }
+      : {}),
   };
 }
 
+/**
+ * Guided / self-guided experience detail.
+ * Prefer TouristTrip over inventing Product/Event claims.
+ * Price only when a real positive RUB amount is confirmed.
+ */
 export function touristTripSchema({
   title,
   description,
@@ -200,18 +240,24 @@ export function touristTripSchema({
     name: title,
     description,
     url,
-    image: imageUrl,
-    touristType: "Культурный туризм",
+    ...(imageUrl ? { image: imageUrl } : {}),
     provider: {
-      "@type": "TravelAgency",
+      "@type": "Organization",
       name: BRAND.projectName,
       url: BASE_URL,
     },
-    ...(duration
+    ...(duration && duration > 0
       ? {
           itinerary: {
             "@type": "ItemList",
             numberOfItems: 1,
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: title,
+              },
+            ],
           },
         }
       : {}),
@@ -222,10 +268,31 @@ export function touristTripSchema({
             price: String(price),
             priceCurrency: "RUB",
             url,
-            availability: "https://schema.org/InStock",
           },
         }
       : {}),
+  };
+}
+
+/** Future CONTENT.1 Person helper — call only with real guide data. */
+export function personSchema({
+  name,
+  description,
+  url,
+  imageUrl,
+}: {
+  name: string;
+  description?: string;
+  url?: string;
+  imageUrl?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name,
+    ...(description ? { description } : {}),
+    ...(url ? { url } : {}),
+    ...(imageUrl ? { image: imageUrl } : {}),
   };
 }
 
@@ -237,7 +304,14 @@ export function breadcrumbSchema(items: Array<{ label: string; href: string }>) 
       "@type": "ListItem",
       position: i + 1,
       name: item.label,
-      item: `${BASE_URL}${item.href}`,
+      item: `${BASE_URL}${item.href.startsWith("/") ? item.href : `/${item.href}`}`,
     })),
   };
+}
+
+/** Safe JSON-LD serialization for script tags (escape `<`). */
+export function serializeJsonLd(
+  data: Record<string, unknown> | Record<string, unknown>[]
+): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }

@@ -41,12 +41,13 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/excursions",
-        destination: "/map?filter=guided",
+        destination: "/map",
         permanent: true,
       },
     ];
   },
   experimental: {
+    globalNotFound: true,
     serverActions: {
       allowedOrigins: [
         "irkportal.ru",

@@ -20,6 +20,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const slugs = await getPublishedMakerSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -28,12 +30,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const maker = await getMakerBySlug(slug);
-  if (!maker) return { title: "Мастер не найден" };
+  if (!maker) notFound();
 
   const site = await getSiteSettings();
   return buildPageMetadata(
     {
-      title: maker.seo?.title || `${maker.title} — мастер Иркутска`,
+      title: maker.seo?.title || maker.title,
       shortDescription: maker.shortDescription,
       seo: {
         title: maker.seo?.title,
@@ -43,7 +45,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       coverUrl: maker.coverUrl || maker.avatarUrl || undefined,
     },
     maker.title,
-    site
+    site,
+    { path: `/souvenirs/makers/${maker.slug}` }
   );
 }
 

@@ -26,6 +26,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const slugs = await getPublishedProductSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -38,7 +40,7 @@ async function getProduct(slug: string) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug);
-  if (!product) return { title: "Товар не найден" };
+  if (!product) notFound();
 
   const site = await getSiteSettings();
   return buildPageMetadata(
@@ -53,7 +55,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       gallery: product.gallery.map((g) => ({ image: { url: g.url } })),
     },
     product.title,
-    site
+    site,
+    { path: `/souvenirs/${product.slug}` }
   );
 }
 
@@ -74,7 +77,7 @@ export default async function SouvenirProductPage({ params }: PageProps) {
     title: product.title,
     description: product.shortDescription || "",
     url: `${BASE_URL}/souvenirs/${product.slug}`,
-    price: product.price || 0,
+    price: product.price ?? 0,
     imageUrl: product.imageUrl || undefined,
     sku: product.id,
     inStock,

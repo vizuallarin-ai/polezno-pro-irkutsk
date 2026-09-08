@@ -14,7 +14,7 @@ import { getFeaturedExploreMaterials } from "@/lib/explore";
 import { ExploreMaterialCard } from "@/components/explore/explore-material-card";
 
 export const metadata: Metadata = {
-  title: "О проекте — манифест Иркпортала",
+  title: "О проекте — манифест",
   description:
     "История и философия Иркпортала. Почему мы создаём авторский навигатор по Иркутску и Байкалу.",
   alternates: { canonical: "/about" },

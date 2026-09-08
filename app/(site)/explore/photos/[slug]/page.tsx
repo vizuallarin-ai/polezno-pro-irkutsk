@@ -11,6 +11,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const slugs = await getPublishedPhotoSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -19,21 +21,29 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const photo = await getPhotoBySlug(slug);
-  if (!photo) return { title: "Фото не найдено" };
+  if (!photo) notFound();
 
   const site = await getSiteSettings();
+  const hasMeaningfulCopy = Boolean(photo.description?.trim());
   return buildPageMetadata(
     {
       title: photo.title,
       description: photo.description,
       coverUrl: photo.imageUrl,
       seo: {
-        title: `${photo.title} — Фото Иркутска`,
+        title: photo.title,
         description: photo.description,
       },
     },
     photo.title,
-    site
+    site,
+    {
+      path: `/explore/photos/${photo.slug}`,
+      // Thin photo-only pages stay crawlable but out of the index until they have real copy.
+      robots: hasMeaningfulCopy
+        ? { index: true, follow: true }
+        : { index: false, follow: true },
+    }
   );
 }
 

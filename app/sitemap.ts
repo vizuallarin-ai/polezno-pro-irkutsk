@@ -19,6 +19,8 @@ import { logSitemapCmsError } from "@/lib/sitemap-contract";
 
 const BASE_URL = getSiteUrl();
 
+type SitemapEntry = MetadataRoute.Sitemap[number];
+
 function eligibleDoc(
   kind: Extract<
     CommercialKind,
@@ -36,15 +38,74 @@ function eligibleDoc(
   return isSitemapEligible(commercialInputFromDoc(kind, doc));
 }
 
-async function getCmsUrls() {
-  if (!process.env.DATABASE_URL) return [];
+function entry(
+  path: string,
+  opts?: {
+    lastModified?: Date | string | null;
+    changeFrequency?: SitemapEntry["changeFrequency"];
+    priority?: number;
+  }
+): SitemapEntry {
+  const lastModified =
+    opts?.lastModified != null && opts.lastModified !== ""
+      ? new Date(opts.lastModified)
+      : undefined;
+
+  return {
+    url: path === "/" ? BASE_URL : `${BASE_URL}${path}`,
+    ...(lastModified && !Number.isNaN(lastModified.getTime())
+      ? { lastModified }
+      : {}),
+    ...(opts?.changeFrequency ? { changeFrequency: opts.changeFrequency } : {}),
+    ...(opts?.priority != null ? { priority: opts.priority } : {}),
+  };
+}
+
+type CmsSitemapResult = {
+  urls: SitemapEntry[];
+  counts: {
+    articles: number;
+    events: number;
+    products: number;
+    makers: number;
+    routes: number;
+    excursions: number;
+    photos: number;
+    arPostcards: number;
+  };
+};
+
+async function getCmsSitemap(): Promise<CmsSitemapResult> {
+  const empty: CmsSitemapResult = {
+    urls: [],
+    counts: {
+      articles: 0,
+      events: 0,
+      products: 0,
+      makers: 0,
+      routes: 0,
+      excursions: 0,
+      photos: 0,
+      arPostcards: 0,
+    },
+  };
+
+  if (!process.env.DATABASE_URL) return empty;
 
   try {
     const { getPayloadClient } = await import("@/lib/payload");
     const payload = await getPayloadClient();
 
-    const [articles, events, products, makersRes, routesRes, excursionsRes, photosRes, arPostcardsRes] =
-      await Promise.all([
+    const [
+      articles,
+      events,
+      products,
+      makersRes,
+      routesRes,
+      excursionsRes,
+      photosRes,
+      arPostcardsRes,
+    ] = await Promise.all([
       payload.find({
         collection: "articles",
         where: ARTICLE_PUBLISHED_WHERE,
@@ -95,147 +156,178 @@ async function getCmsUrls() {
       }),
     ]);
 
-    const articleUrls = articles.docs
-      .filter((a) => eligibleDoc("article", a as Record<string, unknown>))
-      .map((a) => ({
-      url: `${BASE_URL}/explore/${a.slug}`,
-      lastModified: new Date(String(a.updatedAt)),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }));
+    const articleDocs = articles.docs.filter((a) =>
+      eligibleDoc("article", a as Record<string, unknown>)
+    );
+    const eventDocs = events.docs.filter((e) =>
+      eligibleDoc("event", e as Record<string, unknown>)
+    );
+    const productDocs = products.docs.filter((p) =>
+      eligibleDoc("product", p as Record<string, unknown>)
+    );
+    const makerDocs = makersRes.docs.filter((m) =>
+      eligibleDoc("maker", m as Record<string, unknown>)
+    );
+    const routeDocs = routesRes.docs.filter((r) =>
+      eligibleDoc("route", r as Record<string, unknown>)
+    );
+    const excursionDocs = excursionsRes.docs.filter((e) =>
+      eligibleDoc("excursion", e as Record<string, unknown>)
+    );
+    const photoDocs = photosRes.docs.filter((p) => {
+      if (!eligibleDoc("photo", p as Record<string, unknown>)) return false;
+      const raw = p as Record<string, unknown>;
+      const description =
+        typeof raw.description === "string" ? raw.description.trim() : "";
+      // Thin image-only photo pages stay out of the sitemap.
+      return description.length > 0;
+    });
+    const arDocs = arPostcardsRes.docs.filter((p) =>
+      eligibleDoc("ar_postcard", p as Record<string, unknown>)
+    );
 
-    const eventUrls = events.docs
-      .filter((e) => eligibleDoc("event", e as Record<string, unknown>))
-      .map((e) => ({
-      url: `${BASE_URL}/events/${e.slug}`,
-      lastModified: new Date(String(e.updatedAt)),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    }));
-
-    const productUrls = products.docs
-      .filter((p) => eligibleDoc("product", p as Record<string, unknown>))
-      .map((p) => ({
-      url: `${BASE_URL}/souvenirs/${p.slug}`,
-      lastModified: new Date(String(p.updatedAt)),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-
-    const makerUrls = makersRes.docs
-      .filter((m) => eligibleDoc("maker", m as Record<string, unknown>))
-      .map((m) => ({
-      url: `${BASE_URL}/souvenirs/makers/${m.slug}`,
-      lastModified: new Date(String(m.updatedAt)),
-      changeFrequency: "monthly" as const,
-      priority: 0.55,
-    }));
-
-    const cmsRouteUrls = routesRes.docs
-      .filter((r) => eligibleDoc("route", r as Record<string, unknown>))
-      .map((r) => ({
-      url: `${BASE_URL}/map/${r.slug}`,
-      lastModified: new Date(String(r.updatedAt)),
-      changeFrequency: "monthly" as const,
-      priority: 0.85,
-    }));
-
-    const excursionUrls = excursionsRes.docs
-      .filter((e) => eligibleDoc("excursion", e as Record<string, unknown>))
-      .map((e) => ({
-      url: `${BASE_URL}/excursions/${e.slug}`,
-      lastModified: new Date(String(e.updatedAt)),
-      changeFrequency: "weekly" as const,
-      priority: 0.75,
-    }));
-
-    const photoUrls = photosRes.docs
-      .filter((p) => eligibleDoc("photo", p as Record<string, unknown>))
-      .map((p) => ({
-      url: `${BASE_URL}/explore/photos/${p.slug}`,
-      lastModified: new Date(String(p.updatedAt)),
-      changeFrequency: "monthly" as const,
-      priority: 0.65,
-    }));
-
-    const arPostcardUrls = arPostcardsRes.docs
-      .filter((p) => eligibleDoc("ar_postcard", p as Record<string, unknown>))
-      .map((p) => ({
-      url: `${BASE_URL}/ar-postcards/${p.slug}`,
-      lastModified: new Date(String(p.updatedAt)),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-
-    return [
-      ...articleUrls,
-      ...eventUrls,
-      ...productUrls,
-      ...makerUrls,
-      ...cmsRouteUrls,
-      ...excursionUrls,
-      ...photoUrls,
-      ...arPostcardUrls,
+    const urls: SitemapEntry[] = [
+      ...articleDocs.map((a) =>
+        entry(`/explore/${a.slug}`, {
+          lastModified: a.updatedAt ? String(a.updatedAt) : null,
+          changeFrequency: "weekly",
+          priority: 0.7,
+        })
+      ),
+      ...eventDocs.map((e) =>
+        entry(`/events/${e.slug}`, {
+          lastModified: e.updatedAt ? String(e.updatedAt) : null,
+          changeFrequency: "weekly",
+          priority: 0.6,
+        })
+      ),
+      ...productDocs.map((p) =>
+        entry(`/souvenirs/${p.slug}`, {
+          lastModified: p.updatedAt ? String(p.updatedAt) : null,
+          changeFrequency: "monthly",
+          priority: 0.6,
+        })
+      ),
+      ...makerDocs.map((m) =>
+        entry(`/souvenirs/makers/${m.slug}`, {
+          lastModified: m.updatedAt ? String(m.updatedAt) : null,
+          changeFrequency: "monthly",
+          priority: 0.55,
+        })
+      ),
+      ...routeDocs.map((r) =>
+        entry(`/map/${r.slug}`, {
+          lastModified: r.updatedAt ? String(r.updatedAt) : null,
+          changeFrequency: "monthly",
+          priority: 0.85,
+        })
+      ),
+      ...excursionDocs.map((e) =>
+        entry(`/excursions/${e.slug}`, {
+          lastModified: e.updatedAt ? String(e.updatedAt) : null,
+          changeFrequency: "weekly",
+          priority: 0.75,
+        })
+      ),
+      ...photoDocs.map((p) =>
+        entry(`/explore/photos/${p.slug}`, {
+          lastModified: p.updatedAt ? String(p.updatedAt) : null,
+          changeFrequency: "monthly",
+          priority: 0.55,
+        })
+      ),
+      ...arDocs.map((p) =>
+        entry(`/ar-postcards/${p.slug}`, {
+          lastModified: p.updatedAt ? String(p.updatedAt) : null,
+          changeFrequency: "monthly",
+          priority: 0.6,
+        })
+      ),
     ];
+
+    return {
+      urls,
+      counts: {
+        articles: articleDocs.length,
+        events: eventDocs.length,
+        products: productDocs.length,
+        makers: makerDocs.length,
+        routes: routeDocs.length,
+        excursions: excursionDocs.length,
+        photos: photoDocs.length,
+        arPostcards: arDocs.length,
+      },
+    };
   } catch (error) {
     logSitemapCmsError(error);
-    return [];
+    return empty;
   }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const exploreCategoryUrls = EXPLORE_CATEGORIES.map((cat) => ({
-    url: `${BASE_URL}/explore/${cat.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.75,
-  }));
+  const cms = await getCmsSitemap();
 
-  const staticPageDefs = [
-    { url: BASE_URL, priority: 1.0, changeFrequency: "daily" as const },
-    { url: `${BASE_URL}/map`, priority: 0.9, changeFrequency: "weekly" as const },
-    { url: `${BASE_URL}/explore`, priority: 0.9, changeFrequency: "daily" as const },
-    { url: `${BASE_URL}/explore/photos`, priority: 0.85, changeFrequency: "weekly" as const },
-    { url: `${BASE_URL}/events`, priority: 0.8, changeFrequency: "daily" as const },
-    { url: `${BASE_URL}/souvenirs`, priority: 0.8, changeFrequency: "weekly" as const },
-    { url: `${BASE_URL}/ar-postcards`, priority: 0.75, changeFrequency: "weekly" as const },
-    { url: `${BASE_URL}/about`, priority: 0.7, changeFrequency: "monthly" as const },
-    { url: `${BASE_URL}/about/guides`, priority: 0.55, changeFrequency: "monthly" as const },
-    { url: `${BASE_URL}/business`, priority: 0.9, changeFrequency: "monthly" as const },
-    { url: `${BASE_URL}/contact`, priority: 0.7, changeFrequency: "monthly" as const },
-    { url: `${BASE_URL}/privacy`, priority: 0.3, changeFrequency: "yearly" as const },
-  ].map((p) => ({ ...p, lastModified: new Date() }));
+  const coreStatic: SitemapEntry[] = [
+    entry("/", { changeFrequency: "daily", priority: 1.0 }),
+    entry("/map", { changeFrequency: "weekly", priority: 0.9 }),
+    entry("/explore", { changeFrequency: "daily", priority: 0.9 }),
+    entry("/about", { changeFrequency: "monthly", priority: 0.7 }),
+    entry("/business", { changeFrequency: "monthly", priority: 0.9 }),
+    entry("/contact", { changeFrequency: "monthly", priority: 0.7 }),
+    entry("/privacy", { changeFrequency: "yearly", priority: 0.3 }),
+  ];
 
-  const staticPages = staticPageDefs;
+  const exploreCategoryUrls = EXPLORE_CATEGORIES.map((cat) =>
+    entry(`/explore/${cat.slug}`, {
+      changeFrequency: "weekly",
+      priority: 0.75,
+    })
+  );
 
-  const cmsUrls = await getCmsUrls();
-
-  if (cmsUrls.length > 0) {
-    return [...staticPages, ...exploreCategoryUrls, ...cmsUrls];
+  /** Empty CMS shelves stay reachable but out of the sitemap until they have content. */
+  const conditionalSections: SitemapEntry[] = [];
+  if (cms.counts.photos > 0) {
+    conditionalSections.push(
+      entry("/explore/photos", { changeFrequency: "weekly", priority: 0.85 })
+    );
+  }
+  if (cms.counts.events > 0) {
+    conditionalSections.push(
+      entry("/events", { changeFrequency: "daily", priority: 0.8 })
+    );
+  }
+  if (cms.counts.products > 0 || cms.counts.makers > 0) {
+    conditionalSections.push(
+      entry("/souvenirs", { changeFrequency: "weekly", priority: 0.8 })
+    );
+  }
+  if (cms.counts.arPostcards > 0) {
+    conditionalSections.push(
+      entry("/ar-postcards", { changeFrequency: "weekly", priority: 0.75 })
+    );
   }
 
-  // На production с БД — только статика, без demo-URL в sitemap
-  if (process.env.DATABASE_URL) {
-    return [...staticPages, ...exploreCategoryUrls];
+  if (cms.urls.length > 0 || process.env.DATABASE_URL) {
+    return [
+      ...coreStatic,
+      ...conditionalSections,
+      ...exploreCategoryUrls,
+      ...cms.urls,
+    ];
   }
 
-  const demoArticleUrls = DEMO_EXPLORE_MATERIALS.map((m) => ({
-    url: `${BASE_URL}/explore/${m.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
+  // Local/dev without DB: demo corpus only (production fail-closed via DATABASE_URL branch above).
+  const demoArticleUrls = DEMO_EXPLORE_MATERIALS.map((m) =>
+    entry(`/explore/${m.slug}`, { changeFrequency: "weekly", priority: 0.7 })
+  );
 
   const { routes } = await getRoutesForMap();
-  const demoRouteUrls = routes.map((r) => ({
-    url: `${BASE_URL}/map/${r.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.85,
-  }));
+  const demoRouteUrls = routes.map((r) =>
+    entry(`/map/${r.slug}`, { changeFrequency: "monthly", priority: 0.85 })
+  );
 
   return [
-    ...staticPages,
+    ...coreStatic,
     ...exploreCategoryUrls,
     ...demoArticleUrls,
     ...demoRouteUrls,

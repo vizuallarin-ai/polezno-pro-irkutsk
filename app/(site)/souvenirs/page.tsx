@@ -11,17 +11,28 @@ import {
 import { SOUVENIR_CATEGORY_FILTERS } from "@/lib/souvenirs";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { CTA, buildContactHref } from "@/lib/cta-constants";
+import { robotsForContentPresence } from "@/lib/seo/robots-policy";
 
-export const metadata: Metadata = {
-  title: "Сувениры Иркутска — коллекция Иркпортала",
-  description:
-    "Коллекция сувениров и локальных изделий Иркпортала. Каталог открывается после публикации подтверждённых позиций.",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  const [products, makers] = await Promise.all([
+    getPublishedProducts(),
+    getPublishedMakers(),
+  ]);
+  const hasContent = products.length > 0 || makers.length > 0;
+  return {
     title: "Сувениры Иркутска — коллекция Иркпортала",
     description:
-      "Раздел сувениров сохраняется в архитектуре проекта и наполнится после публикации.",
-  },
-};
+      "Коллекция сувениров и локальных изделий Иркпортала. Каталог открывается после публикации подтверждённых позиций.",
+    alternates: { canonical: "/souvenirs" },
+    robots: robotsForContentPresence(hasContent),
+    openGraph: {
+      title: "Сувениры Иркутска — коллекция Иркпортала",
+      description:
+        "Раздел сувениров сохраняется в архитектуре проекта и наполнится после публикации.",
+      url: "/souvenirs",
+    },
+  };
+}
 
 export default async function SouvenirsPage() {
   const [products, makers] = await Promise.all([

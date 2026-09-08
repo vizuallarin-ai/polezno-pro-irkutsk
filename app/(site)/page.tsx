@@ -17,16 +17,20 @@ import { CURATED_FALLBACKS } from "@/lib/visual-assets";
 import { formatPhotoPlaceLabel, formatPhotoYearLabel } from "@/lib/photo-adapter";
 import { BRAND } from "@/lib/brand-constants";
 import { CTA, assistWalkHref } from "@/lib/cta-constants";
+import { absoluteTitle } from "@/lib/seo/title";
+import { canonicalAlternate } from "@/lib/seo/canonical";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
+  const title = `${settings.projectName} — ${settings.footerTagline}`;
   return {
-    title: `${settings.projectName} — ${settings.footerTagline}`,
+    title: absoluteTitle(title),
     description: settings.metaDescription,
-    alternates: { canonical: "/" },
+    alternates: canonicalAlternate("/"),
     openGraph: {
       title: settings.projectName,
       description: settings.description,
+      url: "/",
       ...(settings.ogImageUrl ? { images: [{ url: settings.ogImageUrl }] } : {}),
     },
   };

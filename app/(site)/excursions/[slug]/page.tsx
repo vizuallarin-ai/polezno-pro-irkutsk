@@ -10,6 +10,7 @@ import {
   excursionCoverUrl,
   formatExcursionDuration,
   getExcursionBySlug,
+  getPublishedExcursionSlugs,
 } from "@/lib/excursions";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -23,12 +24,19 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const slugs = await getPublishedExcursionSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const excursion = await getExcursionBySlug(slug);
-  if (!excursion) return { title: "Экскурсия не найдена" };
+  if (!excursion) notFound();
   const site = await getSiteSettings();
   return buildPageMetadata(
     {
@@ -72,7 +80,7 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
           }),
           breadcrumbSchema([
             { label: "Главная", href: "/" },
-            { label: "Экскурсии", href: "/map?filter=guided" },
+            { label: "Маршруты и экскурсии", href: "/map" },
             { label: excursion.title, href: `/excursions/${excursion.slug}` },
           ]),
         ]}
@@ -80,7 +88,7 @@ export default async function ExcursionDetailPage({ params }: PageProps) {
       <ExcursionViewTracker slug={excursion.slug} title={excursion.title} />
       <div className="mx-auto max-w-3xl px-6 lg:px-8 py-12">
         <Link
-          href="/map?filter=guided"
+          href="/map"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft size={14} />

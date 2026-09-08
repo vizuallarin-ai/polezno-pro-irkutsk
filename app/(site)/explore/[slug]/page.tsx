@@ -29,6 +29,7 @@ import {
 import {
   getExploreMaterial,
   getExploreMaterialsByCategory,
+  getPublishedExploreStaticParams,
   getSimilarExploreMaterials,
 } from "@/lib/explore";
 import { getExcursionBySlug } from "@/lib/excursions";
@@ -45,6 +46,12 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  return getPublishedExploreStaticParams();
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -55,15 +62,17 @@ export async function generateMetadata({
     return {
       title: categoryPageTitle(meta.label),
       description: meta.seoDescription,
+      alternates: { canonical: `/explore/${slug}` },
       openGraph: {
         title: categoryPageTitle(meta.label),
         description: meta.seoDescription,
+        url: `/explore/${slug}`,
       },
     };
   }
 
   const article = await getExploreMaterial(slug);
-  if (!article) return { title: "Страница не найдена" };
+  if (!article) notFound();
 
   const site = await getSiteSettings();
   return buildPageMetadata(
@@ -77,7 +86,8 @@ export async function generateMetadata({
       coverUrl: article.coverUrl,
     },
     String(article.title),
-    site
+    site,
+    { path: `/explore/${article.slug}`, ogType: "article" }
   );
 }
 
@@ -149,6 +159,8 @@ export default async function ExploreSlugPage({ params }: PageProps) {
     url: `${BASE_URL}/explore/${article.slug}`,
     imageUrl: article.coverUrl,
     publishedAt: article.publishedAt,
+    updatedAt: article.updatedAt,
+    authorName: article.authorName || undefined,
   });
   const breadcrumb = breadcrumbSchema([
     { label: "Главная", href: "/" },

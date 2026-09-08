@@ -12,7 +12,6 @@ import { breadcrumbSchema } from "@/lib/jsonld";
 import { PHOTO_RIGHTS_LABELS } from "@/lib/content-labels";
 import { buildPageMetadata } from "@/lib/seo-metadata";
 import { getSiteSettings } from "@/lib/site-settings";
-import { getSiteUrl } from "@/lib/site-url";
 import {
   getArPostcardBySlug,
   getPublishedArPostcardSlugs,
@@ -25,6 +24,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const slugs = await getPublishedArPostcardSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -33,7 +34,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const postcard = await getArPostcardBySlug(slug);
-  if (!postcard) return { title: "Открытка не найдена", robots: { index: false } };
+  if (!postcard) notFound();
 
   const site = await getSiteSettings();
   return buildPageMetadata(
@@ -48,7 +49,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       coverUrl: postcard.coverImageUrl || postcard.postcardImageUrl || undefined,
     },
     postcard.title,
-    site
+    site,
+    { path: `/ar-postcards/${postcard.slug}` }
   );
 }
 
@@ -57,7 +59,6 @@ export default async function ArPostcardDetailPage({ params }: PageProps) {
   const postcard = await getArPostcardBySlug(slug);
   if (!postcard) notFound();
 
-  const BASE_URL = getSiteUrl();
   const breadcrumb = breadcrumbSchema([
     { label: "Главная", href: "/" },
     { label: "AR-открытки", href: "/ar-postcards" },

@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Политика обработки персональных данных",
   description:
     "Политика обработки персональных данных проекта Иркпортал (irkportal.ru).",
+  alternates: { canonical: "/privacy" },
   robots: { index: true, follow: true },
 };
 

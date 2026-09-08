@@ -104,6 +104,12 @@ export async function getExcursionBySlug(
   }
 }
 
+/** Slugs for SSG: published-ready excursions only. */
+export async function getPublishedExcursionSlugs(): Promise<string[]> {
+  const list = await getPublishedExcursions();
+  return list.map((e) => e.slug);
+}
+
 function mapExcursionDoc(doc: Record<string, unknown>): ExcursionDoc {
   const relatedRoutes = Array.isArray(doc.relatedRoutes)
     ? doc.relatedRoutes

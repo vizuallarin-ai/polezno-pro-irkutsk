@@ -6,12 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { PrelaunchState } from "@/components/prelaunch/prelaunch-state";
 import { isPublicPublishedReady } from "@/lib/content-readiness";
 import { BRAND } from "@/lib/brand-constants";
+import { robotsForContentPresence } from "@/lib/seo/robots-policy";
 
-export const metadata: Metadata = {
-  title: "Гиды — Иркпортал",
-  description:
-    "Авторы маршрутов и экскурсий Иркпортала. Профили публикуются после редакционной подготовки.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const guides = await getGuides();
+  return {
+    title: "Гиды",
+    description:
+      "Авторы маршрутов и экскурсий Иркпортала. Профили публикуются после редакционной подготовки.",
+    alternates: { canonical: "/about/guides" },
+    robots: robotsForContentPresence(guides.length > 0),
+  };
+}
 
 const SPEC_LABELS: Record<string, string> = {
   history: "История",

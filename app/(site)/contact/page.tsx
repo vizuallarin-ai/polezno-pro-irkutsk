@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Контакты — подобрать прогулку",
   description:
     "Напишите Алёне Ямщиковой: подберём самостоятельный маршрут или формат с Алёной. Для корпоративных программ — отдельный раздел «Для бизнеса».",
+  alternates: { canonical: "/contact" },
 };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;

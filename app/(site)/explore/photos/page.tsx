@@ -8,12 +8,17 @@ import { getPublishedPhotos } from "@/lib/photos";
 import type { PhotoCategory, PhotoType } from "@/types/photos";
 import { PhotosPageClient } from "@/components/photos/photos-page-client";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
+import { robotsForContentPresence } from "@/lib/seo/robots-policy";
 
-export const metadata: Metadata = {
-  title: PHOTOS_PAGE_TITLE,
-  description: PHOTOS_PAGE_DESCRIPTION,
-  alternates: { canonical: "/explore/photos" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const photos = await getPublishedPhotos();
+  return {
+    title: PHOTOS_PAGE_TITLE,
+    description: PHOTOS_PAGE_DESCRIPTION,
+    alternates: { canonical: "/explore/photos" },
+    robots: robotsForContentPresence(photos.length > 0),
+  };
+}
 
 interface PageProps {
   searchParams: Promise<{

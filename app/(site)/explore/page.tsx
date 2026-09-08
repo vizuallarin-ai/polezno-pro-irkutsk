@@ -21,9 +21,11 @@ import { getRoutesForMap } from "@/lib/routes";
 export const metadata: Metadata = {
   title: EXPLORE_PAGE_TITLE,
   description: EXPLORE_PAGE_DESCRIPTION,
+  alternates: { canonical: "/explore" },
   openGraph: {
     title: EXPLORE_PAGE_TITLE,
     description: EXPLORE_PAGE_DESCRIPTION,
+    url: "/explore",
   },
 };
 

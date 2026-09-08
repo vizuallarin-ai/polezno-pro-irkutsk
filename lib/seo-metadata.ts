@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
+import { absoluteCanonical, canonicalAlternate, normalizeCanonicalPath } from "@/lib/seo/canonical";
+import { pageTitle } from "@/lib/seo/title";
 
 type MediaLike = { url?: string | null } | string | number | null | undefined;
 
@@ -40,20 +43,25 @@ function absoluteUrl(url: string | undefined): string | undefined {
   return `${base}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
+/**
+ * SEO title for entity pages.
+ * Uses seo.title when present; otherwise the real title.
+ * Does not append the brand — layout `title.template` owns the suffix.
+ */
 export function getMetaTitle(
   doc: SeoDoc,
   fallbackTitle: string,
   site?: SiteSeoDefaults
 ): string {
-  const seoTitle = doc.seo?.title?.trim();
-  if (seoTitle) return seoTitle;
-  const siteName = site?.projectName?.trim();
-  if (siteName && fallbackTitle) {
-    return `${fallbackTitle} — ${siteName}`;
-  }
-  return fallbackTitle;
+  void site;
+  return pageTitle(doc.seo?.title, fallbackTitle || String(doc.title || ""));
 }
 
+/**
+ * Description fallback contract for CONTENT.1:
+ * seo.description → excerpt / shortDescription / description → site default → "".
+ * Never invent marketing claims.
+ */
 export function getMetaDescription(
   doc: SeoDoc,
   site?: SiteSeoDefaults
@@ -92,29 +100,33 @@ export function buildPageMetadata(
   doc: SeoDoc,
   fallbackTitle: string,
   site?: SiteSeoDefaults,
-  options?: { path?: string }
-) {
+  options?: {
+    path?: string;
+    robots?: Metadata["robots"];
+    ogType?: "website" | "article";
+  }
+): Metadata {
   const title = getMetaTitle(doc, fallbackTitle, site);
   const description = getMetaDescription(doc, site);
   const image = getOgImage(doc, site) ?? absoluteUrl("/og-default.jpg");
   const canonicalPath = options?.path
-    ? options.path.startsWith("/")
-      ? options.path
-      : `/${options.path}`
+    ? normalizeCanonicalPath(options.path)
     : undefined;
 
   return {
     title,
     description,
-    ...(canonicalPath
-      ? { alternates: { canonical: canonicalPath } }
-      : {}),
+    ...(canonicalPath ? { alternates: canonicalAlternate(canonicalPath) } : {}),
+    ...(options?.robots ? { robots: options.robots } : {}),
     openGraph: {
+      type: options?.ogType ?? "website",
       title,
       description,
+      locale: "ru_RU",
+      siteName: site?.projectName?.trim() || "Иркпортал",
       ...(image ? { images: [{ url: image }] } : {}),
       ...(canonicalPath
-        ? { url: `${getSiteUrl()}${canonicalPath}` }
+        ? { url: absoluteCanonical(canonicalPath) }
         : {}),
     },
     twitter: {

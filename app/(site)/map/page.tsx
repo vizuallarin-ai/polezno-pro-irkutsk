@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Маршруты и экскурсии по Иркутску — интерактивная карта",
   description:
     "Готовые маршруты по Иркутску на карте и авторские экскурсии с гидом. Самостоятельные прогулки, форматы с сопровождением и корпоративные программы.",
+  alternates: { canonical: "/map" },
 };
 
 export default async function MapPage() {

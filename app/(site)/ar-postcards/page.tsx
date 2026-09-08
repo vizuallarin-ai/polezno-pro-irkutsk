@@ -7,17 +7,24 @@ import { PostcardCard } from "@/components/ar-postcards/postcard-card";
 import { getFeaturedArPostcards, getPublishedArPostcards } from "@/lib/ar-postcards";
 import { ContactCtaSection } from "@/components/contact/contact-cta-section";
 import { CTA, buildContactHref } from "@/lib/cta-constants";
+import { robotsForContentPresence } from "@/lib/seo/robots-policy";
 
-export const metadata: Metadata = {
-  title: "Ожившие открытки Иркутска — AR-открытки и цифровые истории",
-  description:
-    "Физические открытки с QR-кодом: видео, аудиоистории и цифровые слои про Иркутск. Заказ по заявке — без приложения и без штампов.",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  const all = await getPublishedArPostcards();
+  return {
     title: "Ожившие открытки Иркутска — AR-открытки и цифровые истории",
     description:
-      "Отсканируйте QR на открытке — откроется история, маршрут и сувениры Иркпортала.",
-  },
-};
+      "Физические открытки с QR-кодом: видео, аудиоистории и цифровые слои про Иркутск. Заказ по заявке — без приложения и без штампов.",
+    alternates: { canonical: "/ar-postcards" },
+    robots: robotsForContentPresence(all.length > 0),
+    openGraph: {
+      title: "Ожившие открытки Иркутска — AR-открытки и цифровые истории",
+      description:
+        "Отсканируйте QR на открытке — откроется история, маршрут и сувениры Иркпортала.",
+      url: "/ar-postcards",
+    },
+  };
+}
 
 const STEPS = [
   {

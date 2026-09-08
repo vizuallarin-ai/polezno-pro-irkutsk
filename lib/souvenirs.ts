@@ -101,19 +101,23 @@ export async function getProductBySlug(slug: string): Promise<SouvenirProduct | 
 
 export async function getPublishedMakers(limit = 50): Promise<SouvenirMaker[]> {
   if (!process.env.DATABASE_URL) return [];
-  const { getPayloadClient } = await import("@/lib/payload");
-  const payload = await getPayloadClient();
-  const result = await payload.find({
-    collection: "makers",
-    where: MAKER_PUBLISHED_WHERE,
-    limit,
-    sort: "-updatedAt",
-    depth: 1,
-  });
-  return result.docs
-    .map((doc) => mapMakerRef(doc))
-    .filter((m): m is SouvenirMaker => m !== null)
-    .filter(isReadyMaker);
+  try {
+    const { getPayloadClient } = await import("@/lib/payload");
+    const payload = await getPayloadClient();
+    const result = await payload.find({
+      collection: "makers",
+      where: MAKER_PUBLISHED_WHERE,
+      limit,
+      sort: "-updatedAt",
+      depth: 1,
+    });
+    return result.docs
+      .map((doc) => mapMakerRef(doc))
+      .filter((m): m is SouvenirMaker => m !== null)
+      .filter(isReadyMaker);
+  } catch {
+    return [];
+  }
 }
 
 export async function getMakerBySlug(slug: string): Promise<SouvenirMaker | null> {

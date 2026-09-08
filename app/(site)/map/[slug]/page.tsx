@@ -9,10 +9,14 @@ import { getRoutePageData, getPublishedRouteSlugs } from "@/lib/routes";
 import { getProductsForRoute } from "@/lib/souvenirs";
 import { breadcrumbSchema, touristTripSchema } from "@/lib/jsonld";
 import { getSiteUrl } from "@/lib/site-url";
+import { buildPageMetadata } from "@/lib/seo-metadata";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+/** Unknown slugs 404 at the routing layer (avoids streamed soft-404 200). */
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const slugs = await getPublishedRouteSlugs();
@@ -22,13 +26,18 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const { route } = await getRoutePageData(slug);
-  if (!route) return { title: "Маршрут не найден", robots: { index: false } };
+  if (!route) notFound();
 
-  return {
-    title: `${route.title} — маршрут по Иркутску`,
-    description: route.description,
-    alternates: { canonical: `/map/${route.slug}` },
-  };
+  return buildPageMetadata(
+    {
+      title: route.title,
+      description: route.description,
+      coverUrl: route.coverImage,
+    },
+    `${route.title} — маршрут по Иркутску`,
+    undefined,
+    { path: `/map/${route.slug}` }
+  );
 }
 
 export default async function RouteDetailPage({ params }: PageProps) {

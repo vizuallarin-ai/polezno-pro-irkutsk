@@ -5,16 +5,18 @@ import {
 } from "@/lib/content-readiness";
 import { allowDemoFallback } from "@/lib/demo-fallback";
 import {
+  DEMO_EXPLORE_MATERIALS,
   getDemoExploreMaterial,
   getDemoExploreMaterialsByCategory,
   getFeaturedDemoMaterials,
   type ExploreMaterial,
 } from "@/lib/data/explore-materials";
 import { getDemoRouteBySlug } from "@/lib/data/routes";
-import { isExploreCategorySlug } from "@/lib/explore-constants";
+import { EXPLORE_CATEGORIES, isExploreCategorySlug } from "@/lib/explore-constants";
 
 export type ExploreMaterialView = ExploreMaterial & {
   source: "cms" | "demo";
+  updatedAt?: string;
   relatedRoute?: {
     slug: string;
     title: string;
@@ -119,6 +121,7 @@ function mapCmsDoc(doc: CmsArticleDoc): ExploreMaterialView | null {
         ? String(doc.author)
         : undefined,
     publishedAt: doc.publishedAt ? String(doc.publishedAt) : undefined,
+    updatedAt: doc.updatedAt ? String(doc.updatedAt) : undefined,
     seoTitle: doc.seo?.title ? String(doc.seo.title) : undefined,
     seoDescription: doc.seo?.description ? String(doc.seo.description) : undefined,
     source: "cms",
@@ -306,4 +309,38 @@ export async function getSimilarExploreMaterials(
     filled.push(item);
   }
   return filled.slice(0, limit);
+}
+
+/**
+ * SSG params for /explore/[slug]: category hubs + published-ready articles
+ * (demo slugs only when allowDemoFallback).
+ */
+export async function getPublishedExploreStaticParams(): Promise<
+  Array<{ slug: string }>
+> {
+  const slugs = new Set<string>(EXPLORE_CATEGORIES.map((c) => c.slug));
+
+  const payload = await getPayloadSafe();
+  if (payload) {
+    try {
+      const result = await payload.find({
+        collection: "articles",
+        where: ARTICLE_PUBLISHED_WHERE,
+        limit: 1000,
+        depth: 0,
+      });
+      for (const doc of result.docs as CmsArticleDoc[]) {
+        if (!isReadyCmsArticle(doc)) continue;
+        if (doc.slug) slugs.add(String(doc.slug));
+      }
+    } catch {
+      /* categories still SSG */
+    }
+  } else if (allowDemoFallback()) {
+    for (const m of DEMO_EXPLORE_MATERIALS) {
+      slugs.add(m.slug);
+    }
+  }
+
+  return [...slugs].map((slug) => ({ slug }));
 }

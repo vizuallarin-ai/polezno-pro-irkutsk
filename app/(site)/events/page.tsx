@@ -5,12 +5,19 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, MapPin, Ticket } from "lucide-react";
 import { EVENT_CATEGORY_LABELS } from "@/lib/content-labels";
+import { robotsForContentPresence } from "@/lib/seo/robots-policy";
 
-export const metadata: Metadata = {
-  title: "События в Иркутске — фестивали, концерты, выставки",
-  description:
-    "Календарь событий Иркутска: фестивали, концерты, выставки, ледовые события и гастрономические мероприятия.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { upcoming, past } = await getEvents();
+  const hasAny = upcoming.length > 0 || past.length > 0;
+  return {
+    title: "События в Иркутске — фестивали, концерты, выставки",
+    description:
+      "Календарь событий Иркутска: фестивали, концерты, выставки, ледовые события и гастрономические мероприятия.",
+    alternates: { canonical: "/events" },
+    robots: robotsForContentPresence(hasAny),
+  };
+}
 
 
 async function getEvents() {

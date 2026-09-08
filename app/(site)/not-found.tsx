@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: "Страница не найдена | Иркпортал",
+  },
+  description: "Запрашиваемая страница не существует.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

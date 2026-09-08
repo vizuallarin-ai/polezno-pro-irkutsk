@@ -10,7 +10,11 @@ import { getNavigation } from "@/lib/navigation";
 import { getSiteSettings } from "@/lib/site-settings";
 import { contactsForDisplay } from "@/lib/contact-display";
 import { getSiteUrl } from "@/lib/site-url";
-import { organizationSchema } from "@/lib/jsonld";
+import {
+  organizationSchema,
+  serializeJsonLd,
+  websiteSchema,
+} from "@/lib/jsonld";
 import { BOOSTY_URL, TELEGRAM_URL } from "@/lib/site-links";
 import "../globals.css";
 
@@ -49,17 +53,6 @@ export const metadata: Metadata = {
   },
   description:
     "Иркпортал: авторские маршруты, экскурсии и материалы об Иркутске без туристических штампов.",
-  keywords: [
-    "Иркутск",
-    "Иркпортал",
-    "маршруты",
-    "экскурсии",
-    "путешествия",
-    "Байкал",
-  ],
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "ru_RU",
@@ -77,6 +70,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Иркпортал — авторский навигатор по Иркутску",
+    description:
+      "Иркпортал: авторские маршруты, экскурсии и материалы об Иркутске без туристических штампов.",
     images: ["/og-default.jpg"],
   },
   robots: {
@@ -108,8 +103,11 @@ export default async function SiteLayout({
   const orgSchema = organizationSchema({
     name: settings.projectName,
     description: settings.description,
-    email: contact.email || undefined,
     sameAs,
+  });
+  const siteSchema = websiteSchema({
+    name: settings.projectName,
+    description: settings.description,
   });
 
   return (
@@ -122,7 +120,7 @@ export default async function SiteLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(orgSchema).replace(/</g, "\\u003c"),
+            __html: serializeJsonLd([orgSchema, siteSchema]),
           }}
         />
       </head>
