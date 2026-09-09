@@ -163,28 +163,45 @@ IF FAIL → follow script rollback / ABORT
 
 ---
 
-## 8. Process reload
+## 8. Process reload (OBS.1 — do NOT use bare pm2 restart)
+
+**Incident history:** `pm2 restart` with `script: npm / args: start` left orphan `next-server` on `:3000` → `EADDRINUSE` → restart storm. See `docs/incidents/2026-09-09-pm2-eaddrinuse.md`.
 
 ```bash
-COMMAND: cd /var/www/polezno-current && pm2 restart polezno --update-env
-EXPECTED: pm2 show polezno → online, cwd=…/polezno-current
-IF FAIL → point current back to PREVIOUS; pm2 restart; escalate
+COMMAND: EXPECTED_SHA="$SHA" bash /var/www/polezno-current/scripts/runtime-restart-safe.sh
+EXPECTED: exit 0; health commitSha=$SHA; port :3000 owned by Next under polezno paths
+IF FAIL → do not hammer pm2 restart; follow EADDRINUSE procedure in PRODUCTION_INCIDENT_RUNBOOK.md; rollback symlink if needed
 ```
 
-Downtime class: **short restart window** (single process restart — not zero-downtime).
+Fallback only if safe script missing on an old release tree (copy from engineering branch first):
+
+```bash
+COMMAND: pm2 stop polezno; ss -ltnp | grep ':3000'   # must be free or expected orphan only
+COMMAND: # then pm2 start /var/www/polezno-current/ecosystem.config.cjs --only polezno --env production
+```
+
+`ecosystem.config.cjs` must use **direct** `node_modules/next/dist/bin/next` (not npm wrapper).
+
+Downtime class: **short restart window** (single process — not zero-downtime).
+`PM2 online ≠ ready` — wait for `/api/health`.
+
+Pre-switch alternate-port smoke: prefer `node scripts/preswitch-smoke-server.mjs --port 3912 --expect-sha "$SHA" --smoke` (trap cleanup).
 
 ---
 
 ## 9. Post-switch health + smoke
 
 ```bash
-COMMAND: sleep 4; curl -sf http://127.0.0.1:3000/api/health
-EXPECTED: commitSha=$SHA, database=up, HTTP 200
-IF FAIL → CODE ROLLBACK to PREVIOUS immediately
+COMMAND: curl -sf http://127.0.0.1:3000/api/health
+EXPECTED: commitSha=$SHA, database=up, app=up, HTTP 200
+IF FAIL → CODE ROLLBACK to PREVIOUS immediately (safe restart after symlink retarget)
 
 COMMAND: EXPECTED_GIT_SHA=$SHA SITE_URL=https://irkportal.ru npm run release:smoke
 EXPECTED: all routes pass
 IF FAIL → ROLLBACK
+
+COMMAND: npm run ops:check   # when OBS.1 scripts present on tree
+EXPECTED: OVERALL != UNHEALTHY
 ```
 
 ---
@@ -195,10 +212,10 @@ IF FAIL → ROLLBACK
 COMMAND: PREV=/var/www/polezno-releases/<previous40hex>
 COMMAND: test -d "$PREV/.next" && test -e "$PREV/.env.production" && test -L "$PREV/public/media"
 COMMAND: ln -sfn "$PREV" /var/www/polezno-current.new && mv -Tf /var/www/polezno-current.new /var/www/polezno-current
-COMMAND: pm2 restart polezno --update-env
+COMMAND: EXPECTED_SHA="$(basename "$PREV")" bash "$PREV/scripts/runtime-restart-safe.sh" || EXPECTED_SHA="$(basename "$PREV")" bash /var/www/polezno-current/scripts/runtime-restart-safe.sh
 COMMAND: curl -sf http://127.0.0.1:3000/api/health
 EXPECTED: commitSha of PREVIOUS, database=up
-IF FAIL → check nginx, pm2 logs, Postgres; do not keep half-switched state
+IF FAIL → check nginx, pm2 logs, Postgres; EADDRINUSE runbook; do not keep half-switched state
 ```
 
 ---
@@ -222,7 +239,8 @@ IF FAIL → stop; never force-delete
 | 502 | nginx error log → `pm2 list` → app listening :3000 |
 | 500 | `pm2 logs polezno` → Payload/Next stack |
 | health 503 / database=down | Postgres service, `DATABASE_URL`, shared env symlink |
-| health SHA mismatch | wrong current symlink / stale PM2 cwd |
+| health SHA mismatch | orphan next-server or wrong symlink — see PRODUCTION_INCIDENT_RUNBOOK EADDRINUSE |
+| EADDRINUSE / restart storm | `ss -ltnp :3000` → stop PM2 → free expected orphan → safe start (never killall node) |
 | Turbopack media panic | media symlink present during build — rebuild without it |
 | disk full mid-build | abort; do not switch; free space; delete incomplete release dir |
 

@@ -79,8 +79,9 @@ ln -sfn "$SHARED/media" public/media
 ln -sfn "$REL" /var/www/polezno-current.new
 mv -Tf /var/www/polezno-current.new /var/www/polezno-current
 cd /var/www/polezno-current
-pm2 restart polezno --update-env
-sleep 4
+# OBS.1: prefer safe restart (not bare pm2 restart — orphan next-server risk)
+EXPECTED_SHA="$SHA" bash scripts/runtime-restart-safe.sh
+# fallback only if script absent on tree: see docs/PRODUCTION_RELEASE_RUNBOOK.md §8
 curl -s http://127.0.0.1:3000/api/health
 ```
 
@@ -90,13 +91,13 @@ curl -s http://127.0.0.1:3000/api/health
 
 1. Create/checkout release dir  
 2. Link `.env.production`  
-3. Ensure `public/media` is **absent** (not a symlink)  
-4. `npm ci` + `next build`  
-5. `ln -sfn /var/www/polezno-shared/media public/media`  
-6. Atomic `polezno-current` switch + `pm2 restart`  
-7. Smoke  
+3. Ensure `public/media` is **absent** (not a symlink)
+4. `npm ci` + `next build`
+5. `ln -sfn /var/www/polezno-shared/media public/media`
+6. Atomic `polezno-current` switch + `runtime-restart-safe.sh`
+7. Smoke
 
-If media is linked during build, Turbopack may panic:  
+If media is linked during build, Turbopack may panic:
 `Symlink public/media/... points out of the filesystem root`.
 
 ---
@@ -116,8 +117,7 @@ readlink -f "$PREV/public/media"   # must be /var/www/polezno-shared/media
 ln -sfn "$PREV" /var/www/polezno-current.new
 mv -Tf /var/www/polezno-current.new /var/www/polezno-current
 cd /var/www/polezno-current
-pm2 restart polezno --update-env
-sleep 4
+EXPECTED_SHA="$(basename "$PREV")" bash scripts/runtime-restart-safe.sh
 curl -s http://127.0.0.1:3000/api/health
 # expect commitSha of PREV
 ```
