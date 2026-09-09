@@ -95,6 +95,8 @@ Symptoms: restart_time climbing fast; error log filled with EADDRINUSE or boot c
 
 ## EADDRINUSE / port 3000 occupied
 
+**OPS.2:** production PM2 owns direct Next (`next-server` is the PM2 PID). Prefer `EXPECTED_SHA=… bash scripts/runtime-restart-safe.sh`.
+
 1. `ss -ltnp | grep :3000` → pid.
 2. `tr '\\0' ' ' < /proc/$PID/cmdline` and `readlink /proc/$PID/cwd`.
 3. Confirm user/path look like IrkPortal Next under `polezno-current` or `polezno-releases/*`.

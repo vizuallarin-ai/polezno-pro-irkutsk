@@ -10,6 +10,8 @@ GATE OBS.1 CLOSED / PM2-NEXT LIFECYCLE ROOT CAUSE RESOLVED / ORPHAN PROCESS PATH
 
 Live PM2 dump still runs the **legacy npm wrapper** until an authorized OPS.2 runtime apply (`runtime-restart-safe.sh`). Code + fixtures prove the fixed contract.
 
+**OPS.2 update (2026-09-09):** direct-Next PM2 runtime is **LIVE VERIFIED**; npm wrapper **retired**; safe restart **LIVE VERIFIED**; backup cron **installed** (`/etc/cron.d/polezno-backup`). See [OPS_2_RUNTIME_HARDENING_RELEASE.md](./OPS_2_RUNTIME_HARDENING_RELEASE.md).
+
 ---
 
 ## 1. Baseline

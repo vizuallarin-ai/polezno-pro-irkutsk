@@ -8,6 +8,7 @@
  * Keep in sync with lib/runtime-lifecycle.mjs `buildPoleznoPm2App()`.
  * Live dump may still run npm wrapper until OPS.2 applies this file via
  * scripts/runtime-restart-safe.sh (no silent production restart in OBS.1).
+ * OPS.2 (2026-09-09): direct-Next applied live; `pm2 save` persists this contract.
  */
 module.exports = {
   apps: [

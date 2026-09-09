@@ -1,6 +1,6 @@
 # Production Release Runbook — IrkPortal
 
-For another engineer to deploy **after owner authorization**.  
+For another engineer to deploy **after owner authorization**.
 This is not permission to deploy. Default is dry-run / abort.
 
 Related: [RELEASE_1_PRODUCTION_READINESS.md](./RELEASE_1_PRODUCTION_READINESS.md), [OPS_1_PRODUCTION_RUNBOOK.md](./OPS_1_PRODUCTION_RUNBOOK.md), [immutable-release-deploy.md](./immutable-release-deploy.md).
@@ -167,6 +167,8 @@ IF FAIL → follow script rollback / ABORT
 
 **Incident history:** `pm2 restart` with `script: npm / args: start` left orphan `next-server` on `:3000` → `EADDRINUSE` → restart storm. See `docs/incidents/2026-09-09-pm2-eaddrinuse.md`.
 
+**OPS.2 (2026-09-09):** production now runs **direct** `node_modules/next/dist/bin/next start`. Safe restart is **live-proven**. Do not reintroduce npm wrapper.
+
 ```bash
 COMMAND: EXPECTED_SHA="$SHA" bash /var/www/polezno-current/scripts/runtime-restart-safe.sh
 EXPECTED: exit 0; health commitSha=$SHA; port :3000 owned by Next under polezno paths
@@ -265,7 +267,7 @@ IF FAIL → investigate API/DB; do not leave test PII
 
 ## 14. Explicit non-goals
 
-- No merge to master from this runbook alone  
-- No DNS / secret rotation unless separately approved  
-- No owner content ingest in the same change window as code switch  
-- No `npm run deploy:prod` without legacy emergency flags  
+- No merge to master from this runbook alone
+- No DNS / secret rotation unless separately approved
+- No owner content ingest in the same change window as code switch
+- No `npm run deploy:prod` without legacy emergency flags
