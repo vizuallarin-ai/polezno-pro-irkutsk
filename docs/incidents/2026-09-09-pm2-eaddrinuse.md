@@ -1,8 +1,8 @@
 # Incident: PM2 EADDRINUSE / orphan next-server
 
-**Date:** 2026-09-09 (UTC)  
-**Host:** `root@90.156.170.182`  
-**App:** IrkPortal `polezno`  
+**Date:** 2026-09-09 (UTC)
+**Host:** `root@90.156.170.182`
+**App:** IrkPortal `polezno`
 **During:** SEO.1 + PERF.1 production cutover → TARGET `b3a51ba…`
 
 ---

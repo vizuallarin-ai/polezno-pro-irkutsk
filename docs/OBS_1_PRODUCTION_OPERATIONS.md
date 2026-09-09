@@ -1,7 +1,7 @@
 # OBS.1 — Production Operations / Runtime Observability
 
-**Date (UTC):** 2026-09-09  
-**Branch:** `phase15-ux-funnel-hardening`  
+**Date (UTC):** 2026-09-09
+**Branch:** `phase15-ux-funnel-hardening`
 **Live application SHA (unchanged):** `b3a51ba8500bb03b5f1124feab567bee3a313824`
 
 ```text
@@ -116,7 +116,7 @@ npm run ops:status
 npm run ops:check
 ```
 
-Probes public `/api/health` (and local when on VPS).  
+Probes public `/api/health` (and local when on VPS).
 `PM2 online ≠ ready` — readiness = health 200 + app/database up + commitSha.
 
 ---
@@ -197,5 +197,5 @@ See [PRODUCTION_INCIDENT_RUNBOOK.md](./PRODUCTION_INCIDENT_RUNBOOK.md).
 
 ## 16. Gate status
 
-Closed for engineering contract + observability + fixtures.  
+Closed for engineering contract + observability + fixtures.
 **Next:** `OPS.2` — apply ecosystem + `runtime-restart-safe` + backup cron on production without app feature deploy.
