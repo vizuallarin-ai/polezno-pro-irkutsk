@@ -15,9 +15,9 @@
 | `master` touched | **no** |
 | Starting local HEAD | `f603d33e826b521ee813c9b6316c1e83c13554dd` |
 | Starting remote HEAD | `95ba8d0c83512f410c0d29342ed0d2cae20f4dc9` |
-| Final local HEAD | `f603d33e826b521ee813c9b6316c1e83c13554dd` |
-| Final remote HEAD | `f603d33e826b521ee813c9b6316c1e83c13554dd` |
-| Equality | **LOCAL HEAD == REMOTE BRANCH HEAD** |
+| Push SHA (ADMIN.E history) | `f603d33e826b521ee813c9b6316c1e83c13554dd` |
+| Final closeout tip (local=remote after final push) | `800e654b45b8576f52da5fcc075990e6e3d59dbf` |
+| Equality | **LOCAL HEAD == REMOTE BRANCH HEAD** (after authorized non-force pushes) |
 
 ## History on origin (includes)
 

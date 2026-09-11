@@ -34,7 +34,7 @@ Offsite destination/credentials are absent on production and on the operator hos
 | Branch | `phase15-ux-funnel-hardening` |
 | Starting local HEAD | `f603d33e826b521ee813c9b6316c1e83c13554dd` |
 | Starting remote HEAD | `95ba8d0c83512f410c0d29342ed0d2cae20f4dc9` |
-| Final local/remote HEAD | `f603d33…` then closeout commit (see git section after push) |
+| Final local/remote HEAD | `800e654b45b8576f52da5fcc075990e6e3d59dbf` |
 | Production SHA before/after | `b3a51ba8500bb03b5f1124feab567bee3a313824` |
 | Worktree | tracked clean; unrelated untracked leftovers ignored |
 
