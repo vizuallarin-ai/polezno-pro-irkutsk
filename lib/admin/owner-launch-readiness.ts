@@ -21,6 +21,9 @@ import {
   adminCreatePath,
   adminEditPath,
   adminGlobalPath,
+  adminLeadsDueTodayHref,
+  adminLeadsOverdueHref,
+  adminLeadsUnscheduledHref,
 } from "@/lib/admin/admin-routes";
 
 export type ReadinessSeverity = "critical" | "high" | "medium" | "info";
@@ -62,12 +65,23 @@ export type ContentShelfCounts = {
 
 export type OwnerDashboardSnapshotInput = {
   leadsNew: number;
+  /** Active leads with nextContactAt in the past (never terminal). */
+  leadsOverdue: number;
+  /** Active leads scheduled for today (owner TZ), not yet past. */
+  leadsDueToday: number;
+  /** in_progress / replied / booked without nextContactAt. */
+  leadsUnscheduled: number;
   recentNewLeads: Array<{
     id: string | number;
     name: string;
     createdAt?: string | null;
     requestType?: string | null;
   }>;
+  /** Compact notify signal from env + site-settings (no extra query). */
+  leadNotify?: {
+    enabled: boolean;
+    envConfigured: boolean;
+  };
   excursions: ContentShelfCounts;
   routes: ContentShelfCounts;
   articles: ContentShelfCounts;
@@ -269,6 +283,20 @@ export function buildAttentionItems(
 ): AttentionItem[] {
   const items: AttentionItem[] = [];
 
+  if (input.leadsOverdue > 0) {
+    items.push({
+      id: "leads-overdue",
+      severity: "critical",
+      title:
+        input.leadsOverdue === 1
+          ? "Просрочен контакт по заявке"
+          : `Просроченных заявок: ${input.leadsOverdue}`,
+      detail: "Следующая связь уже прошла — свяжитесь или перенесите дату",
+      href: adminLeadsOverdueHref(),
+      cta: "Открыть просроченные",
+    });
+  }
+
   if (input.leadsNew > 0) {
     items.push({
       id: "leads-new",
@@ -280,6 +308,34 @@ export function buildAttentionItems(
       detail: "Ответьте гостю, пока заявка свежая",
       href: adminCollectionWhereEquals("leads", "status", "new"),
       cta: "Открыть заявки",
+    });
+  }
+
+  if (input.leadsDueToday > 0) {
+    items.push({
+      id: "leads-due-today",
+      severity: "high",
+      title:
+        input.leadsDueToday === 1
+          ? "Контакт по заявке сегодня"
+          : `Заявок на сегодня: ${input.leadsDueToday}`,
+      detail: "Запланированная связь на сегодня",
+      href: adminLeadsDueTodayHref(),
+      cta: "Открыть на сегодня",
+    });
+  }
+
+  if (input.leadsUnscheduled > 0) {
+    items.push({
+      id: "leads-unscheduled",
+      severity: "medium",
+      title:
+        input.leadsUnscheduled === 1
+          ? "Активная заявка без следующего шага"
+          : `Без следующего контакта: ${input.leadsUnscheduled}`,
+      detail: "Укажите дату следующей связи, чтобы заявка не потерялась",
+      href: adminLeadsUnscheduledHref(),
+      cta: "Открыть без шага",
     });
   }
 

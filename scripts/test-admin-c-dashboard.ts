@@ -44,6 +44,9 @@ function check(name: string, fn: () => void) {
 
 const emptySnapshot = (): OwnerDashboardSnapshotInput => ({
   leadsNew: 0,
+  leadsOverdue: 0,
+  leadsDueToday: 0,
+  leadsUnscheduled: 0,
   recentNewLeads: [],
   excursions: { published: 0, drafts: 0, publishedReady: 0 },
   routes: { published: 0, drafts: 0, publishedReady: 0 },
@@ -100,6 +103,22 @@ check("new leads create high attention", () => {
   const attention = buildAttentionItems(snap, readiness);
   assert.ok(attention.some((a) => a.id === "leads-new"));
   assert.equal(attention[0]?.id, "leads-new");
+});
+
+check("overdue leads outrank new leads in attention", () => {
+  const snap = emptySnapshot();
+  snap.leadsNew = 1;
+  snap.leadsOverdue = 2;
+  snap.contacts = { hasPhone: true, hasEmail: true, hasTelegram: true };
+  snap.excursions.publishedReady = 1;
+  snap.routes.publishedReady = 1;
+  snap.guides.publicReady = 1;
+  snap.reviews.publishedReady = 1;
+  snap.photos.publishedReady = 4;
+  const readiness = buildOwnerLaunchReadiness(snap);
+  const attention = buildAttentionItems(snap, readiness);
+  assert.equal(attention[0]?.id, "leads-overdue");
+  assert.ok(attention.some((a) => a.id === "leads-new"));
 });
 
 check("placeholder guide warning", () => {

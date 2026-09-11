@@ -1,29 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import {
+  adminLeadsDueTodayHref,
+  adminLeadsOverdueHref,
+  adminLeadsStatusHref,
+  adminLeadsUnscheduledHref,
+} from "@/lib/admin/admin-routes";
 
 const FILTERS = [
   { label: "Все", href: "/admin/collections/leads" },
-  {
-    label: "Новые",
-    href: "/admin/collections/leads?where[status][equals]=new",
-  },
-  {
-    label: "В работе",
-    href: "/admin/collections/leads?where[status][equals]=in_progress",
-  },
-  {
-    label: "Отвечено",
-    href: "/admin/collections/leads?where[status][equals]=replied",
-  },
-  {
-    label: "Закрыто",
-    href: "/admin/collections/leads?where[status][equals]=closed",
-  },
-  {
-    label: "Спам",
-    href: "/admin/collections/leads?where[status][equals]=spam",
-  },
+  { label: "Новые", href: adminLeadsStatusHref("new") },
+  { label: "Нужно связаться", href: adminLeadsStatusHref("in_progress") },
+  { label: "Просрочено", href: adminLeadsOverdueHref() },
+  { label: "Сегодня", href: adminLeadsDueTodayHref() },
+  { label: "Без следующего шага", href: adminLeadsUnscheduledHref() },
+  { label: "Обсуждение", href: adminLeadsStatusHref("replied") },
+  { label: "Забронировано", href: adminLeadsStatusHref("booked") },
+  { label: "Завершено", href: adminLeadsStatusHref("closed") },
+  { label: "Отказы", href: adminLeadsStatusHref("declined") },
+  { label: "Спам", href: adminLeadsStatusHref("spam") },
   {
     label: "Маршруты",
     href: "/admin/collections/leads?where[or][0][source][equals]=route&where[or][1][requestType][equals]=guided_route&where[or][2][requestType][equals]=route_request",
@@ -68,7 +64,13 @@ export default function LeadsListFilters() {
         border: "1px solid var(--theme-elevation-150)",
       }}
     >
-      <span style={{ fontSize: "13px", color: "var(--theme-elevation-500)", marginRight: "4px" }}>
+      <span
+        style={{
+          fontSize: "13px",
+          color: "var(--theme-elevation-500)",
+          marginRight: "4px",
+        }}
+      >
         Быстрый фильтр:
       </span>
       {FILTERS.map((filter) => (

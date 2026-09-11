@@ -5,6 +5,7 @@ import {
   resolveLeadPriority,
   type RequestType,
 } from "@/lib/leads-constants";
+import { omitCrmInternalFields } from "@/lib/leads/crm";
 
 export function buildTrackingFields(
   body: Record<string, unknown>,
@@ -100,34 +101,64 @@ export function buildUnifiedLeadData(
   source: string,
   referer: string | null
 ) {
-  const requestType = resolveRequestType(data as Record<string, unknown>);
-  const tracking = buildTrackingFields(data as Record<string, unknown>, referer);
-  const consent = buildConsentFields(data as Record<string, unknown>);
-  const message = sanitizeLeadText(data.message, 5000);
-  const contact = sanitizeLeadText(data.contact) || "";
-  const email = deriveEmailFromContact(contact, data.email);
-  const phone = sanitizeLeadText(data.phone);
-  const telegram = deriveTelegramFromContact(contact, data.telegram);
+  // Defence in depth: ignore any CRM-only keys if a client smuggles them in.
+  const safe = omitCrmInternalFields(data as Record<string, unknown>);
+  const requestType = resolveRequestType(safe);
+  const tracking = buildTrackingFields(safe, referer);
+  const consent = buildConsentFields(safe);
+  const message = sanitizeLeadText(
+    typeof safe.message === "string" ? safe.message : undefined,
+    5000
+  );
+  const contact =
+    sanitizeLeadText(typeof safe.contact === "string" ? safe.contact : "") ||
+    "";
+  const email = deriveEmailFromContact(
+    contact,
+    typeof safe.email === "string" ? safe.email : undefined
+  );
+  const phone = sanitizeLeadText(
+    typeof safe.phone === "string" ? safe.phone : undefined
+  );
+  const telegram = deriveTelegramFromContact(
+    contact,
+    typeof safe.telegram === "string" ? safe.telegram : undefined
+  );
 
   const priority = resolveLeadPriority({
     requestType,
-    company: sanitizeLeadText((data as Record<string, unknown>).company),
-    quantity: (data as Record<string, unknown>).quantity as number | undefined,
+    company: sanitizeLeadText(
+      typeof safe.company === "string" ? safe.company : undefined
+    ),
+    quantity:
+      typeof safe.quantity === "number" ? safe.quantity : undefined,
     message,
   });
 
   return {
-    name: sanitizeLeadText(data.name) || "Без имени",
+    name:
+      sanitizeLeadText(typeof safe.name === "string" ? safe.name : undefined) ||
+      "Без имени",
     contact,
     email,
     phone,
     telegram,
-    preferredContactMethod: data.preferredContactMethod || undefined,
+    preferredContactMethod:
+      typeof safe.preferredContactMethod === "string"
+        ? safe.preferredContactMethod
+        : undefined,
     message,
-    serviceType: data.serviceType || "general",
-    dates: sanitizeLeadText(data.dates),
-    groupSize: data.groupSize,
-    budget: sanitizeLeadText(data.budget),
+    serviceType:
+      typeof safe.serviceType === "string" ? safe.serviceType : "general",
+    dates: sanitizeLeadText(
+      typeof safe.dates === "string" ? safe.dates : undefined
+    ),
+    groupSize:
+      typeof safe.groupSize === "number" ? safe.groupSize : undefined,
+    budget: sanitizeLeadText(
+      typeof safe.budget === "string" ? safe.budget : undefined
+    ),
+    // Always force intake status — never from client body.
     status: "new" as const,
     source,
     sourceType: tracking.sourceType || undefined,

@@ -16,13 +16,21 @@ import {
 } from "@/lib/admin/owner-launch-readiness";
 import {
   adminCollectionPath,
+  adminLeadsDueTodayHref,
+  adminLeadsOverdueHref,
+  adminLeadsStatusHref,
+  adminLeadsUnscheduledHref,
   buildOwnerQuickActions,
   type QuickAction,
 } from "@/lib/admin/admin-routes";
 import { isDemoPublicMarker } from "@/lib/content-readiness";
+import {
+  CRM_ACTIVE_SAMPLE_LIMIT,
+  activeLeadsWhere,
+  summarizeCrmLeads,
+} from "@/lib/leads/crm";
 
 const DRAFT_LIMIT = 5;
-const LEAD_LIMIT = 5;
 const READY_SAMPLE = 40;
 
 /** Local API inside authenticated admin view only (never a public route). */
@@ -37,8 +45,21 @@ export type OwnerDashboardModel = {
   quickActions: QuickAction[];
   leads: {
     newCount: number;
+    overdueCount: number;
+    dueTodayCount: number;
+    unscheduledCount: number;
     recent: OwnerDashboardSnapshotInput["recentNewLeads"];
     allHref: string;
+    newHref: string;
+    overdueHref: string;
+    dueTodayHref: string;
+    unscheduledHref: string;
+    sampleCapped: boolean;
+    notify: {
+      enabled: boolean;
+      envConfigured: boolean;
+      label: string;
+    };
   };
   shelves: {
     excursions: OwnerDashboardSnapshotInput["excursions"];
@@ -119,7 +140,8 @@ function reviewLooksDemo(doc: Record<string, unknown>): boolean {
 
 /**
  * Query inventory (all parallel via Promise.all):
- * 11 counts + 9 finds + 1 findGlobal ≈ 21 Local API calls.
+ * 10 counts + 9 finds + 1 findGlobal ≈ 20 Local API calls.
+ * Lead CRM: one active-leads find replaces prior new-count + recent-new find.
  */
 export async function fetchOwnerDashboard(
   payload: Payload
@@ -141,7 +163,6 @@ export async function fetchOwnerDashboard(
     articlesDraft,
     reviewsPublished,
     reviewsDraft,
-    leadsNew,
     photosPending,
     photosTotal,
     excursionDocs,
@@ -153,7 +174,7 @@ export async function fetchOwnerDashboard(
     draftExcursions,
     draftRoutes,
     draftArticles,
-    recentLeads,
+    activeLeadDocs,
     siteSettings,
   ] = await Promise.all([
     track(
@@ -250,18 +271,6 @@ export async function fetchOwnerDashboard(
         },
         errors,
         "отзывы (черновики)"
-      )
-    ),
-    track(
-      safeCount(
-        payload,
-        {
-          collection: "leads",
-          where: { status: { equals: "new" } },
-          ...access,
-        },
-        errors,
-        "новые заявки"
       )
     ),
     track(
@@ -418,19 +427,7 @@ export async function fetchOwnerDashboard(
       )
     ),
     track(
-      safeFindDocs(
-        payload,
-        {
-          collection: "leads",
-          where: { status: { equals: "new" } },
-          limit: LEAD_LIMIT,
-          depth: 0,
-          sort: "-createdAt",
-          ...access,
-        },
-        errors,
-        "список новых заявок"
-      )
+      safeFindActiveLeads(payload, errors)
     ),
     (async () => {
       queryCount += 1;
@@ -448,19 +445,49 @@ export async function fetchOwnerDashboard(
     })(),
   ]);
 
+  const crm = summarizeCrmLeads(
+    activeLeadDocs.docs.map((doc) => ({
+      id: doc.id as string | number,
+      name: doc.name,
+      status: doc.status,
+      nextContactAt: doc.nextContactAt,
+      createdAt: doc.createdAt,
+      requestType: doc.requestType,
+    })),
+    {
+      totalDocs: activeLeadDocs.totalDocs,
+      sampleLimit: CRM_ACTIVE_SAMPLE_LIMIT,
+    }
+  );
+
   const guideStats = classifyGuideDocs(guideDocs);
   const reviewsReady = reviewDocs.filter((doc) => !reviewLooksDemo(doc)).length;
 
+  const leadSettings =
+    siteSettings &&
+    typeof siteSettings.leadSettings === "object" &&
+    siteSettings.leadSettings
+      ? (siteSettings.leadSettings as Record<string, unknown>)
+      : {};
+  const notifyEnabled = leadSettings.leadNotificationEnabled !== false;
+  const envConfigured = Boolean(
+    process.env.RESEND_API_KEY?.trim() &&
+      process.env.EMAIL_FROM?.trim() &&
+      process.env.EMAIL_TO?.trim()
+  );
+  const notifyLabel = !notifyEnabled
+    ? "Уведомления выключены в настройках"
+    : envConfigured
+      ? "Уведомления о заявках настроены"
+      : "Уведомления не настроены (нет Resend/EMAIL_*)";
+
   const snapshot: OwnerDashboardSnapshotInput = {
-    leadsNew,
-    recentNewLeads: recentLeads.map((doc) => ({
-      id: doc.id as string | number,
-      name: docTitle(doc, "Без имени"),
-      createdAt:
-        typeof doc.createdAt === "string" ? doc.createdAt : null,
-      requestType:
-        typeof doc.requestType === "string" ? doc.requestType : null,
-    })),
+    leadsNew: crm.newCount,
+    leadsOverdue: crm.overdueCount,
+    leadsDueToday: crm.dueTodayCount,
+    leadsUnscheduled: crm.unscheduledCount,
+    recentNewLeads: crm.recentNew,
+    leadNotify: { enabled: notifyEnabled, envConfigured },
     excursions: {
       published: excursionsPublished,
       drafts: excursionsDraft,
@@ -537,9 +564,22 @@ export async function fetchOwnerDashboard(
     attention,
     quickActions: buildOwnerQuickActions(siteUrl),
     leads: {
-      newCount: leadsNew,
+      newCount: crm.newCount,
+      overdueCount: crm.overdueCount,
+      dueTodayCount: crm.dueTodayCount,
+      unscheduledCount: crm.unscheduledCount,
       recent: snapshot.recentNewLeads,
       allHref: adminCollectionPath("leads"),
+      newHref: adminLeadsStatusHref("new"),
+      overdueHref: adminLeadsOverdueHref(),
+      dueTodayHref: adminLeadsDueTodayHref(),
+      unscheduledHref: adminLeadsUnscheduledHref(),
+      sampleCapped: crm.sampleCapped,
+      notify: {
+        enabled: notifyEnabled,
+        envConfigured,
+        label: notifyLabel,
+      },
     },
     shelves: {
       excursions: snapshot.excursions,
@@ -552,4 +592,27 @@ export async function fetchOwnerDashboard(
     drafts: snapshot.recentDrafts,
     errors,
   };
+}
+
+async function safeFindActiveLeads(
+  payload: Payload,
+  errors: string[]
+): Promise<{ docs: Record<string, unknown>[]; totalDocs: number }> {
+  try {
+    const res = await payload.find({
+      collection: "leads",
+      where: activeLeadsWhere(),
+      limit: CRM_ACTIVE_SAMPLE_LIMIT,
+      depth: 0,
+      sort: "-createdAt",
+      ...ADMIN_LOCAL,
+    });
+    return {
+      docs: (res.docs ?? []) as unknown as Record<string, unknown>[],
+      totalDocs: res.totalDocs ?? (res.docs?.length ?? 0),
+    };
+  } catch {
+    errors.push("Не удалось загрузить: активные заявки (CRM)");
+    return { docs: [], totalDocs: 0 };
+  }
 }

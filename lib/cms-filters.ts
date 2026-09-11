@@ -46,6 +46,9 @@ export function newLeadsWhere(): Where {
   return { status: { equals: "new" } };
 }
 
+/** Re-export CRM active where from canonical module (ADMIN.D). */
+export { activeLeadsWhere } from "@/lib/leads/crm";
+
 export const PHOTO_PUBLISHED_WHERE: Where = {
   and: [
     { status: { equals: "published" } },

@@ -331,15 +331,51 @@ export function OwnerDashboardPanel({ model }: Props) {
             style={{
               display: "flex",
               flexWrap: "wrap",
+              gap: "0.75rem 1.25rem",
+              marginBottom: "0.75rem",
+              fontSize: "0.9375rem",
+            }}
+          >
+            <a href={leads.newHref} style={{ ...linkReset, textDecoration: "underline" }}>
+              Новых: <strong>{leads.newCount}</strong>
+            </a>
+            <a
+              href={leads.overdueHref}
+              style={{
+                ...linkReset,
+                textDecoration: "underline",
+                fontWeight: leads.overdueCount > 0 ? 600 : 400,
+              }}
+            >
+              Просрочено: <strong>{leads.overdueCount}</strong>
+            </a>
+            <a href={leads.dueTodayHref} style={{ ...linkReset, textDecoration: "underline" }}>
+              Сегодня: <strong>{leads.dueTodayCount}</strong>
+            </a>
+            {leads.unscheduledCount > 0 ? (
+              <a
+                href={leads.unscheduledHref}
+                style={{ ...linkReset, textDecoration: "underline" }}
+              >
+                Без шага: <strong>{leads.unscheduledCount}</strong>
+              </a>
+            ) : null}
+          </div>
+          <p style={{ margin: "0 0 0.75rem", fontSize: "0.8125rem", opacity: 0.75 }}>
+            {leads.notify.label}
+            {leads.sampleCapped
+              ? " · Счётчики по выборке активных заявок (лимит) — при росте объёма уточним запросы."
+              : null}
+          </p>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
               gap: "0.75rem",
-              justifyContent: "space-between",
-              alignItems: "center",
+              justifyContent: "flex-end",
               marginBottom: leads.recent.length ? "0.75rem" : 0,
             }}
           >
-            <p style={{ margin: 0, fontSize: "0.9375rem" }}>
-              Новых: <strong>{leads.newCount}</strong>
-            </p>
             <a href={leads.allHref} style={{ ...btn, ...linkReset }}>
               Открыть все заявки
             </a>
