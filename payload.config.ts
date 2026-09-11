@@ -40,7 +40,14 @@ export default buildConfig({
     },
     dateFormat: "dd.MM.yyyy",
     components: {
-      beforeDashboard: ["./payload/components/BeforeDashboard#default"],
+      views: {
+        dashboard: {
+          Component: "./payload/components/OwnerDashboardView#default",
+          meta: {
+            title: "Главная",
+          },
+        },
+      },
     },
   },
   collections: [

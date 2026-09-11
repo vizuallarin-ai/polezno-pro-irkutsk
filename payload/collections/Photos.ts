@@ -51,7 +51,7 @@ export const Photos: CollectionConfig = {
       "sourceName",
     ],
     description:
-      "Фотоархив /explore/photos. Публично — статус «Опубликован» и модерация «Одобрено», с подтверждёнными правами.",
+      "Фотоархив /explore/photos. Если пусто — загрузите 3–5 снимков с правами. Публично — статус «Опубликован» и модерация «Одобрено».",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/photos/${doc.slug}`;

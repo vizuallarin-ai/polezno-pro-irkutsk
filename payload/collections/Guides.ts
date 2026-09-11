@@ -26,7 +26,7 @@ export const Guides: CollectionConfig = {
     defaultColumns: ["name", "specialization", "isActive", "updatedAt"],
     listSearchableFields: ["name", "slug", "bio"],
     description:
-      "Профили гидов для /about/guides. Неактивный или незаполненный профиль на сайте не показывается.",
+      "Профили гидов для /about/guides. Если профиль пустой или с заглушкой — заполните имя и ссылку. Неактивный или незаполненный профиль на сайте не показывается.",
     hidden: false,
   },
   access: {

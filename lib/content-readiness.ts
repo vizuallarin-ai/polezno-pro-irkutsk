@@ -157,13 +157,26 @@ function hasDemoSignals(input: CommercialRecordInput): boolean {
   return collectSignalTexts(input).some((value) => isDemoPublicMarker(value));
 }
 
-function isGuidePlaceholder(input: CommercialRecordInput): boolean {
-  if (input.kind !== "guide") return false;
-  const title = displayTitle(input).toLowerCase();
+/** Shared placeholder detection for public readiness + admin dashboard. */
+export function isGuidePlaceholderProfile(input: {
+  name?: string | null;
+  title?: string | null;
+  slug?: string | null;
+}): boolean {
+  const title = (input.title ?? input.name ?? "").trim().toLowerCase();
   const slug = (input.slug ?? "").trim().toLowerCase();
   if (title.length > 0 && GUIDE_PLACEHOLDER_TITLES.has(title)) return true;
   if (slug.length > 0 && GUIDE_PLACEHOLDER_SLUGS.has(slug)) return true;
   return false;
+}
+
+function isGuidePlaceholder(input: CommercialRecordInput): boolean {
+  if (input.kind !== "guide") return false;
+  return isGuidePlaceholderProfile({
+    name: input.name,
+    title: input.title,
+    slug: input.slug,
+  });
 }
 
 function hasMinimumFields(input: CommercialRecordInput): boolean {

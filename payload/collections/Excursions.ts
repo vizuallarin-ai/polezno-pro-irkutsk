@@ -28,7 +28,7 @@ export const Excursions: CollectionConfig = {
     defaultColumns: ["title", "format", "price", "duration", "status", "updatedAt"],
     listSearchableFields: ["title", "slug", "shortDescription"],
     description:
-      "Коммерческие экскурсии. Черновик можно сохранить неполным; для публикации нужны цена (или «по запросу»), длительность и описание.",
+      "Коммерческие экскурсии. Если список пуст — начните с одной флагманской. Черновик можно сохранить неполным; для публикации нужны цена (или «по запросу»), длительность и описание.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/excursions/${doc.slug}`;
@@ -51,6 +51,15 @@ export const Excursions: CollectionConfig = {
     afterChange: [revalidateAfterChange],
   },
   fields: [
+    {
+      name: "publishChecklist",
+      type: "ui",
+      admin: {
+        components: {
+          Field: "./payload/components/ExcursionPublishChecklist#default",
+        },
+      },
+    },
     {
       name: "title",
       type: "text",

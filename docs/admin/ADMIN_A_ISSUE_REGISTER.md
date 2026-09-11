@@ -307,8 +307,21 @@ All items are findings only — **not fixed** in this gate.
 | ADMIN-A-P1-12 `/api/routes` shadow | P1 | **deferred** | Documented; rename needs consumer migration |
 | ADMIN-A-P1-13 World-readable hidden | P1 | **partial** | places/partners staff-only; reviews/guides filtered; full matrix → ADMIN.E |
 | ADMIN-A-P2-01 Flat menu | P2 | **resolved** | `admin.group` IA |
-| ADMIN-A-P2-02 Route form overload | P2 | **partial** | Tabs; wizard → ADMIN.C |
+| ADMIN-A-P2-02 Route form overload | P2 | **partial** | Tabs + publish checklist UI (ADMIN.C); full wizard still not required |
 | ADMIN-A-P2-03 Orphan Places/Partners | P2 | **resolved** (hide) | hidden + staff-only; schema kept |
 | ADMIN-A-P2-04 Dead CMS fields | P2 | **partial** | Obvious dead hidden; more wiring TBD |
 | ADMIN-A-P3-02 Missing RU labels guides/reviews | P3 | **resolved** | labels added |
-| ADMIN-A-P0-* / P1-08/09/10 / P2-05… | — | **deferred** | ADMIN.C/D/E / CONTENT.1 |
+| ADMIN-A-P0-* / P1-08/09/10 / P2-05… | — | **deferred** | ADMIN.D/E / CONTENT.1 |
+
+---
+
+## ADMIN.C remediation mapping (2026-09-11)
+
+| Issue | Severity | Resolution | Evidence |
+|-------|----------|------------|----------|
+| ADMIN-A-P2-05 Dashboard incomplete | P2 | **partial** | Owner «Главная» + readiness + leads + open site; local E2E NOT PROVEN |
+| ADMIN-A-P3-01 Dashboard developer tone | P3 | **resolved** | Owner copy / operational blocks |
+| ADMIN-A-P2-02 Route cognitive load | P2 | **partial** | Publish checklist UI; no multi-step wizard |
+| ADMIN-A-P2-08 Photo rights UX | P2 | **deferred** | Empty-state copy only; guided rights UI later |
+| Placeholder guide visibility | P1 carry | **dashboard warn** | Attention «Профиль гида не готов»; prod data untouched |
+| Publish visibility before error | P1 carry | **partial** | Shared checklist UI + ADMIN.B guards authoritative |

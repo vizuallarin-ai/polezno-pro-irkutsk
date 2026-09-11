@@ -28,6 +28,7 @@
     "check:gate-c": "npx tsx scripts/gate-c-audit.mjs",
     "test:leads": "npx tsx scripts/test-leads-security.ts",
     "test:admin-b": "npx tsx scripts/test-admin-b-cms.ts",
+    "test:admin-c": "npx tsx scripts/test-admin-c-dashboard.ts",
     "test:readiness": "npx tsx scripts/test-content-readiness-surfaces.ts",
     "test:lead-privacy": "npx tsx scripts/test-lead-notification-privacy.ts",
     "test:content-intake": "npx tsx scripts/test-content-intake.ts",

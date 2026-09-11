@@ -95,7 +95,7 @@ export const Routes: CollectionConfig = {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "format", "type", "status", "updatedAt"],
     description:
-      "Маршруты для карты /map. Для публикации нужны описание и хотя бы одна точка с координатами.",
+      "Маршруты для карты /map. Если список пуст — добавьте первый маршрут с точками. Для публикации нужны описание и хотя бы одна точка с координатами.",
   },
   access: {
     admin: adminPanelAccess,
@@ -119,6 +119,15 @@ export const Routes: CollectionConfig = {
         {
           label: "Основное",
           fields: [
+            {
+              name: "publishChecklist",
+              type: "ui",
+              admin: {
+                components: {
+                  Field: "./payload/components/RoutePublishChecklist#default",
+                },
+              },
+            },
             {
               name: "title",
               type: "text",

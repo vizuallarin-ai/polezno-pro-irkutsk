@@ -20,7 +20,7 @@ export const Reviews: CollectionConfig = {
     defaultColumns: ["author", "rating", "status", "isFeatured", "updatedAt"],
     listSearchableFields: ["author", "city", "text"],
     description:
-      "Отзывы для блока доверия на главной. Черновик не виден на сайте; «Опубликован» + «На главной» — показывается посетителям.",
+      "Отзывы для блока доверия на главной. Если отзывов ещё нет — добавьте реальные. Черновик не виден на сайте; «Опубликован» + «На главной» — показывается посетителям.",
     hidden: false,
   },
   access: {
