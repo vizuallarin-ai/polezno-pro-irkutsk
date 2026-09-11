@@ -4,16 +4,16 @@ Same-host VPS dumps (`scripts/backup-db.sh`) are **not** enough for disaster rec
 
 ## Status
 
-**OFFSITE BACKUP NOT LIVE** — blocked on owner infrastructure decision (bucket / second host / credentials).
+**OFFSITE BACKUP NOT LIVE** — ADMIN.E.FINAL production discovery: all `OFFSITE_*` / `AWS_*` destination variables **missing**, `aws` CLI **missing**, no dedicated offsite env file. Owner infrastructure still required.
 
-Prepared contract:
+Prepared contract (do not invent a second subsystem):
 
-1. On-host dump: `scripts/backup-db.sh` → `/var/backups/polezno/polezno_*.dump`
-2. Optional media: `scripts/backup-media.sh`
+1. On-host dump: `scripts/backup-db.sh` → `/var/backups/polezno/polezno_*.dump` (cron daily 03:15 UTC)
+2. Media archive: `scripts/backup-media.sh` (`MEDIA_DIR` → shared media; not yet in production cron)
 3. Offsite copy + verify: `scripts/backup-offsite-copy.sh` (`OFFSITE_MODE=s3|scp`)
 4. Health: `node scripts/backup-health-check.mjs` (exit 2 = offsite not configured)
 
-ADMIN.E.1 proved **failure exits** (missing mode=2, bad/missing deps=non-zero). Live remote object was **not** created (no credentials in environment).
+ADMIN.E.1 proved **failure exits** (missing mode=2, bad/missing deps=non-zero). ADMIN.E.FINAL reconfirmed destination absence on VPS — no fake LIVE claim.
 
 ## Minimum live procedure (when credentials exist)
 
