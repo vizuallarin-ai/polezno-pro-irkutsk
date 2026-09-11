@@ -1,21 +1,23 @@
-# Offsite disaster-recovery backup (ADMIN.E / OPS)
+# Offsite disaster-recovery backup (ADMIN.E / ADMIN.E.1)
 
 Same-host VPS dumps (`scripts/backup-db.sh`) are **not** enough for disaster recovery.
 
-## Status (ADMIN.E)
+## Status
 
 **OFFSITE BACKUP NOT LIVE** — blocked on owner infrastructure decision (bucket / second host / credentials).
 
-Prepared contract (code-ready, credentials not committed):
+Prepared contract:
 
 1. On-host dump: `scripts/backup-db.sh` → `/var/backups/polezno/polezno_*.dump`
-2. Optional media archive: `scripts/backup-media.sh`
-3. Offsite copy: `scripts/backup-offsite-copy.sh` with `OFFSITE_MODE=s3|scp`
+2. Optional media: `scripts/backup-media.sh`
+3. Offsite copy + verify: `scripts/backup-offsite-copy.sh` (`OFFSITE_MODE=s3|scp`)
+4. Health: `node scripts/backup-health-check.mjs` (exit 2 = offsite not configured)
+
+ADMIN.E.1 proved **failure exits** (missing mode=2, bad/missing deps=non-zero). Live remote object was **not** created (no credentials in environment).
 
 ## Minimum live procedure (when credentials exist)
 
 ```bash
-# on VPS after daily dump
 DUMP=/var/backups/polezno/polezno_YYYYMMDDT….dump \
 OFFSITE_MODE=s3 \
 OFFSITE_S3_BUCKET=… \
@@ -25,25 +27,24 @@ AWS_SECRET_ACCESS_KEY=… \
 bash scripts/backup-offsite-copy.sh
 ```
 
-Or:
+Script exits 0 only after authenticated size verification for S3.
 
-```bash
-DUMP=… OFFSITE_MODE=scp OFFSITE_SCP_TARGET=user@offsite-host:/backups/polezno/ \
-bash scripts/backup-offsite-copy.sh
-```
+## Retention
+
+- On-host: `RETENTION_DAYS` default 14 (`backup-db.sh`)
+- Offsite: `OFFSITE_RETENTION_DAYS` default 14 — configure **S3 lifecycle** on `db/` and `media/` (do not allow unbounded growth)
 
 ## Security
 
-- Private storage only (no public buckets)
+- Private storage only
 - Transport TLS / SSH
-- Do **not** put `.env` secret values into the dump archive
-- Leads/PII are inside DB dumps — treat offsite as confidential
+- Never commit credentials or put `.env` secrets into dump archives
+- Leads/PII inside DB dumps → treat offsite as confidential
 
-## Definition of Done (offsite LIVE)
+## Definition of Done (LIVE)
 
-- [ ] Dump exists outside the production host
-- [ ] Restore dry-run tested once on a scratch DB
-- [ ] Media recovery contract documented and exercised where applicable
-- [ ] Owner knows who to call if restore is needed
-
-Until checkboxes are done: **ADMIN.E offsite = READY-BUT-NOT-CONNECTED**.
+- [ ] Dump exists outside production host
+- [ ] Authenticated remote object size > 0 proven
+- [ ] Restore dry-run on scratch DB
+- [ ] Media recovery contract exercised or explicitly deferred with owner approval
+- [ ] Lifecycle/retention configured

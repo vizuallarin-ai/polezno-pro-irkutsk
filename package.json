@@ -34,6 +34,8 @@
     "test:admin-e-versions": "npx tsx scripts/admin-e-version-restore-e2e.mjs",
     "test:admin-e-roles": "npx tsx scripts/admin-e-role-e2e.mjs",
     "test:admin-e-backup": "node scripts/admin-e-backup-restore-proof.mjs",
+    "test:admin-e1-restored-app": "node scripts/admin-e1-restored-app-smoke.mjs",
+    "ops:backup-health": "node scripts/backup-health-check.mjs",
     "test:readiness": "npx tsx scripts/test-content-readiness-surfaces.ts",
     "test:lead-privacy": "npx tsx scripts/test-lead-notification-privacy.ts",
     "test:content-intake": "npx tsx scripts/test-content-intake.ts",

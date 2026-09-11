@@ -59,3 +59,4 @@ docs/owner-content/**/raw/
 # ADMIN.E disposable proofs
 .tmp-admin-e-backup/
 .tmp-admin-e-media/
+.tmp-admin-e1-restore/
