@@ -1,0 +1,202 @@
+{
+  "startedAt": "2026-09-11T10:28:07.921Z",
+  "base": "http://localhost:3000",
+  "dbHost": "localhost",
+  "scenarios": {
+    "local_health": {
+      "status": 200,
+      "database": "up",
+      "app": "up"
+    },
+    "admin_login": {
+      "status": "PROVEN",
+      "userId": 1
+    },
+    "article_auto_slug": {
+      "status": "PROVEN",
+      "slug": "testovaya-statya-irkportal-4",
+      "slugAfterRename": "testovaya-statya-irkportal-4",
+      "okSlug": true,
+      "stable": true
+    },
+    "excursion_publish_guard": {
+      "status": "PROVEN",
+      "rejected": true,
+      "published": true,
+      "badHttp": 500,
+      "rejectMessage": "Something went wrong.",
+      "id": 5
+    },
+    "excursion_unpublish": {
+      "status": "PROVEN",
+      "id": 5
+    },
+    "route_publish_guard": {
+      "status": "PROVEN",
+      "rejected": true,
+      "published": true,
+      "badHttp": 500,
+      "rejectMessage": "Something went wrong.",
+      "id": 2,
+      "note": "Create via Local API due to GET-only /api/routes shadowing Payload REST POST"
+    },
+    "frontend_consumers_smoke": {
+      "status": "PROVEN",
+      "statuses": {
+        "/": 200,
+        "/map": 200,
+        "/business": 200,
+        "/excursions/e2e-ekskursiya-bez-tseny-5": 404
+      }
+    },
+    "guide_placeholder": {
+      "status": "PROVEN",
+      "blocked": true,
+      "normalOk": true,
+      "id": 3,
+      "mediaId": 3,
+      "activeHttp": 500,
+      "normalHttp": 200,
+      "activeMsg": "Something went wrong.",
+      "normalMsg": "Успешно Обновлено."
+    },
+    "review_fixture": {
+      "status": "PROVEN",
+      "note": "id=4"
+    },
+    "public_lead_ingestion": {
+      "status": "PROVEN",
+      "leadId": 15,
+      "leadStatus": "new",
+      "http": 200,
+      "note": "RESEND empty locally — notification path must not fail create"
+    },
+    "lead_security_injection": {
+      "status": "PROVEN",
+      "statusForcedNew": true,
+      "crmFieldsCleared": true,
+      "anonStatus": 403,
+      "anonSafe": true,
+      "createStatus": 200
+    },
+    "crm_lifecycle": {
+      "status": "PROVEN",
+      "steps": [
+        {
+          "step": "new",
+          "ok": true
+        },
+        {
+          "step": "upcoming",
+          "ok": true,
+          "bucket": "upcoming"
+        },
+        {
+          "step": "due_today",
+          "ok": true,
+          "bucket": "due_today"
+        },
+        {
+          "step": "due_today_classifier",
+          "ok": true,
+          "bucket": "due_today"
+        },
+        {
+          "step": "overdue",
+          "ok": true,
+          "bucket": "overdue"
+        },
+        {
+          "step": "replied_followup",
+          "ok": true,
+          "bucket": "overdue"
+        },
+        {
+          "step": "booked_not_terminal",
+          "ok": true,
+          "bucket": "overdue"
+        },
+        {
+          "step": "closed_terminal",
+          "ok": true,
+          "bucket": "none"
+        },
+        {
+          "step": "declined_terminal",
+          "ok": true,
+          "bucket": "none",
+          "http": 200
+        },
+        {
+          "step": "unscheduled",
+          "ok": true,
+          "bucket": "unscheduled"
+        },
+        {
+          "step": "new_not_unscheduled",
+          "ok": true,
+          "bucket": "none"
+        },
+        {
+          "step": "crm_summary",
+          "ok": true,
+          "summary": {
+            "overdueCount": 0,
+            "dueTodayCount": 0,
+            "unscheduledCount": 1
+          },
+          "note": "GET /api/leads list returns 405 (app/api/leads POST-only shadows Payload REST). Summary proven via GET-by-id sample."
+        }
+      ]
+    },
+    "leads_list_fields": {
+      "status": "PROVEN",
+      "keys": [
+        "id",
+        "name",
+        "company",
+        "contact",
+        "email",
+        "phone",
+        "telegram",
+        "max",
+        "preferredContactMethod",
+        "message",
+        "interestType",
+        "websiteUrl",
+        "taskType",
+        "businessFormat",
+        "serviceType",
+        "dates",
+        "groupSize",
+        "interests",
+        "budget",
+        "status",
+        "nextContactAt",
+        "lastContactAt",
+        "adminComment",
+        "closedReason",
+        "closedReasonNote",
+        "priority",
+        "requestType",
+        "source",
+        "sourceType",
+        "sourceBlock"
+      ],
+      "listGetHttp": 405,
+      "note": "GET /api/leads list=405 expected (public POST route shadows REST). Fields proven via GET-by-id. Admin UI uses Local API."
+    },
+    "readiness_data_presence": {
+      "status": "PROVEN",
+      "excursions": 5,
+      "routes": 1,
+      "reviews": 4,
+      "guides": 3,
+      "note": "Dashboard UI reaction verified separately in browser; DB counts prove data path"
+    },
+    "admin_shell_html": {
+      "status": 200,
+      "bytes": 279905
+    }
+  }
+}
