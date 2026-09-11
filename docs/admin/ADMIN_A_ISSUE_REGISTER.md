@@ -135,6 +135,7 @@ All items are findings only — **not fixed** in this gate.
 - **Acceptance:** Owner filters overdue; notes + next date saved
 - **Deps:** ADMIN.D
 - **Complexity:** M
+- **Status (2026-09-11):** **partial / CODE+TEST-PROVEN** — `nextContactAt`, status vocabulary, overdue engine, dashboard counters, security tests. History array deferred. Local E2E NOT PROVEN (Postgres down).
 
 ### ADMIN-A-P1-09 — Lead notification may silently skip
 - **User:** Owner
@@ -266,7 +267,7 @@ All items are findings only — **not fixed** in this gate.
 | P1-05 | Model validation |
 | P1-06 | Frontend contract |
 | P1-07 | Access |
-| P1-08 | Missing CRM |
+| P1-08 | Missing CRM | **partial ADMIN.D CODE+TEST** |
 | P1-09 | Ops visibility |
 | P1-10 | Owner content |
 | P1-11 | UX model |
@@ -286,7 +287,7 @@ All items are findings only — **not fixed** in this gate.
 | Site contacts phone/email completeness | OWNER CONTENT REQUIRED |
 | Keep vs unpublish seed products/AR | OWNER DECISION REQUIRED |
 | Whether navigation/home CTAs should become CMS-owned | OWNER DECISION REQUIRED |
-| CRM status vocabulary (booked vs closed) | OWNER DECISION REQUIRED |
+| CRM status vocabulary (booked vs closed) | **DECIDED in ADMIN.D** — keep `closed`=Завершено; add `booked` + `declined` |
 | Whether Events stay in owner menu while empty | OWNER DECISION REQUIRED |
 | Deactivate or replace production guide `slug=Slug` | OWNER / CONTENT.1 (CMS now allows; prod not mutated in ADMIN.B) |
 
@@ -311,7 +312,9 @@ All items are findings only — **not fixed** in this gate.
 | ADMIN-A-P2-03 Orphan Places/Partners | P2 | **resolved** (hide) | hidden + staff-only; schema kept |
 | ADMIN-A-P2-04 Dead CMS fields | P2 | **partial** | Obvious dead hidden; more wiring TBD |
 | ADMIN-A-P3-02 Missing RU labels guides/reviews | P3 | **resolved** | labels added |
-| ADMIN-A-P0-* / P1-08/09/10 / P2-05… | — | **deferred** | ADMIN.D/E / CONTENT.1 |
+| ADMIN-A-P0-* / P1-10 / P2… | — | **deferred** | ADMIN.E / CONTENT.1 |
+| ADMIN-A-P1-08 Missing CRM | P1 | **partial ADMIN.D** | CODE+TEST; E2E pending — see ADMIN.D reports |
+| ADMIN-A-P1-09 Notify health | P1 | **partial ADMIN.D** | Compact dashboard signal only |
 
 ---
 
@@ -325,3 +328,14 @@ All items are findings only — **not fixed** in this gate.
 | ADMIN-A-P2-08 Photo rights UX | P2 | **deferred** | Empty-state copy only; guided rights UI later |
 | Placeholder guide visibility | P1 carry | **dashboard warn** | Attention «Профиль гида не готов»; prod data untouched |
 | Publish visibility before error | P1 carry | **partial** | Shared checklist UI + ADMIN.B guards authoritative |
+
+---
+
+## ADMIN.D remediation mapping (2026-09-11)
+
+| Issue | Severity | Resolution | Evidence |
+|-------|----------|------------|----------|
+| ADMIN-A-P1-08 CRM next-contact / overdue | P1 | **partial** CODE+TEST | `lib/leads/crm.ts`, Leads schema, dashboard, `test:admin-d`; LOCAL-E2E NOT PROVEN |
+| ADMIN-A-P1-09 Notify health | P1 | **partial** | Compact env+settings label on owner dashboard |
+| CRM status vocabulary | Decision | **decided** | `closed`=Завершено; `booked`+`declined` added; spam kept |
+| History / versions / hard-delete | — | **deferred** | ADMIN.E |
