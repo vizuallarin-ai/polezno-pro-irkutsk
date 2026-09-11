@@ -16,7 +16,7 @@ Controlled disposable invocations prove non-zero exit when offsite cannot succee
 
 ```json
 {
-  "at": "2026-09-11T13:15:57.889Z",
+  "at": "2026-09-11T13:28:14.735Z",
   "gate": "ADMIN.E.1",
   "status": "OFFSITE_FAILURE_SIGNAL_PROVEN",
   "liveCopy": "NOT_LIVE",

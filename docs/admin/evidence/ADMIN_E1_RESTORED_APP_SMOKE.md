@@ -2,12 +2,12 @@
 
 ```json
 {
-  "at": "2026-09-11T13:13:07.164Z",
+  "at": "2026-09-11T13:27:46.415Z",
   "gate": "ADMIN.E.1",
   "sourceHost": "localhost",
   "sourceDb": "polezno_irkutsk",
-  "dumpPath": "D:\\AI_WORKSPACE\\Projects\\PoleznoProIrkutsk\\.tmp-admin-e1-restore\\source_2026-09-11T13-13-07-162Z.dump",
-  "tempDb": "restore_app_1789132387163",
+  "dumpPath": "D:\\AI_WORKSPACE\\Projects\\PoleznoProIrkutsk\\.tmp-admin-e1-restore\\source_2026-09-11T13-27-46-414Z.dump",
+  "tempDb": "restore_app_1789133266415",
   "port": 3017,
   "checks": [
     {
@@ -92,6 +92,6 @@
       "n": 3
     }
   ],
-  "serverLogTail": "▲ Next.js 16.2.6\n- Local:         http://127.0.0.1:3017\n- Network:       http://127.0.0.1:3017\n✓ Ready in 3.8s\n[21:13:33] \u001b[33mWARN\u001b[39m: \u001b[36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.\u001b[39m\n"
+  "serverLogTail": "▲ Next.js 16.2.6\n- Local:         http://127.0.0.1:3017\n- Network:       http://127.0.0.1:3017\n✓ Ready in 1105ms\n[21:27:53] \u001b[33mWARN\u001b[39m: \u001b[36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.\u001b[39m\n"
 }
 ```

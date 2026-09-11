@@ -75,6 +75,8 @@ node scripts/backup-health-check.mjs
 
 Expect non-zero dump size and mtime within policy window (`BACKUP_POLICY` in `lib/runtime-lifecycle.mjs`: warn 36h / critical 72h; post-CONTENT.1 target 24h).
 
+Health check recognizes only `polezno_*.dump` (on-host) and `source_*.dump` (E.1 disposable); probe stubs are ignored.
+
 ## 8. Offsite failure behaviour
 
 `scripts/backup-offsite-copy.sh`:

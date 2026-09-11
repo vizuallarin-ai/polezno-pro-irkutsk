@@ -9,10 +9,11 @@ import { fileURLToPath } from "url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const scriptPosix = "scripts/backup-offsite-copy.sh";
-const tmp = path.join(root, ".tmp-admin-e1-restore");
+const tmp = path.join(root, ".tmp-admin-e1-offsite-fail");
 fs.mkdirSync(tmp, { recursive: true });
 const dump = path.join(tmp, "fail-probe.dump");
 fs.writeFileSync(dump, "admin-e1-offsite-failure-probe");
+// Keep probe out of backup-health-check scan paths (.tmp-admin-e1-restore).
 
 const gitBash = "C:\\Program Files\\Git\\bin\\bash.exe";
 if (!fs.existsSync(gitBash)) {

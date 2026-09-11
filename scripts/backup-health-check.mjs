@@ -22,9 +22,12 @@ function newestDump(dirs) {
   for (const dir of dirs) {
     if (!fs.existsSync(dir)) continue;
     for (const f of fs.readdirSync(dir)) {
-      if (!/\.dump$/i.test(f)) continue;
+      // Canonical on-host: polezno_*.dump; E.1 disposable: source_*.dump.
+      // Ignore failure-probe stubs and other non-backup *.dump noise.
+      if (!/^(polezno_|source_).+\.dump$/i.test(f)) continue;
       const p = path.join(dir, f);
       const st = fs.statSync(p);
+      if (st.size < 1) continue;
       found.push({ file: p, size: st.size, mtimeMs: st.mtimeMs });
     }
   }

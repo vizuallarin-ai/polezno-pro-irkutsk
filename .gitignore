@@ -60,3 +60,4 @@ docs/owner-content/**/raw/
 .tmp-admin-e-backup/
 .tmp-admin-e-media/
 .tmp-admin-e1-restore/
+.tmp-admin-e1-offsite-fail/

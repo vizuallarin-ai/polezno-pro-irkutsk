@@ -2,25 +2,32 @@
 
 **Status: GATE ADMIN.E remains PARTIAL**
 
-Not promoted to CLOSED because:
+Not promoted to CLOSED because **both** hard blockers remain:
 
-1. **REMOTE RECOVERY POINT = MISSING** (push not authorized in this gate)
-2. **OFFSITE BACKUP LIVE = NOT PROVEN** (no destination credentials)
+1. **REMOTE RECOVERY POINT = MISSING** — this gate did not separately authorize non-force push; origin still at `95ba8d0` while local carries ADMIN.E / E.1 history.
+2. **OFFSITE BACKUP LIVE = NOT PROVEN** — no `OFFSITE_*` / `AWS_*` destination credentials in operator environment; cannot create/verify a remote object.
 
-Proven in E.1:
+## Proven in E.1 (re-verified this closeout)
 
-- **APP AGAINST RESTORED DB = PROVEN**
-- Offsite **failure signal** = PROVEN (non-zero exits)
-- Recovery runbook updated with end-to-end sequence + health check
+| Criterion | Status |
+|---|---|
+| APP AGAINST RESTORED DB | **PROVEN** (63 tables; health + `/` `/map` `/business` `/admin` `/explore`) |
+| DB restore disposable | **PROVEN** |
+| Offsite **failure signal** | **PROVEN** (exit 2 / non-zero) |
+| Backup health check | Local dump detectable; exit **2** = offsite NOT LIVE (expected) |
+| Role / version / delete / API unit proofs | Still covered by `test:admin-e` PASS |
+| Media restore local (ADMIN.E) | Reused — PRODUCTION EXECUTION NOT PERFORMED |
+| Tests + build | **PASS** |
+| Production | Unchanged `b3a51ba…` |
 
-## Baseline (start)
+## Baseline (this closeout re-entry)
 
 | Item | Value |
 |---|---|
-| Branch | phase15-ux-funnel-hardening |
-| Local HEAD | `026b9d5` |
-| Origin HEAD | `95ba8d0` (ahead 12) |
-| Production SHA | `b3a51ba…` health ok |
+| Branch | `phase15-ux-funnel-hardening` |
+| Local HEAD (start of prior E.1 docs) | `026b9d5` → then `8909f1d` E.1 docs commit |
+| Origin HEAD | `95ba8d0` (ahead 13 before this commit) |
+| Production SHA | `b3a51ba8500bb03b5f1124feab567bee3a313824` health ok |
 
 ## Evidence
 
@@ -29,11 +36,17 @@ Proven in E.1:
 - `docs/admin/evidence/ADMIN_E1_RESTORED_APP_SMOKE.md`
 - `docs/admin/evidence/ADMIN_E1_BUILD.md`
 
-## Owner actions to reach CLOSED
+## Ops notes hardened this pass
 
-1. Authorize non-force push of `phase15-ux-funnel-hardening`.
-2. Provision private S3-compatible (or scp) destination + server env (`OFFSITE_MODE`, bucket/target, keys).
-3. Run daily dump → `backup-offsite-copy.sh` → prove remote object size > 0 via authenticated list/head.
-4. Configure bucket lifecycle (~14d) for `db/` + `media/`.
+- `backup-health-check.mjs` only accepts `polezno_*.dump` / `source_*.dump` (ignores failure-probe stubs).
+- Offsite failure probe writes under `.tmp-admin-e1-offsite-fail/` (gitignored).
 
-Do **not** start ADMIN.F until ADMIN.E is CLOSED (or explicitly waived).
+## Owner actions required for CLOSED
+
+1. Authorize normal non-force push of `phase15-ux-funnel-hardening` → prove `local HEAD == origin HEAD`.
+2. Provision private S3-compatible (or scp) destination + server env (`OFFSITE_MODE`, bucket/target, keys). Never commit secrets.
+3. Run daily dump → `bash scripts/backup-offsite-copy.sh` → prove remote object size > 0 via authenticated `head-object` / list.
+4. Configure bucket lifecycle (~14d) for prefixes `db/` + `media/`.
+5. Optionally re-run `npm run test:admin-e1-restored-app` after offsite artifact is available as restore source.
+
+Do **not** start ADMIN.F until ADMIN.E is CLOSED (or explicitly waived by owner).
