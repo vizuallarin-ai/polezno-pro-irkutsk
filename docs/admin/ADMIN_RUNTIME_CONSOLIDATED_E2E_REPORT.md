@@ -4,7 +4,7 @@
 **Date:** 2026-09-11  
 **Branch:** `phase15-ux-funnel-hardening`  
 **Start SHA:** `4142e7b3853472d86b346f4e992af39e98cd86cc`  
-**End SHA:** see Git section after evidence commit  
+**End SHA:** `a2fa0e465cf8c038747b55b80e455eac20e62047`  
 **Production SHA (unchanged):** `b3a51ba8500bb03b5f1124feab567bee3a313824`
 
 ## Principle
@@ -153,7 +153,14 @@ Historical ADMIN.* reports not rewritten as if E2E existed earlier.
 
 ## Q. Git
 
-See commit messages after this report. No force-push. Pre-existing untracked leftovers not committed unless harness needed for evidence.
+| Item | Value |
+|------|-------|
+| Fix commit | `d25f08a` — `fix(build): replace OG ImageResponse icons with static PNGs` |
+| Evidence commit | `a2fa0e4` — `docs(admin): ADMIN.RUNTIME local DB restore and consolidated E2E evidence` |
+| End SHA | `a2fa0e4` |
+| Diff stat (2 commits) | 13 files, +739 / −56 |
+| Push | **not pushed** |
+| Pre-existing untracked leftovers | left untracked (`####/`, pdfs, `scripts/_tmp-*`, phase15 scripts) |
 
 ## R. Remaining risks
 
