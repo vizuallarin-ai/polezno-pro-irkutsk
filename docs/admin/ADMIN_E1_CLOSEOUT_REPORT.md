@@ -25,8 +25,8 @@ Not promoted to CLOSED because **both** hard blockers remain:
 | Item | Value |
 |---|---|
 | Branch | `phase15-ux-funnel-hardening` |
-| Local HEAD (this closeout) | `750eaf5` |
-| Origin HEAD | `95ba8d0` (ahead 14) |
+| Local HEAD (this closeout) | `445e123` |
+| Origin HEAD | `95ba8d0` (ahead 15) |
 | Production SHA | `b3a51ba8500bb03b5f1124feab567bee3a313824` health ok |
 
 ## Evidence
