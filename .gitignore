@@ -55,3 +55,7 @@ next-env.d.ts
 docs/owner-content/private/
 docs/owner-content/**/raw/
 *.owner-pack.local.json
+
+# ADMIN.E disposable proofs
+.tmp-admin-e-backup/
+.tmp-admin-e-media/

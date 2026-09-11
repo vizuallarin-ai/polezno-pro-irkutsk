@@ -1,8 +1,9 @@
 import type { CollectionConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import {
-  adminCrud,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   publishedOrStaff,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
@@ -12,8 +13,10 @@ import {
   SLUG_FIELD_ADMIN,
   SLUG_FIELD_LABEL,
 } from "../hooks/auto-slug";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { excursionPublishGuardBeforeValidate } from "../hooks/publish-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { CONTENT_VERSIONS } from "../versioning";
 import { validateRequiredSlug } from "../validators";
 
 export const Excursions: CollectionConfig = {
@@ -36,18 +39,20 @@ export const Excursions: CollectionConfig = {
       return null;
     },
   },
+  versions: CONTENT_VERSIONS,
   access: {
     admin: adminPanelAccess,
     read: publishedOrStaff("status"),
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
   hooks: {
     beforeValidate: [
       createAutoSlugBeforeValidate({ sourceField: "title", fallback: "excursion" }),
       excursionPublishGuardBeforeValidate,
     ],
+    beforeDelete: [createContentDeleteGuard()],
     afterChange: [revalidateAfterChange],
   },
   fields: [

@@ -1,5 +1,9 @@
 import type { CollectionConfig } from "payload";
-import { adminCrud, adminPanelAccess, staffOnlyRead } from "../access";
+import {
+  canAccessSystemCollections,
+  developerOnlyRead,
+  developerPanelAccess,
+} from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
 
 export const Partners: CollectionConfig = {
@@ -16,11 +20,11 @@ export const Partners: CollectionConfig = {
       "Orphan / не используется публичным сайтом. Скрыто из ежедневной работы владельца.",
   },
   access: {
-    admin: adminPanelAccess,
-    read: staffOnlyRead,
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    admin: developerPanelAccess,
+    read: developerOnlyRead,
+    create: canAccessSystemCollections,
+    update: canAccessSystemCollections,
+    delete: canAccessSystemCollections,
   },
   fields: [
     {

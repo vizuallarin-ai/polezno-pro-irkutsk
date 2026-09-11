@@ -5,7 +5,7 @@ import type {
 } from "payload";
 import { sendReviewRequest } from "@/lib/email";
 import {
-  adminPanelAccess,
+  ownerOrDeveloperPanelAccess,
   leadsCreateAccess,
   leadsDeleteAccess,
   leadsReadAccess,
@@ -30,6 +30,7 @@ import {
   LEAD_STATUS_OPTIONS,
   parseLeadDate,
 } from "@/lib/leads/crm";
+import { leadsBeforeDeleteGuard } from "../hooks/delete-guards";
 
 const afterChangeHook: CollectionAfterChangeHook = async ({
   doc,
@@ -130,17 +131,22 @@ export const Leads: CollectionConfig = {
       "adminComment",
     ],
     description:
-      "Рабочий стол заявок: статус → следующий контакт → заметка. Не удаляйте завершённые заявки — переведите в «Завершено» или «Отказ».",
+      "Рабочий стол заявок: статус → следующий контакт → заметка. Не удаляйте заявки — переведите в «Завершено» или «Отказ». Жёсткое удаление только у разработчика.",
     components: {
       beforeListTable: ["./payload/components/LeadsListFilters#default"],
     },
   },
   access: {
-    admin: adminPanelAccess,
+    admin: ownerOrDeveloperPanelAccess,
     read: leadsReadAccess,
     create: leadsCreateAccess,
     update: leadsUpdateAccess,
     delete: leadsDeleteAccess,
+  },
+  hooks: {
+    beforeValidate: [crmBeforeValidate],
+    beforeDelete: [leadsBeforeDeleteGuard],
+    afterChange: [afterChangeHook],
   },
   defaultSort: "-createdAt",
   fields: [
@@ -588,8 +594,4 @@ export const Leads: CollectionConfig = {
       ],
     },
   ],
-  hooks: {
-    beforeValidate: [crmBeforeValidate],
-    afterChange: [afterChangeHook],
-  },
 };

@@ -1,7 +1,8 @@
 import type { CollectionConfig } from "payload";
 import {
-  adminCrud,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   publishedOrStaff,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
@@ -11,6 +12,7 @@ import {
   SLUG_FIELD_ADMIN,
   SLUG_FIELD_LABEL,
 } from "../hooks/auto-slug";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -36,14 +38,15 @@ export const Events: CollectionConfig = {
   access: {
     admin: adminPanelAccess,
     read: publishedOrStaff("status"),
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
   hooks: {
     beforeValidate: [
       createAutoSlugBeforeValidate({ sourceField: "title", fallback: "event" }),
     ],
+    beforeDelete: [createContentDeleteGuard()],
     beforeChange: [
       ({ data }) => {
         if (data?.startDate) {

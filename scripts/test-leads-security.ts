@@ -101,6 +101,16 @@ function testAccessContracts() {
   } as never;
   assert.equal(leadsCreateAccess(admin), true);
   assert.equal(mediaReadAccess(admin), true);
+
+  const editor = {
+    req: { user: { role: "editor" } },
+  } as never;
+  assert.equal(leadsCreateAccess(editor), false);
+
+  const developer = {
+    req: { user: { role: "developer" } },
+  } as never;
+  assert.equal(leadsCreateAccess(developer), true);
 }
 
 const tests = [

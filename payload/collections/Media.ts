@@ -2,7 +2,13 @@ import type { CollectionConfig } from "payload";
 import { ADMIN_GROUP } from "../admin-groups";
 import path from "path";
 import { fileURLToPath } from "url";
-import { adminPanelAccess, mediaReadAccess, mediaWriteAccess } from "../access";
+import {
+  adminPanelAccess,
+  mediaDeleteAccess,
+  mediaReadAccess,
+  mediaWriteAccess,
+} from "../access";
+import { mediaBeforeDeleteGuard } from "../hooks/delete-guards";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -37,14 +43,17 @@ export const Media: CollectionConfig = {
     group: ADMIN_GROUP.SYSTEM,
     useAsTitle: "filename",
     description:
-      "Файлы загрузок. Обычно добавляются через поля обложки в экскурсиях/статьях/фото. Прямое управление — для разработчика.",
+      "Файлы загрузок. Обычно добавляются через поля обложки. Жёсткое удаление файлов — только разработчик (чтобы не сломать ссылки).",
   },
   access: {
     admin: adminPanelAccess,
     read: mediaReadAccess,
     create: mediaWriteAccess,
     update: mediaWriteAccess,
-    delete: mediaWriteAccess,
+    delete: mediaDeleteAccess,
+  },
+  hooks: {
+    beforeDelete: [mediaBeforeDeleteGuard],
   },
   fields: [
     {

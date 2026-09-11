@@ -1,12 +1,15 @@
 import type { CollectionConfig } from "payload";
 import {
-  adminCrud,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   reviewReadAccess,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
 import { CONTENT_STATUS_OPTIONS } from "../constants";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { CONTENT_VERSIONS } from "../versioning";
 
 export const Reviews: CollectionConfig = {
   slug: "reviews",
@@ -23,14 +26,16 @@ export const Reviews: CollectionConfig = {
       "Отзывы для блока доверия на главной. Если отзывов ещё нет — добавьте реальные. Черновик не виден на сайте; «Опубликован» + «На главной» — показывается посетителям.",
     hidden: false,
   },
+  versions: CONTENT_VERSIONS,
   access: {
     admin: adminPanelAccess,
     read: reviewReadAccess,
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
   hooks: {
+    beforeDelete: [createContentDeleteGuard()],
     afterChange: [revalidateAfterChange],
   },
   fields: [

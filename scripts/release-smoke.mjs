@@ -34,7 +34,7 @@ Convention:
   marker field / message: [RELEASE1-SMOKE] <stamp>
 
 Expected:
-  POST /api/leads → 200 { ok: true, id }
+  POST /api/public/leads → 200 { ok: true, id }
   Payload admin → Leads collection shows row with marker
   Cleanup: delete that lead in admin (or SQL delete by marker) after proof
 

@@ -24,9 +24,12 @@ export default async function OwnerDashboardView({
     redirect("/admin/login");
   }
 
+  const role = (user as { role?: string | null }).role;
+  const includeLeads = role === "admin" || role === "developer";
+
   let model;
   try {
-    model = await fetchOwnerDashboard(payload);
+    model = await fetchOwnerDashboard(payload, { includeLeads });
   } catch {
     model = null;
   }

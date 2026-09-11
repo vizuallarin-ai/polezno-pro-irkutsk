@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { adminCrud } from "../access";
+import { isOwnerOrDeveloper } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
 import { revalidateGlobalAfterChange } from "../hooks/revalidate";
 
@@ -15,7 +15,7 @@ export const Navigation: GlobalConfig = {
   access: {
     // Public Local API needs CTA fields; mainNav is unused by frontend.
     read: () => true,
-    update: adminCrud,
+    update: isOwnerOrDeveloper,
   },
   hooks: {
     afterChange: [revalidateGlobalAfterChange],

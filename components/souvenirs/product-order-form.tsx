@@ -76,7 +76,7 @@ export function ProductOrderForm({
           ? values.contact
           : values.email,
       };
-      const res = await fetch("/api/leads", {
+      const res = await fetch("/api/public/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

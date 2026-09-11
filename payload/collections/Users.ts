@@ -1,6 +1,17 @@
 import type { CollectionConfig } from "payload";
-import { adminCrud, adminPanelAccess } from "../access";
+import {
+  ownerOrDeveloperPanelAccess,
+  usersCreateAccess,
+  usersDeleteAccess,
+  usersReadAccess,
+  usersUpdateAccess,
+} from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
+import {
+  usersBeforeChangeGuard,
+  usersBeforeDeleteGuard,
+} from "../hooks/delete-guards";
+import { ROLE_OPTIONS } from "../roles";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -13,14 +24,18 @@ export const Users: CollectionConfig = {
     group: ADMIN_GROUP.MANAGEMENT,
     useAsTitle: "email",
     description:
-      "Доступ к /admin только для роли «Администратор». Роль «Редактор» пока не открывает панель (планируется в ADMIN.E).",
+      "Роли: Владелец (admin), Контент-редактор (editor), Разработчик (developer). Не удаляйте последнего владельца/разработчика.",
   },
   access: {
-    admin: adminPanelAccess,
-    read: adminCrud,
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    admin: ownerOrDeveloperPanelAccess,
+    read: usersReadAccess,
+    create: usersCreateAccess,
+    update: usersUpdateAccess,
+    delete: usersDeleteAccess,
+  },
+  hooks: {
+    beforeChange: [usersBeforeChangeGuard],
+    beforeDelete: [usersBeforeDeleteGuard],
   },
   fields: [
     {
@@ -33,17 +48,11 @@ export const Users: CollectionConfig = {
       type: "select",
       label: "Роль",
       required: true,
-      options: [
-        { label: "Администратор (полный доступ)", value: "admin" },
-        {
-          label: "Редактор (пока без входа в /admin — не выбирать)",
-          value: "editor",
-        },
-      ],
+      options: [...ROLE_OPTIONS],
       defaultValue: "admin",
       admin: {
         description:
-          "Пока используйте только «Администратор». Модель Owner / Content Editor / Developer — этап ADMIN.E.",
+          "Владелец — контент и заявки. Редактор — только контент (без заявок и пользователей). Разработчик — технический полный доступ.",
       },
     },
   ],

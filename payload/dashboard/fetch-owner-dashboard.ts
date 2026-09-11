@@ -40,6 +40,8 @@ export type OwnerDashboardModel = {
   siteUrl: string;
   generatedAt: string;
   queryCount: number;
+  /** When false, leads block must stay hidden (Content Editor). */
+  includeLeads: boolean;
   readiness: OwnerLaunchReadiness;
   attention: AttentionItem[];
   quickActions: QuickAction[];
@@ -144,8 +146,10 @@ function reviewLooksDemo(doc: Record<string, unknown>): boolean {
  * Lead CRM: one active-leads find replaces prior new-count + recent-new find.
  */
 export async function fetchOwnerDashboard(
-  payload: Payload
+  payload: Payload,
+  options?: { includeLeads?: boolean }
 ): Promise<OwnerDashboardModel> {
+  const includeLeads = options?.includeLeads !== false;
   const errors: string[] = [];
   const access = ADMIN_LOCAL;
   let queryCount = 0;
@@ -426,9 +430,9 @@ export async function fetchOwnerDashboard(
         "черновики статей"
       )
     ),
-    track(
-      safeFindActiveLeads(payload, errors)
-    ),
+    includeLeads
+      ? track(safeFindActiveLeads(payload, errors))
+      : Promise.resolve({ docs: [] as Record<string, unknown>[], totalDocs: 0 }),
     (async () => {
       queryCount += 1;
       try {
@@ -482,11 +486,11 @@ export async function fetchOwnerDashboard(
       : "Уведомления не настроены (нет Resend/EMAIL_*)";
 
   const snapshot: OwnerDashboardSnapshotInput = {
-    leadsNew: crm.newCount,
-    leadsOverdue: crm.overdueCount,
-    leadsDueToday: crm.dueTodayCount,
-    leadsUnscheduled: crm.unscheduledCount,
-    recentNewLeads: crm.recentNew,
+    leadsNew: includeLeads ? crm.newCount : 0,
+    leadsOverdue: includeLeads ? crm.overdueCount : 0,
+    leadsDueToday: includeLeads ? crm.dueTodayCount : 0,
+    leadsUnscheduled: includeLeads ? crm.unscheduledCount : 0,
+    recentNewLeads: includeLeads ? crm.recentNew : [],
     leadNotify: { enabled: notifyEnabled, envConfigured },
     excursions: {
       published: excursionsPublished,
@@ -501,7 +505,7 @@ export async function fetchOwnerDashboard(
     articles: {
       published: articlesPublished,
       drafts: articlesDraft,
-      // Counts use admin `status`. Public also gates on `_status` when set — ADMIN.E.
+      // Canonical lifecycle = custom status; _status synced by ADMIN.E hook.
       publishedReady: countPublishedReadyDocs("article", articleDocs),
     },
     reviews: {
@@ -553,16 +557,22 @@ export async function fetchOwnerDashboard(
   };
 
   const readiness = buildOwnerLaunchReadiness(snapshot);
-  const attention = buildAttentionItems(snapshot, readiness);
+  const attention = buildAttentionItems(snapshot, readiness).filter((item) =>
+    includeLeads ? true : !String(item.id).startsWith("leads-")
+  );
   const siteUrl = getSiteUrl();
+  const quickActions = buildOwnerQuickActions(siteUrl).filter((action) =>
+    includeLeads ? true : action.id !== "open-leads"
+  );
 
   return {
     siteUrl,
     generatedAt: new Date().toISOString(),
     queryCount,
+    includeLeads,
     readiness,
     attention,
-    quickActions: buildOwnerQuickActions(siteUrl),
+    quickActions,
     leads: {
       newCount: crm.newCount,
       overdueCount: crm.overdueCount,

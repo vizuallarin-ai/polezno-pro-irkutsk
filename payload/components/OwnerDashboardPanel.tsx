@@ -119,6 +119,7 @@ export function OwnerDashboardPanel({ model }: Props) {
     attention,
     readiness,
     quickActions,
+    includeLeads,
     leads,
     shelves,
     drafts,
@@ -322,6 +323,7 @@ export function OwnerDashboardPanel({ model }: Props) {
         </div>
       </section>
 
+      {includeLeads ? (
       <section style={section} aria-labelledby="owner-leads-heading">
         <h2 id="owner-leads-heading" style={sectionTitle}>
           Заявки
@@ -414,6 +416,7 @@ export function OwnerDashboardPanel({ model }: Props) {
           )}
         </div>
       </section>
+      ) : null}
 
       <section style={section} aria-labelledby="owner-content-heading">
         <h2 id="owner-content-heading" style={sectionTitle}>

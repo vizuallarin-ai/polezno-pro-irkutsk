@@ -1,8 +1,9 @@
 import type { CollectionConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import {
-  adminCrud,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   articleReadAccess,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
@@ -11,12 +12,15 @@ import {
   CONTENT_STATUS_OPTIONS,
   MATERIAL_TYPE_OPTIONS,
 } from "../constants";
+import { articleStatusSyncBeforeChange } from "../hooks/article-status-sync";
 import {
   createAutoSlugBeforeValidate,
   SLUG_FIELD_ADMIN,
   SLUG_FIELD_LABEL,
 } from "../hooks/auto-slug";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { ARTICLE_VERSIONS } from "../versioning";
 import { validateRequiredSlug } from "../validators";
 
 export const Articles: CollectionConfig = {
@@ -28,10 +32,10 @@ export const Articles: CollectionConfig = {
   admin: {
     group: ADMIN_GROUP.CONTENT,
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "status", "publishedAt", "_status", "updatedAt"],
+    defaultColumns: ["title", "category", "status", "publishedAt", "updatedAt"],
     listSearchableFields: ["title", "excerpt", "slug"],
     description:
-      "Статьи раздела /explore. На сайте видны только при «Опубликован» и версии Payload «Published» (оба статуса).",
+      "Статьи раздела /explore. Канонический контроль — «Статус публикации». На сайте видны только со статусом «Опубликован» (Payload _status синхронизируется автоматически).",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/${doc.slug}`;
@@ -42,19 +46,17 @@ export const Articles: CollectionConfig = {
   access: {
     admin: adminPanelAccess,
     read: articleReadAccess,
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
-  versions: {
-    drafts: {
-      autosave: true,
-    },
-  },
+  versions: ARTICLE_VERSIONS,
   hooks: {
     beforeValidate: [
       createAutoSlugBeforeValidate({ sourceField: "title", fallback: "article" }),
     ],
+    beforeChange: [articleStatusSyncBeforeChange],
+    beforeDelete: [createContentDeleteGuard()],
     afterChange: [revalidateAfterChange],
   },
   fields: [
@@ -83,7 +85,7 @@ export const Articles: CollectionConfig = {
       admin: {
         position: "sidebar",
         description:
-          "Свой статус коллекции. Для сайта также нужна кнопка Publish версии Payload (_status). Оба должны быть «published».",
+          "Канонический статус для владельца. «Опубликован» автоматически выставляет Payload _status=published; скрыт/архив/черновик → draft.",
       },
     },
     {

@@ -1,8 +1,9 @@
 import type { CollectionConfig } from "payload";
 import {
-  adminCrud,
   adminFieldAccess,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   photoReadAccess,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
@@ -18,7 +19,9 @@ import {
   SLUG_FIELD_ADMIN,
   SLUG_FIELD_LABEL,
 } from "../hooks/auto-slug";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { CONTENT_VERSIONS } from "../versioning";
 import { validateRequiredSlug } from "../validators";
 import { promotePendingMedia } from "@/lib/promote-pending-media";
 
@@ -59,17 +62,19 @@ export const Photos: CollectionConfig = {
       return null;
     },
   },
+  versions: CONTENT_VERSIONS,
   access: {
     admin: adminPanelAccess,
     read: photoReadAccess,
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
   hooks: {
     beforeValidate: [
       createAutoSlugBeforeValidate({ sourceField: "title", fallback: "photo" }),
     ],
+    beforeDelete: [createContentDeleteGuard()],
     beforeChange: [
       ({ data, operation }) => {
         if (data?.status === "published") {

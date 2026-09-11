@@ -1,53 +1,103 @@
+/**
+ * Canonical Payload access layer (ADMIN.E).
+ * Collection configs should import helpers from here — avoid inline role checks.
+ */
 import type { Access, AccessArgs, FieldAccess, Where } from "payload";
-import { PHOTO_PUBLISHED_WHERE } from "@/lib/cms-filters";
+import { PHOTO_PUBLISHED_WHERE, MAKER_PUBLISHED_WHERE } from "@/lib/cms-filters";
+import {
+  isContentEditorRole,
+  isDeveloperRole,
+  isOwnerRole,
+  isPrivilegedRole,
+  roleOf,
+  type UserWithRole,
+} from "./roles";
 
-type UserWithRole = { role?: "admin" | "editor" | null };
+type Args = AccessArgs;
+type User = UserWithRole | null | undefined;
 
-export const isAdmin = ({ req: { user } }: AccessArgs): boolean =>
-  (user as UserWithRole | null)?.role === "admin";
+export const isAuthenticated = ({ req: { user } }: Args): boolean => Boolean(user);
 
-export const isStaff = ({ req: { user } }: AccessArgs): boolean => {
-  const role = (user as UserWithRole | null)?.role;
-  return role === "admin" || role === "editor";
+export const isOwner = ({ req: { user } }: Args): boolean =>
+  isOwnerRole(roleOf(user as User));
+
+export const isDeveloper = ({ req: { user } }: Args): boolean =>
+  isDeveloperRole(roleOf(user as User));
+
+export const isContentEditor = ({ req: { user } }: Args): boolean =>
+  isContentEditorRole(roleOf(user as User));
+
+export const isOwnerOrDeveloper = ({ req: { user } }: Args): boolean => {
+  const role = roleOf(user as User);
+  return isOwnerRole(role) || isDeveloperRole(role);
 };
 
-/** Доступ к панели /admin — только администраторы (boolean). */
-export const adminPanelAccess = ({ req: { user } }: AccessArgs): boolean =>
-  (user as UserWithRole | null)?.role === "admin";
+/** Any signed-in CMS operator (Owner / Editor / Developer). */
+export const isStaff = ({ req: { user } }: Args): boolean =>
+  roleOf(user as User) != null;
 
-/** CRUD контента — только администраторы. */
-export const adminCrud: Access = isAdmin;
+/** @deprecated Use isOwner — kept for older call sites during ADMIN.E. */
+export const isAdmin = isOwner;
 
-export const adminFieldAccess: FieldAccess = isAdmin;
+export const canManageContent = ({ req: { user } }: Args): boolean =>
+  roleOf(user as User) != null;
 
-/** Публичное чтение опубликованного или полный доступ для staff. */
-export const publishedOrStaff = (
-  statusField = "status"
-): Access =>
+export const canManageLeads = isOwnerOrDeveloper;
+
+export const canManageUsers = isOwnerOrDeveloper;
+
+export const canAccessSystemCollections = isDeveloper;
+
+export const canHardDelete = isDeveloper;
+
+/** /admin panel: all three roles. */
+export const adminPanelAccess = ({ req: { user } }: Args): boolean =>
+  roleOf(user as User) != null;
+
+/** Owner+Developer only surfaces (leads list, etc.). */
+export const ownerOrDeveloperPanelAccess = isOwnerOrDeveloper;
+
+/** Developer-only admin visibility for system collections. */
+export const developerPanelAccess = isDeveloper;
+
+/** Legacy name: owner-facing CRUD previously meant admin-only. Prefer canManageContent. */
+export const adminCrud: Access = ({ req: { user } }) =>
+  isOwnerRole(roleOf(user as User)) || isDeveloperRole(roleOf(user as User));
+
+export const contentCrud: Access = canManageContent;
+
+export const adminFieldAccess: FieldAccess = ({ req: { user } }) =>
+  isOwnerRole(roleOf(user as User)) || isDeveloperRole(roleOf(user as User));
+
+export const developerFieldAccess: FieldAccess = ({ req: { user } }) =>
+  isDeveloperRole(roleOf(user as User));
+
+/** Published catalog read, or full staff read. */
+export const publishedOrStaff = (statusField = "status"): Access =>
   ({ req: { user } }) => {
-    if (isStaff({ req: { user } } as AccessArgs)) return true;
+    if (isStaff({ req: { user } } as Args)) return true;
     return { [statusField]: { equals: "published" } };
   };
 
-/**
- * Orphan / system collections: no anonymous REST dump.
- * Local API with overrideAccess still works for trusted server code.
- */
-export const staffOnlyRead: Access = ({ req: { user } }) =>
-  isStaff({ req: { user } } as AccessArgs);
+/** Makers: public must match frontend MAKER_PUBLISHED_WHERE (ADMIN-A-P2-13). */
+export const makerReadAccess: Access = ({ req: { user } }) => {
+  if (isStaff({ req: { user } } as Args)) return true;
+  return MAKER_PUBLISHED_WHERE;
+};
 
-/** Featured reviews: public only when status=published (ADMIN.B). */
+export const staffOnlyRead: Access = ({ req: { user } }) =>
+  isStaff({ req: { user } } as Args);
+
+export const developerOnlyRead: Access = ({ req: { user } }) =>
+  isDeveloperRole(roleOf(user as User));
+
 export const reviewReadAccess: Access = ({ req: { user } }) => {
-  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  if (isStaff({ req: { user } } as Args)) return true;
   return { status: { equals: "published" } };
 };
 
-/**
- * Guides: public only active profiles, excluding known placeholder slugs.
- * Frontend also fail-closes via content-readiness.
- */
 export const guideReadAccess: Access = ({ req: { user } }) => {
-  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  if (isStaff({ req: { user } } as Args)) return true;
   const where: Where = {
     and: [
       { isActive: { equals: true } },
@@ -60,6 +110,11 @@ export const guideReadAccess: Access = ({ req: { user } }) => {
   return where;
 };
 
+/**
+ * Articles: after ADMIN.E sync hook, custom `status` is canonical for lifecycle
+ * (incl. hidden/archived). Public still requires Payload `_status=published`
+ * so a bad draft version cannot leak; sync keeps them aligned when owner publishes.
+ */
 const ARTICLE_PUBLIC_WHERE: Where = {
   and: [
     { _status: { equals: "published" } },
@@ -67,27 +122,44 @@ const ARTICLE_PUBLIC_WHERE: Where = {
   ],
 };
 
-/** Статьи с drafts: staff видит всё, публично — только published. */
 export const articleReadAccess: Access = ({ req: { user } }) => {
-  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  if (isStaff({ req: { user } } as Args)) return true;
   return ARTICLE_PUBLIC_WHERE;
 };
 
-export const leadsReadAccess: Access = isAdmin;
-export const leadsUpdateAccess: Access = isAdmin;
-export const leadsDeleteAccess: Access = isAdmin;
-/** Create only via trusted Local API (`overrideAccess`) after spam checks — not public REST/GraphQL. */
-export const leadsCreateAccess: Access = isAdmin;
+export const leadsReadAccess: Access = canManageLeads;
+export const leadsUpdateAccess: Access = canManageLeads;
+/** Hard delete: Developer only (Owner closes via CRM status). */
+export const leadsDeleteAccess: Access = canHardDelete;
+/** Create only via trusted Local API (`overrideAccess`) after spam checks. */
+export const leadsCreateAccess: Access = canManageLeads;
 
-/** Public may read only media marked visibility=public; staff sees all. */
 export const mediaReadAccess: Access = ({ req: { user } }) => {
-  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  if (isStaff({ req: { user } } as Args)) return true;
   return { visibility: { equals: "public" } };
 };
-export const mediaWriteAccess: Access = isAdmin;
+export const mediaWriteAccess: Access = canManageContent;
+/** Prefer soft-removal; hard delete media is Developer (relational safety). */
+export const mediaDeleteAccess: Access = canHardDelete;
 
-/** Публично — только опубликованные и одобренные фото. */
 export const photoReadAccess: Access = ({ req: { user } }) => {
-  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  if (isStaff({ req: { user } } as Args)) return true;
   return PHOTO_PUBLISHED_WHERE;
 };
+
+/** Content delete: Owner/Editor blocked at access+hook for non-archived; Developer always. */
+export const contentDeleteAccess: Access = ({ req: { user } }) => {
+  const role = roleOf(user as User);
+  if (isDeveloperRole(role)) return true;
+  if (role == null) return false;
+  // Narrowing for non-dev happens in beforeDelete (status must be archived).
+  return true;
+};
+
+export const usersReadAccess: Access = canManageUsers;
+export const usersCreateAccess: Access = canManageUsers;
+export const usersUpdateAccess: Access = canManageUsers;
+export const usersDeleteAccess: Access = canManageUsers;
+
+export { isPrivilegedRole, roleOf };
+export type { UserWithRole };

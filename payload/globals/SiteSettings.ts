@@ -1,8 +1,9 @@
 import type { GlobalConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { adminCrud, adminFieldAccess } from "../access";
+import { adminFieldAccess, isOwnerOrDeveloper } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
 import { revalidateGlobalAfterChange } from "../hooks/revalidate";
+import { GLOBAL_VERSIONS } from "../versioning";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
@@ -12,9 +13,10 @@ export const SiteSettings: GlobalConfig = {
     description:
       "Имя автора, контакты, SEO и настройки заявок. Не заполняйте чужие данные — только реальные контакты владельца.",
   },
+  versions: GLOBAL_VERSIONS,
   access: {
     read: () => true,
-    update: adminCrud,
+    update: isOwnerOrDeveloper,
   },
   hooks: {
     afterChange: [revalidateGlobalAfterChange],

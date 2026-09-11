@@ -1,7 +1,8 @@
 import type { CollectionConfig } from "payload";
 import {
-  adminCrud,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   publishedOrStaff,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
@@ -10,9 +11,11 @@ import {
   SLUG_FIELD_ADMIN,
   SLUG_FIELD_LABEL,
 } from "../hooks/auto-slug";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { routePublishGuardBeforeValidate } from "../hooks/publish-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { syncRouteGeometryBeforeChange } from "../hooks/sync-route-geometry";
+import { CONTENT_VERSIONS } from "../versioning";
 import {
   CONTENT_STATUS_OPTIONS,
   ROUTE_ACCESS_OPTIONS,
@@ -97,12 +100,13 @@ export const Routes: CollectionConfig = {
     description:
       "Маршруты для карты /map. Если список пуст — добавьте первый маршрут с точками. Для публикации нужны описание и хотя бы одна точка с координатами.",
   },
+  versions: CONTENT_VERSIONS,
   access: {
     admin: adminPanelAccess,
     read: publishedOrStaff("status"),
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
   hooks: {
     beforeValidate: [
@@ -110,6 +114,7 @@ export const Routes: CollectionConfig = {
       routePublishGuardBeforeValidate,
     ],
     beforeChange: [syncRouteGeometryBeforeChange],
+    beforeDelete: [createContentDeleteGuard()],
     afterChange: [revalidateAfterChange],
   },
   fields: [

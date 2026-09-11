@@ -1,7 +1,8 @@
 import type { CollectionConfig } from "payload";
 import {
-  adminCrud,
   adminPanelAccess,
+  contentCrud,
+  contentDeleteAccess,
   guideReadAccess,
 } from "../access";
 import { ADMIN_GROUP } from "../admin-groups";
@@ -10,8 +11,10 @@ import {
   SLUG_FIELD_ADMIN,
   SLUG_FIELD_LABEL,
 } from "../hooks/auto-slug";
+import { createContentDeleteGuard } from "../hooks/delete-guards";
 import { guidePublicSafetyBeforeValidate } from "../hooks/publish-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
+import { CONTENT_VERSIONS } from "../versioning";
 import { validateRequiredSlug } from "../validators";
 
 export const Guides: CollectionConfig = {
@@ -29,18 +32,20 @@ export const Guides: CollectionConfig = {
       "Профили гидов для /about/guides. Если профиль пустой или с заглушкой — заполните имя и ссылку. Неактивный или незаполненный профиль на сайте не показывается.",
     hidden: false,
   },
+  versions: CONTENT_VERSIONS,
   access: {
     admin: adminPanelAccess,
     read: guideReadAccess,
-    create: adminCrud,
-    update: adminCrud,
-    delete: adminCrud,
+    create: contentCrud,
+    update: contentCrud,
+    delete: contentDeleteAccess,
   },
   hooks: {
     beforeValidate: [
       createAutoSlugBeforeValidate({ sourceField: "name", fallback: "guide" }),
       guidePublicSafetyBeforeValidate,
     ],
+    beforeDelete: [createContentDeleteGuard({ mode: "guide" })],
     afterChange: [revalidateAfterChange],
   },
   fields: [
