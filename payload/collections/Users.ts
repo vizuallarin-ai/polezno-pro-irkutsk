@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { adminCrud, adminPanelAccess } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -9,8 +10,10 @@ export const Users: CollectionConfig = {
   },
   auth: true,
   admin: {
+    group: ADMIN_GROUP.MANAGEMENT,
     useAsTitle: "email",
-    description: "Доступ к /admin только для роли «Администратор».",
+    description:
+      "Доступ к /admin только для роли «Администратор». Роль «Редактор» пока не открывает панель (планируется в ADMIN.E).",
   },
   access: {
     admin: adminPanelAccess,
@@ -31,12 +34,16 @@ export const Users: CollectionConfig = {
       label: "Роль",
       required: true,
       options: [
-        { label: "Администратор", value: "admin" },
-        { label: "Редактор", value: "editor" },
+        { label: "Администратор (полный доступ)", value: "admin" },
+        {
+          label: "Редактор (пока без входа в /admin — не выбирать)",
+          value: "editor",
+        },
       ],
       defaultValue: "admin",
       admin: {
-        description: "Только администраторы могут входить в панель CMS.",
+        description:
+          "Пока используйте только «Администратор». Модель Owner / Content Editor / Developer — этап ADMIN.E.",
       },
     },
   ],

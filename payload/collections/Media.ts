@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { ADMIN_GROUP } from "../admin-groups";
 import path from "path";
 import { fileURLToPath } from "url";
 import { adminPanelAccess, mediaReadAccess, mediaWriteAccess } from "../access";
@@ -33,8 +34,10 @@ export const Media: CollectionConfig = {
     ],
   },
   admin: {
+    group: ADMIN_GROUP.SYSTEM,
     useAsTitle: "filename",
-    description: "Изображения, видео и PDF для маршрутов, статей и товаров.",
+    description:
+      "Файлы загрузок. Обычно добавляются через поля обложки в экскурсиях/статьях/фото. Прямое управление — для разработчика.",
   },
   access: {
     admin: adminPanelAccess,

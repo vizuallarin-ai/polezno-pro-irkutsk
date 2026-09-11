@@ -258,8 +258,16 @@ export const SLUG_POLICY = {
 } as const;
 
 export const PUBLICATION_FLOW = {
-  withDraftStatus: ["excursions", "routes", "photos", "events", "articles", "products"],
-  withoutDraftStatus: ["reviews", "guides", "site-settings"],
+  withDraftStatus: [
+    "excursions",
+    "routes",
+    "photos",
+    "events",
+    "articles",
+    "products",
+    "reviews",
+  ],
+  withoutDraftStatus: ["guides", "site-settings"],
   recommended: ["INGEST", "DRAFT", "PREVIEW", "OWNER_QA", "PUBLISH"] as const,
-  gap: "reviews/guides lack publish status — use isFeatured/isActive carefully; prefer draft CMS extension or staging-only until publish gate.",
+  gap: "guides use isActive (not draft status); placeholder profiles are fail-closed in access + readiness. Reviews use status + isFeatured (ADMIN.B).",
 } as const;

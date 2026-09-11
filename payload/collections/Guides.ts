@@ -1,21 +1,47 @@
 import type { CollectionConfig } from "payload";
-import { adminCrud, adminPanelAccess } from "../access";
+import {
+  adminCrud,
+  adminPanelAccess,
+  guideReadAccess,
+} from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
+import { guidePublicSafetyBeforeValidate } from "../hooks/publish-guards";
+import { revalidateAfterChange } from "../hooks/revalidate";
+import { validateRequiredSlug } from "../validators";
 
 export const Guides: CollectionConfig = {
   slug: "guides",
+  labels: {
+    singular: "Гид / профиль",
+    plural: "Гиды / профили",
+  },
   admin: {
+    group: ADMIN_GROUP.PROJECT,
     useAsTitle: "name",
     defaultColumns: ["name", "specialization", "isActive", "updatedAt"],
-    group: "Позже",
-    hidden: true,
-    description: "Скоро — управление гидами в следующей фазе.",
+    listSearchableFields: ["name", "slug", "bio"],
+    description:
+      "Профили гидов для /about/guides. Неактивный или незаполненный профиль на сайте не показывается.",
+    hidden: false,
   },
   access: {
     admin: adminPanelAccess,
-    read: () => true,
+    read: guideReadAccess,
     create: adminCrud,
     update: adminCrud,
     delete: adminCrud,
+  },
+  hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "name", fallback: "guide" }),
+      guidePublicSafetyBeforeValidate,
+    ],
+    afterChange: [revalidateAfterChange],
   },
   fields: [
     {
@@ -27,10 +53,11 @@ export const Guides: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
-      admin: { position: "sidebar" },
+      validate: validateRequiredSlug,
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "photo",
@@ -88,9 +115,13 @@ export const Guides: CollectionConfig = {
     {
       name: "isActive",
       type: "checkbox",
-      label: "Активный гид (показывать на сайте)",
-      defaultValue: true,
-      admin: { position: "sidebar" },
+      label: "Показывать на сайте",
+      defaultValue: false,
+      admin: {
+        position: "sidebar",
+        description:
+          "Включайте только для готового профиля. Placeholder и незаполненные карточки остаются выключенными.",
+      },
     },
     {
       name: "isFeatured",

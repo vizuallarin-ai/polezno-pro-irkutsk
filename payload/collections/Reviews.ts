@@ -1,21 +1,37 @@
 import type { CollectionConfig } from "payload";
-import { adminCrud, adminPanelAccess } from "../access";
+import {
+  adminCrud,
+  adminPanelAccess,
+  reviewReadAccess,
+} from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
+import { CONTENT_STATUS_OPTIONS } from "../constants";
+import { revalidateAfterChange } from "../hooks/revalidate";
 
 export const Reviews: CollectionConfig = {
   slug: "reviews",
+  labels: {
+    singular: "Отзыв",
+    plural: "Отзывы",
+  },
   admin: {
+    group: ADMIN_GROUP.CONTENT,
     useAsTitle: "author",
-    defaultColumns: ["author", "rating", "isFeatured", "updatedAt"],
-    group: "Позже",
-    hidden: true,
-    description: "Скоро — отзывы в следующей фазе.",
+    defaultColumns: ["author", "rating", "status", "isFeatured", "updatedAt"],
+    listSearchableFields: ["author", "city", "text"],
+    description:
+      "Отзывы для блока доверия на главной. Черновик не виден на сайте; «Опубликован» + «На главной» — показывается посетителям.",
+    hidden: false,
   },
   access: {
     admin: adminPanelAccess,
-    read: () => true,
+    read: reviewReadAccess,
     create: adminCrud,
     update: adminCrud,
     delete: adminCrud,
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange],
   },
   fields: [
     {
@@ -64,11 +80,26 @@ export const Reviews: CollectionConfig = {
       ],
     },
     {
+      name: "status",
+      type: "select",
+      label: "Статус публикации",
+      required: true,
+      defaultValue: "draft",
+      options: [...CONTENT_STATUS_OPTIONS],
+      admin: {
+        position: "sidebar",
+        description: "Только «Опубликован» может появиться на сайте.",
+      },
+    },
+    {
       name: "isFeatured",
       type: "checkbox",
       label: "Показывать на главной",
       defaultValue: false,
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Нужны статус «Опубликован» и эта галочка.",
+      },
     },
   ],
 };

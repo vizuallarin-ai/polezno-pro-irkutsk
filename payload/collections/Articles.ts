@@ -5,26 +5,33 @@ import {
   adminPanelAccess,
   articleReadAccess,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import {
   ARTICLE_CATEGORY_OPTIONS,
   CONTENT_STATUS_OPTIONS,
   MATERIAL_TYPE_OPTIONS,
 } from "../constants";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
   labels: {
-    singular: "Материал",
-    plural: "Материалы",
+    singular: "Статья",
+    plural: "Статьи",
   },
   admin: {
+    group: ADMIN_GROUP.CONTENT,
     useAsTitle: "title",
     defaultColumns: ["title", "category", "status", "publishedAt", "_status", "updatedAt"],
     listSearchableFields: ["title", "excerpt", "slug"],
     description:
-      "Материалы для раздела /explore. Публично — только status «Опубликован» и версия published.",
+      "Статьи раздела /explore. На сайте видны только при «Опубликован» и версии Payload «Published» (оба статуса).",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/${doc.slug}`;
@@ -45,6 +52,9 @@ export const Articles: CollectionConfig = {
     },
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "article" }),
+    ],
     afterChange: [revalidateAfterChange],
   },
   fields: [
@@ -57,11 +67,11 @@ export const Articles: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "URL-slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
       validate: validateRequiredSlug,
-      admin: { position: "sidebar" },
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "status",
@@ -70,7 +80,11 @@ export const Articles: CollectionConfig = {
       defaultValue: "draft",
       required: true,
       options: [...CONTENT_STATUS_OPTIONS],
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description:
+          "Свой статус коллекции. Для сайта также нужна кнопка Publish версии Payload (_status). Оба должны быть «published».",
+      },
     },
     {
       name: "materialType",
@@ -232,8 +246,12 @@ export const Articles: CollectionConfig = {
       name: "relatedPlaces",
       type: "relationship",
       relationTo: "places",
-      label: "Связанные места",
+      label: "Связанные места (system)",
       hasMany: true,
+      admin: {
+        hidden: true,
+        description: "Коллекция places не используется публичным сайтом.",
+      },
     },
     {
       name: "ctaText",

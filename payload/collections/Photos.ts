@@ -5,6 +5,7 @@ import {
   adminPanelAccess,
   photoReadAccess,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import {
   CONTENT_STATUS_OPTIONS,
   PHOTO_CATEGORY_OPTIONS,
@@ -12,6 +13,11 @@ import {
   PHOTO_RIGHTS_OPTIONS,
   PHOTO_TYPE_OPTIONS,
 } from "../constants";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 import { promotePendingMedia } from "@/lib/promote-pending-media";
@@ -22,9 +28,10 @@ export const Photos: CollectionConfig = {
   slug: "photos",
   labels: {
     singular: "Фото",
-    plural: "Фото Иркутска",
+    plural: "Фото",
   },
   admin: {
+    group: ADMIN_GROUP.CONTENT,
     useAsTitle: "title",
     defaultColumns: [
       "title",
@@ -44,7 +51,7 @@ export const Photos: CollectionConfig = {
       "sourceName",
     ],
     description:
-      "Фотоархив /explore/photos. Публично — status «Опубликован» и moderationStatus «Одобрено».",
+      "Фотоархив /explore/photos. Публично — статус «Опубликован» и модерация «Одобрено», с подтверждёнными правами.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/explore/photos/${doc.slug}`;
@@ -60,6 +67,9 @@ export const Photos: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "photo" }),
+    ],
     beforeChange: [
       ({ data, operation }) => {
         if (data?.status === "published") {
@@ -134,11 +144,11 @@ export const Photos: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
       validate: validateRequiredSlug,
-      admin: { position: "sidebar" },
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "status",

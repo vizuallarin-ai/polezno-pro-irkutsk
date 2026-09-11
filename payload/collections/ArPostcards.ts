@@ -5,6 +5,7 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import {
   AR_POSTCARD_EFFECT_OPTIONS,
   type ArPostcardEffectType,
@@ -13,6 +14,11 @@ import {
   CONTENT_STATUS_OPTIONS,
   PHOTO_RIGHTS_OPTIONS,
 } from "../constants";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -44,6 +50,7 @@ export const ArPostcards: CollectionConfig = {
     plural: "AR-открытки",
   },
   admin: {
+    group: ADMIN_GROUP.PRODUCT,
     useAsTitle: "title",
     defaultColumns: [
       "title",
@@ -78,6 +85,9 @@ export const ArPostcards: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "ar-postcard" }),
+    ],
     beforeChange: [
       ({ data, originalDoc, operation }) => {
         if (!data) return data;
@@ -158,14 +168,14 @@ export const ArPostcards: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
       validate: validateRequiredSlug,
       admin: {
-        position: "sidebar",
+        ...SLUG_FIELD_ADMIN,
         description:
-          "После публикации slug не меняется — иначе сломаются QR на напечатанных открытках. Смена slug у опубликованной записи заблокирована.",
+          "Заполняется автоматически. После публикации менять нельзя — иначе сломаются QR на напечатанных открытках.",
       },
     },
     {

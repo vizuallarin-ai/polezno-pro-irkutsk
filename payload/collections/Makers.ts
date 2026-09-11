@@ -5,12 +5,18 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import {
   CONTENT_STATUS_OPTIONS,
   MAKER_CRAFT_OPTIONS,
   MAKER_PLACEMENT_STATUS_OPTIONS,
   MAKER_PLACEMENT_TYPE_OPTIONS,
 } from "../constants";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -21,6 +27,7 @@ export const Makers: CollectionConfig = {
     plural: "Мастера",
   },
   admin: {
+    group: ADMIN_GROUP.PRODUCT,
     useAsTitle: "title",
     defaultColumns: [
       "title",
@@ -48,6 +55,9 @@ export const Makers: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "maker" }),
+    ],
     afterChange: [revalidateAfterChange],
   },
   fields: [
@@ -60,11 +70,11 @@ export const Makers: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
       validate: validateRequiredSlug,
-      admin: { position: "sidebar" },
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "status",

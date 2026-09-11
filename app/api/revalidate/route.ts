@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
+import {
+  pathsForRevalidate,
+  tagsForRevalidate,
+} from "@/lib/revalidate-paths";
 
 export async function POST(request: NextRequest) {
   const secret = request.headers.get("x-revalidate-secret");
@@ -14,43 +18,22 @@ export async function POST(request: NextRequest) {
       slug?: string;
     };
 
-    const { collection, slug } = body;
+    const paths = pathsForRevalidate(body);
+    const tags = tagsForRevalidate(body);
 
-    if (collection === "articles" && slug) {
-      revalidatePath(`/explore/${slug}`);
-      revalidatePath("/explore");
-    } else if (collection === "events" && slug) {
-      revalidatePath(`/events/${slug}`);
-      revalidatePath("/events");
-    } else if (collection === "products" && slug) {
-      revalidatePath(`/souvenirs/${slug}`);
-      revalidatePath("/souvenirs");
-    } else if (collection === "makers" && slug) {
-      revalidatePath(`/souvenirs/makers/${slug}`);
-      revalidatePath("/souvenirs");
-    } else if (collection === "routes") {
-      revalidatePath("/map");
-      if (slug) revalidatePath(`/map/${slug}`);
-    } else if (collection === "excursions") {
-      revalidatePath("/business");
-    } else if (collection === "photos" && slug) {
-      revalidatePath(`/explore/photos/${slug}`);
-      revalidatePath("/explore/photos");
-    } else if (collection === "photos") {
-      revalidatePath("/explore/photos");
-    } else if (collection === "ar-postcards" && slug) {
-      revalidatePath(`/ar-postcards/${slug}`);
-      revalidatePath("/ar-postcards");
-    } else if (collection === "ar-postcards") {
-      revalidatePath("/ar-postcards");
-    } else if (collection === "site-settings") {
-      revalidatePath("/");
-      revalidatePath("/about");
-    } else {
-      revalidatePath("/");
+    for (const path of paths) {
+      revalidatePath(path);
+    }
+    for (const tag of tags) {
+      // Next.js 16: second arg is cacheLife profile
+      revalidateTag(tag, "max");
     }
 
-    return NextResponse.json({ revalidated: true });
+    return NextResponse.json({
+      revalidated: true,
+      paths,
+      tags,
+    });
   } catch {
     return NextResponse.json({ error: "Revalidation failed" }, { status: 500 });
   }

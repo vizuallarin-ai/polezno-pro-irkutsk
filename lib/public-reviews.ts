@@ -57,7 +57,12 @@ export async function getFeaturedPublicReviews(
     const payload = await getPayloadClient();
     const result = await payload.find({
       collection: "reviews",
-      where: { isFeatured: { equals: true } },
+      where: {
+        and: [
+          { isFeatured: { equals: true } },
+          { status: { equals: "published" } },
+        ],
+      },
       limit: Math.max(limit * 2, 6),
       depth: 1,
     });

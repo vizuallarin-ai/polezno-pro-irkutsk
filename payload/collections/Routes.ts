@@ -4,6 +4,13 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
+import { routePublishGuardBeforeValidate } from "../hooks/publish-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { syncRouteGeometryBeforeChange } from "../hooks/sync-route-geometry";
 import {
@@ -13,6 +20,7 @@ import {
   ROUTE_DIFFICULTY_OPTIONS,
   ROUTE_FORMAT_OPTIONS,
 } from "../constants";
+import { validateRequiredSlug } from "../validators";
 
 const routePointFields = [
   {
@@ -83,9 +91,11 @@ export const Routes: CollectionConfig = {
     plural: "Маршруты",
   },
   admin: {
+    group: ADMIN_GROUP.OPERATIONS,
     useAsTitle: "title",
     defaultColumns: ["title", "category", "format", "type", "status", "updatedAt"],
-    description: "Пешие и авторские маршруты для карты и страниц /map/[slug].",
+    description:
+      "Маршруты для карты /map. Для публикации нужны описание и хотя бы одна точка с координатами.",
   },
   access: {
     admin: adminPanelAccess,
@@ -95,23 +105,417 @@ export const Routes: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "route" }),
+      routePublishGuardBeforeValidate,
+    ],
     beforeChange: [syncRouteGeometryBeforeChange],
     afterChange: [revalidateAfterChange],
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-      label: "Название маршрута",
-      required: true,
+      type: "tabs",
+      tabs: [
+        {
+          label: "Основное",
+          fields: [
+            {
+              name: "title",
+              type: "text",
+              label: "Название маршрута",
+              required: true,
+            },
+            {
+              name: "category",
+              type: "select",
+              label: "Категория",
+              required: true,
+              options: [...ROUTE_CATEGORY_OPTIONS],
+            },
+            {
+              name: "format",
+              type: "select",
+              label: "Формат",
+              defaultValue: "walking",
+              options: [...ROUTE_FORMAT_OPTIONS],
+            },
+            {
+              name: "type",
+              type: "select",
+              label: "Тип доступа",
+              required: true,
+              options: [...ROUTE_ACCESS_OPTIONS],
+              defaultValue: "free",
+            },
+            {
+              name: "price",
+              type: "number",
+              label: "Цена (₽)",
+              admin: {
+                condition: (data) => data?.type === "paid",
+                description: "Обязательна для платного маршрута при публикации.",
+              },
+            },
+            {
+              name: "description",
+              type: "textarea",
+              label: "Краткое описание",
+              required: true,
+            },
+            {
+              name: "fullDescription",
+              type: "textarea",
+              label: "Полное описание",
+            },
+            {
+              name: "duration",
+              type: "number",
+              label: "Продолжительность (мин)",
+            },
+            {
+              name: "distance",
+              type: "number",
+              label: "Дистанция (км)",
+            },
+            {
+              name: "difficulty",
+              type: "select",
+              label: "Сложность",
+              defaultValue: "medium",
+              options: [...ROUTE_DIFFICULTY_OPTIONS],
+            },
+            {
+              name: "cover",
+              type: "upload",
+              relationTo: "media",
+              label: "Обложка (загрузка)",
+            },
+            {
+              name: "coverUrl",
+              type: "text",
+              label: "Обложка (URL)",
+              admin: {
+                description: "Альтернатива загрузке — прямая ссылка на изображение.",
+              },
+            },
+            {
+              name: "tags",
+              type: "array",
+              label: "Теги",
+              fields: [{ name: "tag", type: "text", label: "Тег" }],
+            },
+            {
+              name: "guide",
+              type: "relationship",
+              relationTo: "guides",
+              label: "Гид-автор",
+            },
+          ],
+        },
+        {
+          label: "Формат прохождения",
+          fields: [
+            {
+              name: "isSelfGuided",
+              type: "checkbox",
+              label: "Можно пройти самостоятельно",
+              defaultValue: true,
+            },
+            {
+              name: "isGuidedAvailable",
+              type: "checkbox",
+              label: "Доступно с гидом",
+              defaultValue: true,
+            },
+            {
+              name: "isCorporateAvailable",
+              type: "checkbox",
+              label: "Подходит для корпоратива",
+              defaultValue: false,
+            },
+            {
+              name: "experienceType",
+              type: "select",
+              label: "Тип опыта (для фильтров)",
+              options: [
+                { label: "— не задан —", value: "" },
+                { label: "Пеший", value: "walking" },
+                { label: "Гастро", value: "gastro" },
+                { label: "Авторский", value: "author" },
+                { label: "Байкал рядом", value: "baikal" },
+                { label: "Корпоратив", value: "corporate" },
+                { label: "Первое знакомство", value: "first-visit" },
+              ],
+            },
+            {
+              name: "priceLabel",
+              type: "text",
+              label: "Подпись цены",
+              admin: {
+                description:
+                  "Например: «Бесплатно» или «от 490 ₽». Если пусто — выводится автоматически.",
+              },
+            },
+            {
+              name: "bookingCta",
+              type: "text",
+              label: "Текст кнопки записи",
+              admin: { description: "Например: «Пройти с Алёной»" },
+            },
+            {
+              name: "bookingDescription",
+              type: "textarea",
+              label: "Описание для записи",
+            },
+          ],
+        },
+        {
+          label: "Точки и карта",
+          fields: [
+            {
+              name: "routePoints",
+              type: "array",
+              label: "Точки маршрута",
+              admin: {
+                initCollapsed: false,
+                description:
+                  "Для публикации нужна хотя бы одна точка с широтой и долготой. Перетаскивайте строки для порядка.",
+              },
+              fields: routePointFields,
+            },
+            {
+              type: "collapsible",
+              label: "Линия маршрута на карте",
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: "routeGeometryPanel",
+                  type: "ui",
+                  admin: {
+                    components: {
+                      Field: "./payload/components/RouteGeometryPanel#RouteGeometryPanel",
+                    },
+                  },
+                },
+                {
+                  name: "routeGeometry",
+                  type: "group",
+                  label: "Данные геометрии",
+                  admin: {
+                    description:
+                      "Активная линия для сайта: ручная → API → по точкам. Обычно достаточно панели выше.",
+                  },
+                  fields: [
+                    {
+                      name: "activeSource",
+                      type: "select",
+                      label: "Активный источник",
+                      defaultValue: "fallback",
+                      options: [
+                        { label: "Ручная линия", value: "manual" },
+                        { label: "Яндекс API", value: "yandex_api" },
+                        { label: "По точкам (прямые)", value: "fallback" },
+                        { label: "Только точки", value: "none" },
+                      ],
+                    },
+                    {
+                      name: "status",
+                      type: "select",
+                      label: "Статус линии",
+                      defaultValue: "active",
+                      options: [
+                        { label: "Черновик", value: "draft" },
+                        { label: "Активна", value: "active" },
+                        { label: "Требует проверки", value: "needs_review" },
+                        { label: "Ошибка", value: "error" },
+                        { label: "В архиве", value: "archived" },
+                      ],
+                    },
+                    {
+                      name: "showRouteLine",
+                      type: "checkbox",
+                      label: "Показывать линию на карте",
+                      defaultValue: true,
+                    },
+                    {
+                      name: "routeLineColor",
+                      type: "text",
+                      label: "Цвет линии (hex)",
+                      admin: { description: "Необязательно. Например: #0B3D5C" },
+                    },
+                    {
+                      name: "manualGeometry",
+                      type: "json",
+                      label: "Ручная линия (GeoJSON LineString)",
+                      admin: {
+                        description:
+                          "Для разработчика / продвинутого режима. Обычному владельцу достаточно точек и панели карты.",
+                      },
+                    },
+                    {
+                      name: "apiGeometry",
+                      type: "json",
+                      label: "Линия из API (GeoJSON LineString)",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "fallbackGeometry",
+                      type: "json",
+                      label: "Fallback по точкам",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "distanceMeters",
+                      type: "number",
+                      label: "Дистанция (м)",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "durationMinutesMin",
+                      type: "number",
+                      label: "Время мин (мин)",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "durationMinutesMax",
+                      type: "number",
+                      label: "Время макс (мин)",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "provider",
+                      type: "text",
+                      label: "Провайдер",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "providerRequestHash",
+                      type: "text",
+                      label: "Хэш запроса",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "providerRawResponse",
+                      type: "json",
+                      label: "Ответ API (служебное)",
+                      admin: {
+                        readOnly: true,
+                        condition: () => false,
+                      },
+                    },
+                    {
+                      name: "pointsFingerprint",
+                      type: "text",
+                      label: "Отпечаток точек",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "geometryUpdatedAt",
+                      type: "date",
+                      label: "Геометрия обновлена",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "geometryReviewedAt",
+                      type: "date",
+                      label: "Проверено",
+                      admin: { readOnly: true },
+                    },
+                    {
+                      name: "lastError",
+                      type: "textarea",
+                      label: "Последняя ошибка",
+                      admin: { readOnly: true },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "geoLine",
+              type: "json",
+              label: "Активная линия для сайта (GeoJSON)",
+              admin: {
+                readOnly: true,
+                description: "Синхронизируется автоматически из активного источника геометрии.",
+              },
+            },
+          ],
+        },
+        {
+          label: "Медиа и расписание",
+          fields: [
+            {
+              name: "audioGuide",
+              type: "upload",
+              relationTo: "media",
+              label: "Аудиогид (MP3)",
+              admin: {
+                description: "Показывается в карте, если файл загружен.",
+              },
+            },
+            {
+              name: "pdfGuide",
+              type: "upload",
+              relationTo: "media",
+              label: "PDF-гид",
+            },
+            {
+              name: "schedule",
+              type: "array",
+              label: "Расписание экскурсий",
+              admin: {
+                description: "Необязательно. Используется в боковой панели карты.",
+              },
+              fields: [
+                { name: "date", type: "date", label: "Дата", required: true },
+                { name: "time", type: "text", label: "Время (11:00)" },
+                { name: "spotsTotal", type: "number", label: "Всего мест", defaultValue: 10 },
+                { name: "spotsLeft", type: "number", label: "Осталось мест" },
+                { name: "isOpen", type: "checkbox", label: "Запись открыта", defaultValue: true },
+              ],
+            },
+            {
+              name: "qrCodeUrl",
+              type: "text",
+              label: "QR-код (URL)",
+            },
+          ],
+        },
+        {
+          label: "SEO и служебное",
+          fields: [
+            {
+              name: "seo",
+              type: "group",
+              label: "SEO",
+              fields: [
+                { name: "title", type: "text", label: "Meta Title" },
+                { name: "description", type: "textarea", label: "Meta Description" },
+                { name: "image", type: "upload", relationTo: "media", label: "OG Image" },
+              ],
+            },
+            {
+              name: "stripeProductId",
+              type: "text",
+              label: "Stripe Product ID (legacy)",
+              admin: {
+                hidden: true,
+                description: "Не используется — lead-only продажи.",
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       name: "slug",
       type: "text",
-      label: "URL-slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
-      admin: { position: "sidebar" },
+      validate: validateRequiredSlug,
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "status",
@@ -120,29 +524,11 @@ export const Routes: CollectionConfig = {
       required: true,
       defaultValue: "draft",
       options: [...CONTENT_STATUS_OPTIONS],
-      admin: { position: "sidebar" },
-    },
-    {
-      name: "category",
-      type: "select",
-      label: "Категория",
-      required: true,
-      options: [...ROUTE_CATEGORY_OPTIONS],
-    },
-    {
-      name: "format",
-      type: "select",
-      label: "Формат",
-      defaultValue: "walking",
-      options: [...ROUTE_FORMAT_OPTIONS],
-    },
-    {
-      name: "type",
-      type: "select",
-      label: "Тип доступа",
-      required: true,
-      options: [...ROUTE_ACCESS_OPTIONS],
-      defaultValue: "free",
+      admin: {
+        position: "sidebar",
+        description:
+          "Для публикации: описание + минимум одна точка с координатами. Платный — ещё и цена.",
+      },
     },
     {
       name: "isPaid",
@@ -155,98 +541,6 @@ export const Routes: CollectionConfig = {
       },
     },
     {
-      name: "price",
-      type: "number",
-      label: "Цена (₽)",
-      admin: { condition: (data) => data?.type === "paid" },
-    },
-    {
-      name: "description",
-      type: "textarea",
-      label: "Краткое описание",
-      required: true,
-    },
-    {
-      name: "fullDescription",
-      type: "textarea",
-      label: "Полное описание",
-    },
-    {
-      name: "duration",
-      type: "number",
-      label: "Продолжительность (мин)",
-    },
-    {
-      name: "distance",
-      type: "number",
-      label: "Дистанция (км)",
-    },
-    {
-      name: "difficulty",
-      type: "select",
-      label: "Сложность",
-      defaultValue: "medium",
-      options: [...ROUTE_DIFFICULTY_OPTIONS],
-    },
-    {
-      type: "collapsible",
-      label: "Формат прохождения",
-      admin: { initCollapsed: false },
-      fields: [
-        {
-          name: "isSelfGuided",
-          type: "checkbox",
-          label: "Можно пройти самостоятельно",
-          defaultValue: true,
-        },
-        {
-          name: "isGuidedAvailable",
-          type: "checkbox",
-          label: "Доступно с гидом",
-          defaultValue: true,
-        },
-        {
-          name: "isCorporateAvailable",
-          type: "checkbox",
-          label: "Подходит для корпоратива",
-          defaultValue: false,
-        },
-        {
-          name: "experienceType",
-          type: "select",
-          label: "Тип опыта (для фильтров)",
-          options: [
-            { label: "— не задан —", value: "" },
-            { label: "Пеший", value: "walking" },
-            { label: "Гастро", value: "gastro" },
-            { label: "Авторский", value: "author" },
-            { label: "Байкал рядом", value: "baikal" },
-            { label: "Корпоратив", value: "corporate" },
-            { label: "Первое знакомство", value: "first-visit" },
-          ],
-        },
-        {
-          name: "priceLabel",
-          type: "text",
-          label: "Подпись цены",
-          admin: {
-            description: "Например: «Бесплатно» или «от 490 ₽». Если пусто — выводится автоматически.",
-          },
-        },
-        {
-          name: "bookingCta",
-          type: "text",
-          label: "Текст кнопки записи",
-          admin: { description: "Например: «Пройти с Алёной»" },
-        },
-        {
-          name: "bookingDescription",
-          type: "textarea",
-          label: "Описание для записи",
-        },
-      ],
-    },
-    {
       name: "pointsCount",
       type: "number",
       label: "Количество точек",
@@ -255,246 +549,6 @@ export const Routes: CollectionConfig = {
         position: "sidebar",
         description: "Вычисляется автоматически из опубликованных точек.",
       },
-    },
-    {
-      name: "tags",
-      type: "array",
-      label: "Теги",
-      fields: [{ name: "tag", type: "text", label: "Тег" }],
-    },
-    {
-      name: "cover",
-      type: "upload",
-      relationTo: "media",
-      label: "Обложка (загрузка)",
-    },
-    {
-      name: "coverUrl",
-      type: "text",
-      label: "Обложка (URL)",
-      admin: {
-        description: "Альтернатива загрузке — прямая ссылка на изображение.",
-      },
-    },
-    {
-      name: "routePoints",
-      type: "array",
-      label: "Точки маршрута",
-      admin: {
-        initCollapsed: false,
-        description: "Перетаскивайте строки для изменения порядка. Заполните lat/lng для карты.",
-      },
-      fields: routePointFields,
-    },
-    {
-      type: "collapsible",
-      label: "Геометрия маршрута",
-      admin: { initCollapsed: false },
-      fields: [
-        {
-          name: "routeGeometryPanel",
-          type: "ui",
-          admin: {
-            components: {
-              Field: "./payload/components/RouteGeometryPanel#RouteGeometryPanel",
-            },
-          },
-        },
-        {
-          name: "routeGeometry",
-          type: "group",
-          label: "Данные геометрии",
-          admin: {
-            description:
-              "Активная линия для сайта выбирается по источнику: ручная → API → fallback.",
-          },
-          fields: [
-            {
-              name: "activeSource",
-              type: "select",
-              label: "Активный источник",
-              defaultValue: "fallback",
-              options: [
-                { label: "Ручная линия", value: "manual" },
-                { label: "Яндекс API", value: "yandex_api" },
-                { label: "По точкам (прямые)", value: "fallback" },
-                { label: "Только точки", value: "none" },
-              ],
-            },
-            {
-              name: "status",
-              type: "select",
-              label: "Статус линии",
-              defaultValue: "active",
-              options: [
-                { label: "Черновик", value: "draft" },
-                { label: "Активна", value: "active" },
-                { label: "Требует проверки", value: "needs_review" },
-                { label: "Ошибка", value: "error" },
-                { label: "В архиве", value: "archived" },
-              ],
-            },
-            {
-              name: "showRouteLine",
-              type: "checkbox",
-              label: "Показывать линию на карте",
-              defaultValue: true,
-            },
-            {
-              name: "routeLineColor",
-              type: "text",
-              label: "Цвет линии (hex)",
-              admin: { description: "Необязательно. Например: #0B3D5C" },
-            },
-            {
-              name: "manualGeometry",
-              type: "json",
-              label: "Ручная линия (GeoJSON LineString)",
-            },
-            {
-              name: "apiGeometry",
-              type: "json",
-              label: "Линия из API (GeoJSON LineString)",
-              admin: { readOnly: true },
-            },
-            {
-              name: "fallbackGeometry",
-              type: "json",
-              label: "Fallback по точкам",
-              admin: { readOnly: true },
-            },
-            {
-              name: "distanceMeters",
-              type: "number",
-              label: "Дистанция (м)",
-              admin: { readOnly: true },
-            },
-            {
-              name: "durationMinutesMin",
-              type: "number",
-              label: "Время мин (мин)",
-              admin: { readOnly: true },
-            },
-            {
-              name: "durationMinutesMax",
-              type: "number",
-              label: "Время макс (мин)",
-              admin: { readOnly: true },
-            },
-            {
-              name: "provider",
-              type: "text",
-              label: "Провайдер",
-              admin: { readOnly: true },
-            },
-            {
-              name: "providerRequestHash",
-              type: "text",
-              label: "Хэш запроса",
-              admin: { readOnly: true },
-            },
-            {
-              name: "providerRawResponse",
-              type: "json",
-              label: "Ответ API (служебное)",
-              admin: {
-                readOnly: true,
-                condition: () => false,
-              },
-            },
-            {
-              name: "pointsFingerprint",
-              type: "text",
-              label: "Отпечаток точек",
-              admin: { readOnly: true },
-            },
-            {
-              name: "geometryUpdatedAt",
-              type: "date",
-              label: "Геометрия обновлена",
-              admin: { readOnly: true },
-            },
-            {
-              name: "geometryReviewedAt",
-              type: "date",
-              label: "Проверено",
-              admin: { readOnly: true },
-            },
-            {
-              name: "lastError",
-              type: "textarea",
-              label: "Последняя ошибка",
-              admin: { readOnly: true },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: "geoLine",
-      type: "json",
-      label: "Активная линия для сайта (GeoJSON)",
-      admin: {
-        readOnly: true,
-        description: "Синхронизируется автоматически из активного источника геометрии.",
-      },
-    },
-    {
-      name: "audioGuide",
-      type: "upload",
-      relationTo: "media",
-      label: "Аудиогид (MP3)",
-    },
-    {
-      name: "pdfGuide",
-      type: "upload",
-      relationTo: "media",
-      label: "PDF-гид",
-    },
-    {
-      name: "schedule",
-      type: "array",
-      label: "Расписание экскурсий",
-      fields: [
-        { name: "date", type: "date", label: "Дата", required: true },
-        { name: "time", type: "text", label: "Время (11:00)" },
-        { name: "spotsTotal", type: "number", label: "Всего мест", defaultValue: 10 },
-        { name: "spotsLeft", type: "number", label: "Осталось мест" },
-        { name: "isOpen", type: "checkbox", label: "Запись открыта", defaultValue: true },
-      ],
-    },
-    {
-      name: "guide",
-      type: "relationship",
-      relationTo: "guides",
-      label: "Гид-автор",
-      admin: { position: "sidebar" },
-    },
-    {
-      name: "stripeProductId",
-      type: "text",
-      label: "Stripe Product ID (legacy)",
-      admin: {
-        position: "sidebar",
-        hidden: true,
-        description: "Не используется — lead-only продажи.",
-      },
-    },
-    {
-      name: "qrCodeUrl",
-      type: "text",
-      label: "QR-код (URL)",
-      admin: { position: "sidebar" },
-    },
-    {
-      name: "seo",
-      type: "group",
-      label: "SEO",
-      fields: [
-        { name: "title", type: "text", label: "Meta Title" },
-        { name: "description", type: "textarea", label: "Meta Description" },
-        { name: "image", type: "upload", relationTo: "media", label: "OG Image" },
-      ],
     },
   ],
 };

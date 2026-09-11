@@ -1,13 +1,12 @@
 import type { Validate } from "payload";
-
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+import { isValidSlug } from "@/lib/slug";
 
 export const validateRequiredSlug: Validate<string> = (value) => {
   if (!value || typeof value !== "string") {
-    return "Укажите URL-slug";
+    return "Ссылка на сайте заполнится автоматически из названия. Если меняете вручную — укажите латиницу.";
   }
-  if (!SLUG_PATTERN.test(value)) {
-    return "Slug: только латиница, цифры и дефис (например: wooden-irkutsk)";
+  if (!isValidSlug(value)) {
+    return "Ссылка: только латиница, цифры и дефис (например: wooden-irkutsk)";
   }
   return true;
 };

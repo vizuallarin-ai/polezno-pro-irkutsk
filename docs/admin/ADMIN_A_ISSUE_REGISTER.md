@@ -288,3 +288,27 @@ All items are findings only — **not fixed** in this gate.
 | Whether navigation/home CTAs should become CMS-owned | OWNER DECISION REQUIRED |
 | CRM status vocabulary (booked vs closed) | OWNER DECISION REQUIRED |
 | Whether Events stay in owner menu while empty | OWNER DECISION REQUIRED |
+| Deactivate or replace production guide `slug=Slug` | OWNER / CONTENT.1 (CMS now allows; prod not mutated in ADMIN.B) |
+
+---
+
+## ADMIN.B remediation mapping (2026-09-11)
+
+| Issue | Severity | Resolution | Evidence |
+|-------|----------|------------|----------|
+| ADMIN-A-P1-01 Excursion revalidate | P1 | **resolved** | `lib/revalidate-paths.ts`, `app/api/revalidate/route.ts`, `test:admin-b` |
+| ADMIN-A-P1-02 Reviews hidden | P1 | **resolved** | `Reviews.ts` unhidden + status; `public-reviews.ts` |
+| ADMIN-A-P1-03 Guides hidden / placeholder | P1 | **partial** | Unhidden + access filter + safety hook; prod placeholder not mutated |
+| ADMIN-A-P1-04 Manual slug | P1 | **resolved** | `lib/slug.ts`, `payload/hooks/auto-slug.ts` on owner collections |
+| ADMIN-A-P1-05 Excursion price publish | P1 | **resolved** | `publish-guards.ts` server beforeValidate |
+| ADMIN-A-P1-06 Nav/false editability | P1 | **partial** | Hide unused nav/mainNav; Site Settings notes; wiring deferred |
+| ADMIN-A-P1-07 Editor role | P1 | **partial** | UI warning only; RBAC → ADMIN.E |
+| ADMIN-A-P1-11 Articles dual status | P1 | **partial** | Help text clarified; model sync → later |
+| ADMIN-A-P1-12 `/api/routes` shadow | P1 | **deferred** | Documented; rename needs consumer migration |
+| ADMIN-A-P1-13 World-readable hidden | P1 | **partial** | places/partners staff-only; reviews/guides filtered; full matrix → ADMIN.E |
+| ADMIN-A-P2-01 Flat menu | P2 | **resolved** | `admin.group` IA |
+| ADMIN-A-P2-02 Route form overload | P2 | **partial** | Tabs; wizard → ADMIN.C |
+| ADMIN-A-P2-03 Orphan Places/Partners | P2 | **resolved** (hide) | hidden + staff-only; schema kept |
+| ADMIN-A-P2-04 Dead CMS fields | P2 | **partial** | Obvious dead hidden; more wiring TBD |
+| ADMIN-A-P3-02 Missing RU labels guides/reviews | P3 | **resolved** | labels added |
+| ADMIN-A-P0-* / P1-08/09/10 / P2-05… | — | **deferred** | ADMIN.C/D/E / CONTENT.1 |

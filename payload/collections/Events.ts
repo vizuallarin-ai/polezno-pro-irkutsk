@@ -4,7 +4,13 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import { CONTENT_STATUS_OPTIONS, EVENT_CATEGORY_OPTIONS } from "../constants";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -15,6 +21,7 @@ export const Events: CollectionConfig = {
     plural: "События",
   },
   admin: {
+    group: ADMIN_GROUP.CONTENT,
     useAsTitle: "title",
     defaultColumns: ["title", "category", "startDate", "status", "isPast", "updatedAt"],
     listSearchableFields: ["title", "venue", "slug"],
@@ -34,6 +41,9 @@ export const Events: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "event" }),
+    ],
     beforeChange: [
       ({ data }) => {
         if (data?.startDate) {
@@ -57,11 +67,11 @@ export const Events: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
       validate: validateRequiredSlug,
-      admin: { position: "sidebar" },
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "status",
@@ -127,7 +137,11 @@ export const Events: CollectionConfig = {
     {
       name: "fullDescription",
       type: "textarea",
-      label: "Полное описание",
+      label: "Полное описание (не используется сайтом)",
+      admin: {
+        hidden: true,
+        description: "Legacy — сайт показывает краткое description.",
+      },
     },
     {
       name: "ticketUrl",
@@ -137,8 +151,12 @@ export const Events: CollectionConfig = {
     {
       name: "hasApplicationForm",
       type: "checkbox",
-      label: "Форма заявки на сайте",
+      label: "Форма заявки на сайте (legacy)",
       defaultValue: false,
+      admin: {
+        hidden: true,
+        description: "Не подключено к публичному UI.",
+      },
     },
     {
       name: "price",

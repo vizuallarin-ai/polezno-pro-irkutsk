@@ -1,17 +1,23 @@
 import type { CollectionConfig } from "payload";
-import { adminCrud, adminPanelAccess } from "../access";
+import { adminCrud, adminPanelAccess, staffOnlyRead } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 
 export const Partners: CollectionConfig = {
   slug: "partners",
+  labels: {
+    singular: "Партнёр (system)",
+    plural: "Партнёры (system)",
+  },
   admin: {
     useAsTitle: "name",
-    group: "Позже",
+    group: ADMIN_GROUP.SYSTEM,
     hidden: true,
-    description: "Скоро — партнёры в следующей фазе.",
+    description:
+      "Orphan / не используется публичным сайтом. Скрыто из ежедневной работы владельца.",
   },
   access: {
     admin: adminPanelAccess,
-    read: () => true,
+    read: staffOnlyRead,
     create: adminCrud,
     update: adminCrud,
     delete: adminCrud,

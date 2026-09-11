@@ -29,6 +29,37 @@ export const publishedOrStaff = (
     return { [statusField]: { equals: "published" } };
   };
 
+/**
+ * Orphan / system collections: no anonymous REST dump.
+ * Local API with overrideAccess still works for trusted server code.
+ */
+export const staffOnlyRead: Access = ({ req: { user } }) =>
+  isStaff({ req: { user } } as AccessArgs);
+
+/** Featured reviews: public only when status=published (ADMIN.B). */
+export const reviewReadAccess: Access = ({ req: { user } }) => {
+  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  return { status: { equals: "published" } };
+};
+
+/**
+ * Guides: public only active profiles, excluding known placeholder slugs.
+ * Frontend also fail-closes via content-readiness.
+ */
+export const guideReadAccess: Access = ({ req: { user } }) => {
+  if (isStaff({ req: { user } } as AccessArgs)) return true;
+  const where: Where = {
+    and: [
+      { isActive: { equals: true } },
+      { slug: { not_equals: "Slug" } },
+      { slug: { not_equals: "slug" } },
+      { slug: { not_equals: "placeholder" } },
+      { slug: { not_equals: "guide" } },
+    ],
+  };
+  return where;
+};
+
 const ARTICLE_PUBLIC_WHERE: Where = {
   and: [
     { _status: { equals: "published" } },

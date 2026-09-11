@@ -1,19 +1,21 @@
 import type { CollectionConfig } from "payload";
-import { adminCrud, adminPanelAccess } from "../access";
+import { adminCrud, adminPanelAccess, staffOnlyRead } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 
 export const Places: CollectionConfig = {
   slug: "places",
-  labels: { singular: "Место", plural: "Места" },
+  labels: { singular: "Место (system)", plural: "Места (system)" },
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "isLocalGem", "updatedAt"],
-    group: "Позже",
+    group: ADMIN_GROUP.SYSTEM,
     hidden: true,
-    description: "Скоро — справочник мест в следующей фазе.",
+    description:
+      "Orphan / не используется публичным сайтом. Скрыто из ежедневной работы владельца. Данные сохранены.",
   },
   access: {
     admin: adminPanelAccess,
-    read: () => true,
+    read: staffOnlyRead,
     create: adminCrud,
     update: adminCrud,
     delete: adminCrud,
@@ -28,7 +30,7 @@ export const Places: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: "Ссылка на сайте",
       required: true,
       unique: true,
       admin: { position: "sidebar" },

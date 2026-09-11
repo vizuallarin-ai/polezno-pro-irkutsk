@@ -1,13 +1,16 @@
 import type { GlobalConfig } from "payload";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { adminCrud, adminFieldAccess } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import { revalidateGlobalAfterChange } from "../hooks/revalidate";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
-  label: "Настройки сайта",
+  label: "Профиль / контакты и настройки",
   admin: {
-    description: "Глобальные настройки: контакты, hero, SEO, подвал.",
+    group: ADMIN_GROUP.PROJECT,
+    description:
+      "Имя автора, контакты, SEO и настройки заявок. Не заполняйте чужие данные — только реальные контакты владельца.",
   },
   access: {
     read: () => true,
@@ -18,291 +21,345 @@ export const SiteSettings: GlobalConfig = {
   },
   fields: [
     {
-      name: "projectName",
-      type: "text",
-      label: "Название проекта",
-      defaultValue: "Иркпортал",
-    },
-    {
-      name: "projectDescriptor",
-      type: "text",
-      label: "Дескриптор бренда",
-      defaultValue: "Авторский навигатор по Иркутску от Алёны Ямщиковой",
-    },
-    {
-      name: "legacyProjectName",
-      type: "text",
-      label: "Прежнее название (подвал)",
-      defaultValue: "Полезно про Иркутск",
-    },
-    {
-      name: "description",
-      type: "textarea",
-      label: "Описание проекта",
-    },
-    {
-      name: "city",
-      type: "text",
-      label: "Город",
-      defaultValue: "Иркутск",
-    },
-    {
-      name: "heroBadge",
-      type: "text",
-      label: "Hero — бейдж",
-      defaultValue: "Авторский навигатор",
-    },
-    {
-      name: "heroTitle",
-      type: "text",
-      label: "Hero — заголовок",
-      defaultValue: "Иркутск без штампов",
-    },
-    {
-      name: "heroSubtitle",
-      type: "textarea",
-      label: "Hero — подзаголовок",
-      defaultValue:
-        "Иркпортал — авторский навигатор Алёны Ямщиковой по Иркутску: самостоятельные маршруты, экскурсии с гидом и программы для бизнеса.",
-    },
-    {
-      name: "authorName",
-      type: "text",
-      label: "Имя автора",
-      defaultValue: "Алёна Ямщикова",
-    },
-    {
-      name: "authorRole",
-      type: "text",
-      label: "Роль автора",
-      defaultValue: "Автор навигатора и гид",
-    },
-    {
-      name: "authorShortText",
-      type: "textarea",
-      label: "Короткий текст об авторе",
-    },
-    {
-      name: "authorPhoto",
-      type: "upload",
-      relationTo: "media",
-      label: "Фото автора",
-    },
-    {
-      name: "mainCta",
-      type: "group",
-      label: "Главный CTA",
-      fields: [
+      type: "tabs",
+      tabs: [
         {
-          name: "label",
-          type: "text",
-          label: "Текст кнопки",
-          defaultValue: "Смотреть маршруты",
-        },
-        {
-          name: "href",
-          type: "text",
-          label: "Ссылка",
-          defaultValue: "/map",
-        },
-        { name: "description", type: "textarea", label: "Подзаголовок" },
-      ],
-    },
-    {
-      name: "secondaryCta",
-      type: "group",
-      label: "Вторичный CTA",
-      fields: [
-        {
-          name: "label",
-          type: "text",
-          label: "Текст кнопки",
-          defaultValue: "Подобрать мне прогулку",
-        },
-        {
-          name: "href",
-          type: "text",
-          label: "Ссылка",
-          defaultValue: "/contact",
-        },
-      ],
-    },
-    {
-      name: "contact",
-      type: "group",
-      label: "Контакты",
-      fields: [
-        { name: "phone", type: "text", label: "Телефон" },
-        { name: "email", type: "email", label: "Email" },
-        { name: "telegram", type: "text", label: "Telegram", defaultValue: "https://t.me/poleznoproirkutsk" },
-        { name: "max", type: "text", label: "MAX (мессенджер)" },
-        { name: "whatsapp", type: "text", label: "WhatsApp" },
-        { name: "vk", type: "text", label: "ВКонтакте" },
-        { name: "boosty", type: "text", label: "Boosty" },
-        { name: "youtube", type: "text", label: "YouTube" },
-        { name: "instagram", type: "text", label: "Instagram" },
-      ],
-    },
-    {
-      name: "footerText",
-      type: "textarea",
-      label: "Текст в подвале",
-    },
-    {
-      name: "footerTagline",
-      type: "text",
-      label: "Подзаголовок в подвале",
-      defaultValue: "Авторский навигатор по Иркутску",
-    },
-    {
-      name: "socialDisclaimerText",
-      type: "textarea",
-      label: "Дисклеймер соцсетей (Meta/Instagram)",
-      defaultValue:
-        "* Instagram принадлежит компании Meta, признанной экстремистской организацией и запрещённой в РФ.",
-    },
-    {
-      name: "defaultSeo",
-      type: "group",
-      label: "SEO по умолчанию",
-      fields: [
-        {
-          name: "metaDescription",
-          type: "textarea",
-          label: "Meta description",
-        },
-        {
-          name: "ogImage",
-          type: "upload",
-          relationTo: "media",
-          label: "OG-изображение",
-        },
-      ],
-    },
-    {
-      name: "heroVideo",
-      type: "upload",
-      relationTo: "media",
-      label: "Hero-видео (WebM)",
-    },
-    {
-      name: "heroVideoPoster",
-      type: "upload",
-      relationTo: "media",
-      label: "Постер Hero-видео",
-    },
-    {
-      name: "founderName",
-      type: "text",
-      label: "Имя основателя (legacy)",
-      admin: { description: "Используется, если authorName не задан." },
-    },
-    {
-      name: "founderPhoto",
-      type: "upload",
-      relationTo: "media",
-      label: "Фото основателя",
-    },
-    {
-      name: "manifesto",
-      type: "richText",
-      label: "Манифест проекта",
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [...defaultFeatures],
-      }),
-    },
-    {
-      name: "stats",
-      type: "array",
-      label: "Статистика",
-      fields: [
-        { name: "value", type: "text", label: "Значение", required: true },
-        { name: "label", type: "text", label: "Подпись", required: true },
-      ],
-    },
-    {
-      name: "ogImage",
-      type: "upload",
-      relationTo: "media",
-      label: "OG-изображение (legacy)",
-      admin: { description: "Дублирует defaultSeo.ogImage — для совместимости." },
-    },
-    {
-      name: "metaDescription",
-      type: "textarea",
-      label: "Meta description (legacy)",
-      admin: { description: "Дублирует defaultSeo.metaDescription." },
-    },
-    {
-      name: "socialLinks",
-      type: "group",
-      label: "Социальные сети (legacy)",
-      admin: { description: "Дублирует contact — для обратной совместимости." },
-      fields: [
-        { name: "telegram", type: "text", label: "Telegram", defaultValue: "https://t.me/poleznoproirkutsk" },
-        { name: "instagram", type: "text", label: "Instagram" },
-        { name: "vk", type: "text", label: "ВКонтакте" },
-      ],
-    },
-    {
-      name: "leadSettings",
-      type: "group",
-      label: "Заявки и согласия",
-      fields: [
-        {
-          name: "consentText",
-          type: "textarea",
-          label: "Текст согласия на обработку данных",
-          defaultValue:
-            "Я согласен(на) на обработку персональных данных и понимаю, что со мной свяжутся по указанному контакту",
-        },
-        {
-          name: "consentVersion",
-          type: "text",
-          label: "Версия согласия",
-          defaultValue: "2026-06",
-        },
-        {
-          name: "privacyPolicyUrl",
-          type: "text",
-          label: "Ссылка на политику конфиденциальности",
-          defaultValue: "/privacy",
-        },
-        {
-          name: "primaryMessenger",
-          type: "select",
-          label: "Основной мессенджер",
-          defaultValue: "telegram",
-          options: [
-            { label: "Telegram", value: "telegram" },
-            { label: "MAX", value: "max" },
-            { label: "Email", value: "email" },
+          label: "Профиль и контакты",
+          description: "То, что посетители видят в подвале, about и формах связи.",
+          fields: [
+            {
+              name: "projectName",
+              type: "text",
+              label: "Название проекта",
+              defaultValue: "Иркпортал",
+            },
+            {
+              name: "projectDescriptor",
+              type: "text",
+              label: "Дескриптор бренда",
+              defaultValue: "Авторский навигатор по Иркутску от Алёны Ямщиковой",
+            },
+            {
+              name: "legacyProjectName",
+              type: "text",
+              label: "Прежнее название (подвал)",
+              defaultValue: "Полезно про Иркутск",
+            },
+            {
+              name: "description",
+              type: "textarea",
+              label: "Описание проекта",
+            },
+            {
+              name: "city",
+              type: "text",
+              label: "Город",
+              defaultValue: "Иркутск",
+            },
+            {
+              name: "authorName",
+              type: "text",
+              label: "Имя автора",
+              defaultValue: "Алёна Ямщикова",
+            },
+            {
+              name: "authorRole",
+              type: "text",
+              label: "Роль автора",
+              defaultValue: "Автор навигатора и гид",
+            },
+            {
+              name: "authorShortText",
+              type: "textarea",
+              label: "Короткий текст об авторе",
+            },
+            {
+              name: "authorPhoto",
+              type: "upload",
+              relationTo: "media",
+              label: "Фото автора",
+            },
+            {
+              name: "contact",
+              type: "group",
+              label: "Контакты",
+              fields: [
+                { name: "phone", type: "text", label: "Телефон" },
+                { name: "email", type: "email", label: "Email" },
+                {
+                  name: "telegram",
+                  type: "text",
+                  label: "Telegram",
+                  defaultValue: "https://t.me/poleznoproirkutsk",
+                },
+                { name: "max", type: "text", label: "MAX (мессенджер)" },
+                { name: "whatsapp", type: "text", label: "WhatsApp" },
+                { name: "vk", type: "text", label: "ВКонтакте" },
+                { name: "boosty", type: "text", label: "Boosty" },
+                { name: "youtube", type: "text", label: "YouTube" },
+                { name: "instagram", type: "text", label: "Instagram" },
+              ],
+            },
+            {
+              name: "footerText",
+              type: "textarea",
+              label: "Текст в подвале",
+            },
+            {
+              name: "footerTagline",
+              type: "text",
+              label: "Подзаголовок в подвале",
+              defaultValue: "Авторский навигатор по Иркутску",
+            },
+            {
+              name: "socialDisclaimerText",
+              type: "textarea",
+              label: "Дисклеймер соцсетей (Meta/Instagram)",
+              defaultValue:
+                "* Instagram принадлежит компании Meta, признанной экстремистской организацией и запрещённой в РФ.",
+            },
           ],
         },
         {
-          name: "leadNotificationEnabled",
-          type: "checkbox",
-          label: "Email-уведомления о новых заявках",
-          defaultValue: true,
+          label: "Hero и CTA",
+          description:
+            "Часть CTA на главной задаётся кодом — если правка не видна на сайте, сообщите разработчику.",
+          fields: [
+            {
+              name: "heroBadge",
+              type: "text",
+              label: "Hero — бейдж",
+              defaultValue: "Авторский навигатор",
+            },
+            {
+              name: "heroTitle",
+              type: "text",
+              label: "Hero — заголовок",
+              defaultValue: "Иркутск без штампов",
+            },
+            {
+              name: "heroSubtitle",
+              type: "textarea",
+              label: "Hero — подзаголовок",
+              defaultValue:
+                "Иркпортал — авторский навигатор Алёны Ямщиковой по Иркутску: самостоятельные маршруты, экскурсии с гидом и программы для бизнеса.",
+            },
+            {
+              name: "mainCta",
+              type: "group",
+              label: "Главный CTA",
+              fields: [
+                {
+                  name: "label",
+                  type: "text",
+                  label: "Текст кнопки",
+                  defaultValue: "Смотреть маршруты",
+                },
+                {
+                  name: "href",
+                  type: "text",
+                  label: "Ссылка",
+                  defaultValue: "/map",
+                },
+                { name: "description", type: "textarea", label: "Подзаголовок" },
+              ],
+            },
+            {
+              name: "secondaryCta",
+              type: "group",
+              label: "Вторичный CTA",
+              fields: [
+                {
+                  name: "label",
+                  type: "text",
+                  label: "Текст кнопки",
+                  defaultValue: "Подобрать мне прогулку",
+                },
+                {
+                  name: "href",
+                  type: "text",
+                  label: "Ссылка",
+                  defaultValue: "/contact",
+                },
+              ],
+            },
+            {
+              name: "heroVideo",
+              type: "upload",
+              relationTo: "media",
+              label: "Hero-видео (WebM)",
+              admin: {
+                description: "Необязательно. Если пусто — сайт работает без видео.",
+              },
+            },
+            {
+              name: "heroVideoPoster",
+              type: "upload",
+              relationTo: "media",
+              label: "Постер Hero-видео",
+            },
+          ],
         },
         {
-          name: "leadNotificationEmail",
-          type: "email",
-          label: "Email для уведомлений о заявках",
-          access: {
-            read: adminFieldAccess,
-            update: adminFieldAccess,
-          },
-          admin: {
-            description:
-              "Не отдаётся в публичный REST. На сервере читается через Local API с overrideAccess.",
-          },
+          label: "SEO и заявки",
+          fields: [
+            {
+              name: "defaultSeo",
+              type: "group",
+              label: "SEO по умолчанию",
+              fields: [
+                {
+                  name: "metaDescription",
+                  type: "textarea",
+                  label: "Meta description",
+                },
+                {
+                  name: "ogImage",
+                  type: "upload",
+                  relationTo: "media",
+                  label: "OG-изображение",
+                },
+              ],
+            },
+            {
+              name: "leadSettings",
+              type: "group",
+              label: "Заявки и согласия",
+              fields: [
+                {
+                  name: "consentText",
+                  type: "textarea",
+                  label: "Текст согласия на обработку данных",
+                  defaultValue:
+                    "Я согласен(на) на обработку персональных данных и понимаю, что со мной свяжутся по указанному контакту",
+                },
+                {
+                  name: "consentVersion",
+                  type: "text",
+                  label: "Версия согласия",
+                  defaultValue: "2026-06",
+                },
+                {
+                  name: "privacyPolicyUrl",
+                  type: "text",
+                  label: "Ссылка на политику конфиденциальности",
+                  defaultValue: "/privacy",
+                },
+                {
+                  name: "primaryMessenger",
+                  type: "select",
+                  label: "Основной мессенджер",
+                  defaultValue: "telegram",
+                  options: [
+                    { label: "Telegram", value: "telegram" },
+                    { label: "MAX", value: "max" },
+                    { label: "Email", value: "email" },
+                  ],
+                },
+                {
+                  name: "leadNotificationEnabled",
+                  type: "checkbox",
+                  label: "Email-уведомления о новых заявках",
+                  defaultValue: true,
+                },
+                {
+                  name: "leadNotificationEmail",
+                  type: "email",
+                  label: "Email для уведомлений о заявках",
+                  access: {
+                    read: adminFieldAccess,
+                    update: adminFieldAccess,
+                  },
+                  admin: {
+                    description:
+                      "Не отдаётся в публичный REST. На сервере читается через Local API с overrideAccess.",
+                  },
+                },
+                {
+                  name: "contactCtaLabel",
+                  type: "text",
+                  label: "Текст кнопки «Связаться»",
+                  defaultValue: "Связаться",
+                },
+              ],
+            },
+          ],
         },
         {
-          name: "contactCtaLabel",
-          type: "text",
-          label: "Текст кнопки «Связаться»",
-          defaultValue: "Связаться",
+          label: "Служебное / legacy",
+          description: "Старые дублирующие поля. Не трогайте без необходимости.",
+          fields: [
+            {
+              name: "founderName",
+              type: "text",
+              label: "Имя основателя (legacy)",
+              admin: {
+                description: "Используется, если authorName не задан.",
+              },
+            },
+            {
+              name: "founderPhoto",
+              type: "upload",
+              relationTo: "media",
+              label: "Фото основателя",
+            },
+            {
+              name: "manifesto",
+              type: "richText",
+              label: "Манифест проекта (частично не на сайте)",
+              editor: lexicalEditor({
+                features: ({ defaultFeatures }) => [...defaultFeatures],
+              }),
+              admin: {
+                description:
+                  "Часть текстов about сейчас в коде. Не ожидайте мгновенного эффекта на всех блоках.",
+              },
+            },
+            {
+              name: "stats",
+              type: "array",
+              label: "Статистика",
+              fields: [
+                { name: "value", type: "text", label: "Значение", required: true },
+                { name: "label", type: "text", label: "Подпись", required: true },
+              ],
+            },
+            {
+              name: "ogImage",
+              type: "upload",
+              relationTo: "media",
+              label: "OG-изображение (legacy)",
+              admin: {
+                description: "Дублирует defaultSeo.ogImage — для совместимости.",
+              },
+            },
+            {
+              name: "metaDescription",
+              type: "textarea",
+              label: "Meta description (legacy)",
+              admin: {
+                description: "Дублирует defaultSeo.metaDescription.",
+              },
+            },
+            {
+              name: "socialLinks",
+              type: "group",
+              label: "Социальные сети (legacy)",
+              admin: {
+                description: "Дублирует contact — для обратной совместимости.",
+              },
+              fields: [
+                {
+                  name: "telegram",
+                  type: "text",
+                  label: "Telegram",
+                  defaultValue: "https://t.me/poleznoproirkutsk",
+                },
+                { name: "instagram", type: "text", label: "Instagram" },
+                { name: "vk", type: "text", label: "ВКонтакте" },
+              ],
+            },
+          ],
         },
       ],
     },

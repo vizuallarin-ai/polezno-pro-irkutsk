@@ -14,6 +14,7 @@ import {
   BUSINESS_TASK_TYPE_OPTIONS,
 } from "@/lib/leads-business";
 import { LEAD_SOURCE_OPTIONS } from "../constants";
+import { ADMIN_GROUP } from "../admin-groups";
 import {
   PRIORITY_OPTIONS,
   PREFERRED_CONTACT_OPTIONS,
@@ -46,6 +47,7 @@ export const Leads: CollectionConfig = {
     plural: "Заявки",
   },
   admin: {
+    group: ADMIN_GROUP.OPERATIONS,
     useAsTitle: "name",
     defaultColumns: [
       "createdAt",
@@ -82,7 +84,7 @@ export const Leads: CollectionConfig = {
       "photoId",
     ],
     description:
-      "Фильтруйте по колонке «Статус» или «Источник». B2B-заявки: источник «Для бизнеса (B2B)» — /admin/collections/leads?where[source][equals]=business",
+      "Входящие заявки с сайта. Фильтруйте по «Статус» или «Источник». Расширенная CRM (следующий контакт, просрочки) — следующий этап.",
     components: {
       beforeListTable: ["./payload/components/LeadsListFilters#default"],
     },

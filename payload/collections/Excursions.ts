@@ -5,7 +5,14 @@ import {
   adminPanelAccess,
   publishedOrStaff,
 } from "../access";
+import { ADMIN_GROUP } from "../admin-groups";
 import { CONTENT_STATUS_OPTIONS, EXCURSION_FORMAT_OPTIONS } from "../constants";
+import {
+  createAutoSlugBeforeValidate,
+  SLUG_FIELD_ADMIN,
+  SLUG_FIELD_LABEL,
+} from "../hooks/auto-slug";
+import { excursionPublishGuardBeforeValidate } from "../hooks/publish-guards";
 import { revalidateAfterChange } from "../hooks/revalidate";
 import { validateRequiredSlug } from "../validators";
 
@@ -16,10 +23,12 @@ export const Excursions: CollectionConfig = {
     plural: "Экскурсии",
   },
   admin: {
+    group: ADMIN_GROUP.OPERATIONS,
     useAsTitle: "title",
-    defaultColumns: ["title", "format", "price", "status", "updatedAt"],
+    defaultColumns: ["title", "format", "price", "duration", "status", "updatedAt"],
     listSearchableFields: ["title", "slug", "shortDescription"],
-    description: "Экскурсии для /excursions. Публично — только опубликованные.",
+    description:
+      "Коммерческие экскурсии. Черновик можно сохранить неполным; для публикации нужны цена (или «по запросу»), длительность и описание.",
     preview: (doc) => {
       if (doc?.slug) {
         return `${process.env.NEXT_PUBLIC_SERVER_URL}/excursions/${doc.slug}`;
@@ -35,6 +44,10 @@ export const Excursions: CollectionConfig = {
     delete: adminCrud,
   },
   hooks: {
+    beforeValidate: [
+      createAutoSlugBeforeValidate({ sourceField: "title", fallback: "excursion" }),
+      excursionPublishGuardBeforeValidate,
+    ],
     afterChange: [revalidateAfterChange],
   },
   fields: [
@@ -47,11 +60,11 @@ export const Excursions: CollectionConfig = {
     {
       name: "slug",
       type: "text",
-      label: "Slug",
+      label: SLUG_FIELD_LABEL,
       required: true,
       unique: true,
       validate: validateRequiredSlug,
-      admin: { position: "sidebar" },
+      admin: SLUG_FIELD_ADMIN,
     },
     {
       name: "status",
@@ -60,7 +73,11 @@ export const Excursions: CollectionConfig = {
       defaultValue: "draft",
       required: true,
       options: [...CONTENT_STATUS_OPTIONS],
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description:
+          "Черновик — не на сайте. «Опубликован» — нужна цена или «по запросу», длительность и описание.",
+      },
     },
     {
       name: "format",
@@ -85,7 +102,10 @@ export const Excursions: CollectionConfig = {
       type: "checkbox",
       label: "Цена по запросу",
       defaultValue: false,
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Включите, если цену сообщаете после заявки.",
+      },
     },
     {
       name: "price",
@@ -94,13 +114,17 @@ export const Excursions: CollectionConfig = {
       min: 0,
       admin: {
         condition: (_, siblingData) => !siblingData?.priceOnRequest,
+        description: "Обязательна при публикации, если не включено «Цена по запросу».",
       },
     },
     {
       name: "duration",
       type: "number",
       label: "Длительность (мин)",
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Обязательна при публикации.",
+      },
     },
     {
       name: "groupSize",
@@ -130,7 +154,10 @@ export const Excursions: CollectionConfig = {
       name: "coverUrl",
       type: "text",
       label: "Обложка (URL)",
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Альтернатива загрузке файла. Обычно достаточно одного варианта.",
+      },
     },
     {
       name: "relatedRoutes",
@@ -148,10 +175,15 @@ export const Excursions: CollectionConfig = {
     {
       name: "content",
       type: "richText",
-      label: "Подробное описание",
+      label: "Подробное описание (не используется сайтом)",
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [...defaultFeatures],
       }),
+      admin: {
+        hidden: true,
+        description:
+          "Legacy Lexical field — сайт читает shortDescription/fullDescription. Данные сохранены.",
+      },
     },
     {
       name: "isFeatured",
@@ -167,7 +199,8 @@ export const Excursions: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: "sidebar",
-        description: "Если выключено — экскурсия доступна только по прямой ссылке /excursions/[slug].",
+        description:
+          "Если выключено — экскурсия доступна только по прямой ссылке /excursions/[slug].",
       },
     },
     {
