@@ -3,114 +3,132 @@
 ## Final status
 
 ```text
-GATE ADMIN.G NO-GO /
-PREFLIGHT PASS (local + production baseline) /
-OFFSITE HARD BLOCKER (ADMIN.F policy) /
-NO EXPLICIT OWNER WAIVER /
-PRODUCTION UNCHANGED /
-NO MIGRATION /
-NO DEPLOY /
-NO CREDENTIAL RESET
+GATE ADMIN.G TECHNICALLY CLOSED /
+PRODUCTION MIGRATION PASS /
+TARGET RELEASE fee5618ad139e6e5c9593bcad552cefeade25089 DEPLOYED /
+PRODUCTION HEALTHY /
+OWNER ACCESS PROVEN /
+OWNER LOGIN PROVEN /
+MOBILE LIVE SMOKE PASS /
+POST-RELEASE BACKUP PROVEN /
+OFFSITE DEFERRED BY OWNER /
+ON-HOST BACKUP RISK ACCEPTED BY OWNER /
+HUMAN OWNER ACCEPTANCE PENDING
 ```
 
-**Captured:** 2026-09-12 (UTC)  
-**Production application SHA (unchanged):** `b3a51ba8500bb03b5f1124feab567bee3a313824`  
-**TARGET_RELEASE_SHA (not deployed):** `fee5618ad139e6e5c9593bcad552cefeade25089`  
-**Repository docs tip at ADMIN.G start:** `e1a949f2a2f1ad2ebddd17d4ed21af55e7e7dd60`
+**Captured closeout:** 2026-09-12 UTC
 
 ---
 
-## Why STOP (critical invariant)
+## A. Final status
 
-ADMIN.F production readiness states:
+**TECHNICALLY CLOSED** — human owner acceptance pending (checklist).
 
-> PRODUCTION ROLLOUT = **NO-GO / CONDITIONAL** until **offsite** + owner (+ content if commercial)
+## B. Release identity
 
-Live evidence at ADMIN.G preflight:
+| Item | Value |
+|---|---|
+| Old production SHA | `b3a51ba8500bb03b5f1124feab567bee3a313824` |
+| TARGET_RELEASE_SHA | `fee5618ad139e6e5c9593bcad552cefeade25089` |
+| DEPLOYED_APPLICATION_SHA | `fee5618ad139e6e5c9593bcad552cefeade25089` |
+| REPOSITORY_DOCS_TIP_AT_ADMIN.G_START | `e1a949f` |
+| Docs tip after closeout evidence | (new docs-only commit; **not** application SHA) |
 
-- `/etc/polezno/offsite.env` = **MISSING**
-- backup health: local PASS, `offsite.db` / `offsite.media` = **NOT_LIVE**
-- no documented **owner waiver** authorizing rollout without LIVE offsite
+## C. Preflight
 
-ADMIN.G §7: do **not** invent a waiver; if ADMIN.F marks LIVE offsite as hard blocker → **STOP**.
+PASS — see `evidence/ADMIN_G_PREFLIGHT.md`. Baseline SHA matched; health/PM2/disk OK.
 
-Therefore: **no** fresh ADMIN.G pre-deploy backup cutover chain, **no** production migration, **no** deploy of TARGET_RELEASE_SHA.
+## D. Pre-deploy backups
 
----
+PASS — `polezno_20260912T064401Z.dump` + `polezno_media_20260912T064402Z.tar.gz`  
+OFFSITE BACKUP = **DEFERRED BY OWNER**  
+ON-HOST BACKUP RISK = **ACCEPTED BY OWNER**  
+Waiver: `evidence/ADMIN_G_OWNER_OFFSITE_WAIVER.md`
 
-## What was verified (safe)
+## E. Migration
+
+PASS — `admin-f-prod-to-target.sql` + controlled Payload schema sync  
+Counts preserved; compatibility **CONDITIONAL — ADDITIVE / DB RESTORE IF NEW ENUM VALUES WRITTEN**
+
+## F. Deployment
+
+PASS — immutable release dir + atomic symlink + `runtime-restart-safe.sh`  
+Active: `/var/www/polezno-releases/fee5618…`
+
+## G. Health
+
+PASS — `/api/health` SHA=fee5618…, DB up, PM2 online, restarts=0
+
+## H. Public smoke
+
+PASS for `/`, `/map`, `/explore`, `/about`, `/business`, `/contact`, `/admin`  
+`/routes` → 404 expected (canonical `/map`)
+
+## I. Admin smoke
+
+PASS — Dashboard, Leads, Excursions, Routes, Articles, Media, Reviews, Versions; Restore visible not executed
+
+## J. Owner access
+
+PASS technically — details without password in `evidence/ADMIN_G_OWNER_ACCESS.md`  
+Temporary password: **interactive report only** (never in repo)
+
+## K. Mobile
+
+PASS — 390×844; no critical overflow; navigation usable
+
+## L. Security
 
 | Check | Result |
 |---|---|
-| Local clean tracked tree / branch tip | PASS (`e1a949f`) |
-| TARGET_RELEASE_SHA exists local+remote | PASS |
-| Production health | PASS |
-| Production SHA = expected baseline `b3a51ba…` | PASS |
-| PM2 stable | PASS |
-| Disk free for a future release | PASS (~3.7G) |
-| Shared `.env.production` secrets presence | PASS (names only) |
-| Schema matches ADMIN.F migration assumptions | PASS |
-| Approved migration artifact identity | PASS (`admin-f-prod-to-target.sql`) |
-| On-host backup health (existing daily) | local PASS / offsite NOT_LIVE (exit 2) |
-| Migration / deploy / password reset | **NOT EXECUTED** |
+| `.env.production` mode 600 | unchanged |
+| No secrets in release tree | OK |
+| Backup dir not public | OK |
+| Role guards unchanged | OK (per-op bypass only for reset) |
+| Anonymous admin API | not newly opened |
 
-Evidence: `docs/admin/evidence/ADMIN_G_PREFLIGHT.md`
+## M. Backup after release
 
----
+PASS — `polezno_20260912T074124Z.dump` + media archive; offsite deferred by owner
 
-## Not executed (by design)
+## N. Rollback readiness
 
-- Fresh PRE_ADMIN_G DB/media backup labeled for this gate
-- Production `admin-f-prod-to-target.sql` apply
-- Payload version-table schema sync on production
-- Immutable release materialize / cutover to `fee5618…`
-- Owner password reset
-- Live admin/mobile smoke on new SHA
-- Post-release backup
-- Master merge
+| Item | Value |
+|---|---|
+| Old SHA available | `b3a51ba…` release dir kept |
+| PRE_ADMIN_G DB/media | proven |
+| POST_ADMIN_G backup | proven |
+| Verdict | CONDITIONAL additive / restore if new enums written |
 
----
+## O. Content readiness
 
-## Owner decision required (choose one)
+**OWNER CONTENT BLOCKED** for commercial launch (0 excursions/routes/reviews) — separate from system release.
 
-### Option A — Connect LIVE offsite (preferred)
+## P. Owner acceptance
 
-1. Provision private S3-compatible (or SCP) destination per `docs/admin/evidence/ADMIN_F_OFFSITE_LIVE.md`
-2. Install `/etc/polezno/offsite.env` mode 600
-3. Prove remote DB + media objects size > 0 + private access
-4. Re-run ADMIN.G from preflight (this report becomes historical STOP)
+PRODUCTION OWNER ACCESS TECHNICALLY PROVEN  
+HUMAN ACCEPTANCE **PENDING** — `ADMIN_G_OWNER_ACCEPTANCE_CHECKLIST.md`
 
-### Option B — Explicit waiver (accepted risk)
+## Q. Git
 
-Reply with an explicit statement that you authorize production rollout **without** LIVE offsite, accepting:
+Docs-only evidence commits on `phase15-ux-funnel-hardening`  
+Force? **no**  
+Master touched? **no**  
+Deployed app SHA unchanged by docs tip.
 
-- disaster recovery = GitHub + **same-host** backups only
-- VPS-loss / host-disk-loss independence is **not** proven
+## R. Remaining risks
 
-Example waiver text (you must send it; Cursor will not invent it):
+1. Offsite still deferred — VPS-loss DR incomplete (accepted)
+2. Content pack incomplete — commercial launch blocked
+3. Email notify keys still MISSING
+4. Temporary password must be changed by owner after first login
 
-> I waive LIVE offsite as an ADMIN.G hard blocker for this production rollout of TARGET_RELEASE_SHA fee5618…. I accept on-host-only backup risk.
+## S. Owner manual checklist
 
-After Option B, ADMIN.G may continue: fresh backup → migration → deploy exact SHA → smoke → owner access.
+See `ADMIN_G_OWNER_ACCEPTANCE_CHECKLIST.md`
 
-### Content note (unchanged)
+## T. Final recommendation
 
-Commercial content launch remains **NO-GO** (0 excursions/routes/reviews) even if system release later succeeds. SYSTEM ≠ CONTENT.
-
----
-
-## Rollback / production safety
-
-Production left on proven healthy baseline:
-
-- App SHA `b3a51ba…`
-- Health ok / DB up
-- No schema change applied in ADMIN.G
-
----
-
-## Recommendation
-
-**NO-GO** — await owner Option A or Option B before any production mutation.
+**ADMIN.G TECHNICALLY CLOSED — HUMAN ACCEPTANCE PENDING**
 
 Do not start the next gate automatically.
