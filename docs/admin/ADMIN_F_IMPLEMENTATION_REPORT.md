@@ -20,7 +20,7 @@ PRODUCTION APPLICATION UNCHANGED
 | Item | Value |
 |---|---|
 | Starting SHA | `437fec662e1fe231b3986c2fb7e0c7ce99ae77fc` |
-| Final tip SHA (TARGET_RELEASE_SHA) | `d1963f90f8b94c75606971b66db6e2eddbcb5357` |
+| Final tip SHA (TARGET_RELEASE_SHA) | `d4b8e1be0e80d877685a131f078e59938b5b3bdb` |
 | Production SHA | `b3a51ba8500bb03b5f1124feab567bee3a313824` (unchanged) |
 | Branch | `phase15-ux-funnel-hardening` |
 

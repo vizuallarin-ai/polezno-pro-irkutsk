@@ -39,7 +39,7 @@ Then Payload schema sync for version tables.
 
 ## TARGET_RELEASE_SHA
 
-`d1963f90f8b94c75606971b66db6e2eddbcb5357` on `phase15-ux-funnel-hardening` (ADMIN.F tip after readiness commit).
+`d4b8e1be0e80d877685a131f078e59938b5b3bdb` on `phase15-ux-funnel-hardening` (ADMIN.F tip after readiness commit).
 
 Update this value only with a new explicit ADMIN.F closeout commit if further fixes land before PROD.ROLLOUT.
 
