@@ -9,7 +9,7 @@
 |---|---|
 | Repo | `vizuallarin-ai/polezno-pro-irkutsk` |
 | Feature branch (source) | `phase15-ux-funnel-hardening` |
-| **TARGET_RELEASE_SHA** | _set to final ADMIN.F tip before PROD.ROLLOUT_ |
+| **TARGET_RELEASE_SHA** | `d1963f90f8b94c75606971b66db6e2eddbcb5357` |
 | Application rollback SHA | `b3a51ba8500bb03b5f1124feab567bee3a313824` (pre-ADMIN.B–F production) |
 | Production host | Beget VPS / `irkportal.ru` |
 
