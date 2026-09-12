@@ -37,7 +37,7 @@ Do **not** read this as FULL DISASTER RECOVERY PROVEN.
 | Branch | `phase15-ux-funnel-hardening` |
 | Starting local HEAD | `5b4fe8f73df09fd767a3582e9e87b346316388b2` |
 | Starting remote HEAD | `5b4fe8f73df09fd767a3582e9e87b346316388b2` |
-| Final local/remote HEAD | (this closeout commit after push) |
+| Final local/remote HEAD | `220eb0f407c5e7e76f92ebe53c32a7d9a71c21bc` |
 | Production SHA before/after | `b3a51ba8500bb03b5f1124feab567bee3a313824` |
 | Worktree | tracked changes for this gate; unrelated untracked leftovers ignored |
 
