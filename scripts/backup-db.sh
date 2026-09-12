@@ -12,10 +12,12 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 RETENTION_DAYS="${RETENTION_DAYS:-14}"
 
 mkdir -p "$BACKUP_DIR"
+chmod 750 "$BACKUP_DIR" 2>/dev/null || true
 OUT="${BACKUP_DIR}/polezno_${STAMP}.dump"
 
 sudo -u postgres pg_dump -Fc "$DB_NAME" > "$OUT"
 test -s "$OUT"
+chmod 640 "$OUT" 2>/dev/null || true
 
 if command -v sha256sum >/dev/null 2>&1; then
   sha256sum "$OUT" | tee "${OUT}.sha256"

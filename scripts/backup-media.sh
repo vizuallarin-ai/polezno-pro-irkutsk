@@ -19,10 +19,12 @@ if [ ! -d "$MEDIA_DIR" ]; then
 fi
 
 mkdir -p "$OUT_DIR"
+chmod 750 "$OUT_DIR" 2>/dev/null || true
 OUT="${OUT_DIR}/polezno_media_${STAMP}.tar.gz"
 
 tar -czf "$OUT" -C "$(dirname "$MEDIA_DIR")" "$(basename "$MEDIA_DIR")"
 test -s "$OUT"
+chmod 640 "$OUT" 2>/dev/null || true
 
 if command -v sha256sum >/dev/null 2>&1; then
   sha256sum "$OUT" | tee "${OUT}.sha256"

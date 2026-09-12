@@ -1,14 +1,19 @@
-# IrkPortal production DB backup — install to /etc/cron.d/polezno-backup
-# OBS.1: scheduled backup was missing (NO_ROOT_CRON_BACKUP).
+# IrkPortal production on-host backup pipeline — install to /etc/cron.d/polezno-backup
+#
+# ADMIN.E final closeout: daily DB + media on-host.
+# LIVE offsite is deferred to ADMIN.F (owner decision) — not invoked here.
 #
 # Install (owner/ops authorized):
 #   install -m 644 scripts/cron/polezno-backup /etc/cron.d/polezno-backup
 #
+# Scripts live under shared ops so production release SHA need not change:
+#   /var/www/polezno-shared/ops/scripts/backup-daily-onhost.sh
+#
 # Uses flock so overlapping runs abort. Logs to /var/log/polezno-backup.log
-# Does not print secrets. Retention handled inside backup-db.sh (14 days default).
+# Does not print secrets. Retention handled inside backup-db.sh / backup-media.sh (14d).
 
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-# Daily 03:15 UTC — tighten cadence after CONTENT.1 if needed
-15 3 * * * root flock -n /var/lock/polezno-backup.lock -c 'bash /var/www/polezno-current/scripts/backup-db.sh >> /var/log/polezno-backup.log 2>&1; echo exit:$? >> /var/log/polezno-backup.log'
+# Daily 03:15 UTC — DB dump → media archive → on-host health
+15 3 * * * root flock -n /var/lock/polezno-backup.lock -c 'MEDIA_DIR=/var/www/polezno-shared/media BACKUP_DIR=/var/backups/polezno REQUIRE_MEDIA_BACKUP=1 bash /var/www/polezno-shared/ops/scripts/backup-daily-onhost.sh >> /var/log/polezno-backup.log 2>&1; echo exit:$? >> /var/log/polezno-backup.log'

@@ -1,24 +1,39 @@
-# Offsite disaster-recovery backup (ADMIN.E / ADMIN.E.1)
+# Offsite disaster-recovery backup (contract)
 
-Same-host VPS dumps (`scripts/backup-db.sh`) are **not** enough for disaster recovery.
+Same-host VPS dumps are a recovery layer, **not** full independent disaster recovery.
 
 ## Status
 
-**OFFSITE BACKUP NOT LIVE** — ADMIN.E.FINAL production discovery: all `OFFSITE_*` / `AWS_*` destination variables **missing**, `aws` CLI **missing**, no dedicated offsite env file. Owner infrastructure still required.
+**OFFSITE CONTRACT = READY-BUT-NOT-CONNECTED**
 
-Prepared contract (do not invent a second subsystem):
+**LIVE OFFSITE = DEFERRED TO ADMIN.F BY OWNER DECISION**
 
-1. On-host dump: `scripts/backup-db.sh` → `/var/backups/polezno/polezno_*.dump` (cron daily 03:15 UTC)
-2. Media archive: `scripts/backup-media.sh` (`MEDIA_DIR` → shared media; not yet in production cron)
+Do not claim OFFSITE LIVE or FULL DISASTER RECOVERY until ADMIN.F proves remote objects.
+
+## On-host layer (ADMIN.E — operational)
+
+1. Daily pipeline: `scripts/backup-daily-onhost.sh`
+   - DB: `scripts/backup-db.sh` → `/var/backups/polezno/polezno_*.dump`
+   - Media: `scripts/backup-media.sh` (`MEDIA_DIR=/var/www/polezno-shared/media`)
+   - Health: `node scripts/backup-health-check.mjs` with `REQUIRE_MEDIA_BACKUP=1`
+2. Schedule: `/etc/cron.d/polezno-backup` at **03:15 UTC**
+3. Retention: ~14 days on-host for DB and media archives
+4. Scripts on VPS: `/var/www/polezno-shared/ops/scripts/` (shared ops; independent of release SHA)
+
+Absence of S3 does **not** block local DB/media backup.
+
+## Offsite contract (ready; not connected)
+
 3. Offsite copy + verify: `scripts/backup-offsite-copy.sh` (`OFFSITE_MODE=s3|scp`)
-4. Health: `node scripts/backup-health-check.mjs` (exit 2 = offsite not configured)
+4. Health: exit **2** when mode unset (deferred / NOT LIVE); exit **0** only after live verify when configured
 
-ADMIN.E.1 proved **failure exits** (missing mode=2, bad/missing deps=non-zero). ADMIN.E.FINAL reconfirmed destination absence on VPS — no fake LIVE claim.
+Failure exits already proven (ADMIN.E.1): missing mode=2; bad/missing deps=non-zero. Silent success on failed S3 upload is not possible (`head-object` size > 0 required).
 
-## Minimum live procedure (when credentials exist)
+## Minimum live procedure (ADMIN.F)
 
 ```bash
 DUMP=/var/backups/polezno/polezno_YYYYMMDDT….dump \
+MEDIA_ARCHIVE=/var/backups/polezno/polezno_media_….tar.gz \
 OFFSITE_MODE=s3 \
 OFFSITE_S3_BUCKET=… \
 OFFSITE_S3_ENDPOINT=… \
@@ -27,24 +42,22 @@ AWS_SECRET_ACCESS_KEY=… \
 bash scripts/backup-offsite-copy.sh
 ```
 
-Script exits 0 only after authenticated size verification for S3.
-
 ## Retention
 
-- On-host: `RETENTION_DAYS` default 14 (`backup-db.sh`)
-- Offsite: `OFFSITE_RETENTION_DAYS` default 14 — configure **S3 lifecycle** on `db/` and `media/` (do not allow unbounded growth)
+- On-host: `RETENTION_DAYS` / `MEDIA_RETENTION_DAYS` default 14
+- Offsite: `OFFSITE_RETENTION_DAYS` default 14 — configure **S3 lifecycle** on `db/` and `media/`
 
 ## Security
 
 - Private storage only
 - Transport TLS / SSH
-- Never commit credentials or put `.env` secrets into dump archives
+- Never commit credentials
 - Leads/PII inside DB dumps → treat offsite as confidential
 
-## Definition of Done (LIVE)
+## Definition of Done (LIVE) — ADMIN.F
 
 - [ ] Dump exists outside production host
 - [ ] Authenticated remote object size > 0 proven
-- [ ] Restore dry-run on scratch DB
-- [ ] Media recovery contract exercised or explicitly deferred with owner approval
+- [ ] Media remote object proven
 - [ ] Lifecycle/retention configured
+- [ ] Remote health exit 0 path proven
