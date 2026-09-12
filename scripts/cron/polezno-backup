@@ -1,7 +1,8 @@
 # IrkPortal production on-host backup pipeline — install to /etc/cron.d/polezno-backup
 #
-# ADMIN.E final closeout: daily DB + media on-host.
-# LIVE offsite is deferred to ADMIN.F (owner decision) — not invoked here.
+# Daily DB + media on-host. Offsite runs automatically when
+# /etc/polezno/offsite.env sets OFFSITE_MODE (ADMIN.F). Without that file,
+# local backup still succeeds (health exit 2 = NOT LIVE).
 #
 # Install (owner/ops authorized):
 #   install -m 644 scripts/cron/polezno-backup /etc/cron.d/polezno-backup

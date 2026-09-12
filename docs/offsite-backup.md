@@ -2,62 +2,51 @@
 
 Same-host VPS dumps are a recovery layer, **not** full independent disaster recovery.
 
-## Status
+## Status (ADMIN.F)
 
-**OFFSITE CONTRACT = READY-BUT-NOT-CONNECTED**
+**OFFSITE CONTRACT = READY**  
+**LIVE OFFSITE = NOT LIVE — OWNER INFRA ACTION REQUIRED**
 
-**LIVE OFFSITE = DEFERRED TO ADMIN.F BY OWNER DECISION**
+Do not claim OFFSITE LIVE or FULL DISASTER RECOVERY until remote objects are proven.
 
-Do not claim OFFSITE LIVE or FULL DISASTER RECOVERY until ADMIN.F proves remote objects.
-
-## On-host layer (ADMIN.E — operational)
+## On-host layer (operational)
 
 1. Daily pipeline: `scripts/backup-daily-onhost.sh`
-   - DB: `scripts/backup-db.sh` → `/var/backups/polezno/polezno_*.dump`
-   - Media: `scripts/backup-media.sh` (`MEDIA_DIR=/var/www/polezno-shared/media`)
-   - Health: `node scripts/backup-health-check.mjs` with `REQUIRE_MEDIA_BACKUP=1`
+   - DB → Media → optional Offsite → Health
 2. Schedule: `/etc/cron.d/polezno-backup` at **03:15 UTC**
-3. Retention: ~14 days on-host for DB and media archives
-4. Scripts on VPS: `/var/www/polezno-shared/ops/scripts/` (shared ops; independent of release SHA)
+3. Retention: ~14 days on-host
+4. Scripts: `/var/www/polezno-shared/ops/scripts/`
 
-Absence of S3 does **not** block local DB/media backup.
+When `OFFSITE_MODE` unset, health exits **2** (local OK / offsite not live). Pipeline treats exit 2 as success for the on-host layer.
 
-## Offsite contract (ready; not connected)
+## Owner infra to go LIVE
 
-3. Offsite copy + verify: `scripts/backup-offsite-copy.sh` (`OFFSITE_MODE=s3|scp`)
-4. Health: exit **2** when mode unset (deferred / NOT LIVE); exit **0** only after live verify when configured
+1. Private S3-compatible bucket (or approved SCP host ≠ production VPS)
+2. Public access OFF; TLS; lifecycle 14d on `db/` + `media/`
+3. Host file `/etc/polezno/offsite.env` mode `600`:
+   - `OFFSITE_MODE=s3|scp`
+   - `OFFSITE_S3_BUCKET` / optional `OFFSITE_S3_ENDPOINT`
+   - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` **or** `OFFSITE_SCP_TARGET`
+4. `aws` CLI on VPS for S3 mode
+5. Prove authenticated remote size > 0 for DB + media
+6. Prove health exit **0** with `offsite.db=HEALTHY` and `offsite.media=HEALTHY`
+7. Disposable download/`pg_restore --list` + media tar list
 
-Failure exits already proven (ADMIN.E.1): missing mode=2; bad/missing deps=non-zero. Silent success on failed S3 upload is not possible (`head-object` size > 0 required).
+Never commit credentials.
 
-## Minimum live procedure (ADMIN.F)
+## RPO / RTO (honest)
 
-```bash
-DUMP=/var/backups/polezno/polezno_YYYYMMDDT….dump \
-MEDIA_ARCHIVE=/var/backups/polezno/polezno_media_….tar.gz \
-OFFSITE_MODE=s3 \
-OFFSITE_S3_BUCKET=… \
-OFFSITE_S3_ENDPOINT=… \
-AWS_ACCESS_KEY_ID=… \
-AWS_SECRET_ACCESS_KEY=… \
-bash scripts/backup-offsite-copy.sh
-```
+| Layer | RPO | Notes |
+|---|---|---|
+| On-host daily | ≤ ~24h | 03:15 UTC cadence |
+| Offsite (when LIVE) | ≤ ~24h | same pipeline after local archives |
+| RTO | hours-scale | fresh VPS + GitHub + restore runbook; not an enterprise SLA |
 
-## Retention
-
-- On-host: `RETENTION_DAYS` / `MEDIA_RETENTION_DAYS` default 14
-- Offsite: `OFFSITE_RETENTION_DAYS` default 14 — configure **S3 lifecycle** on `db/` and `media/`
-
-## Security
-
-- Private storage only
-- Transport TLS / SSH
-- Never commit credentials
-- Leads/PII inside DB dumps → treat offsite as confidential
-
-## Definition of Done (LIVE) — ADMIN.F
+## Definition of Done (LIVE)
 
 - [ ] Dump exists outside production host
-- [ ] Authenticated remote object size > 0 proven
-- [ ] Media remote object proven
+- [ ] Authenticated remote DB object size > 0
+- [ ] Authenticated remote media object size > 0
 - [ ] Lifecycle/retention configured
-- [ ] Remote health exit 0 path proven
+- [ ] Remote health exit 0
+- [ ] Download smoke on disposable target

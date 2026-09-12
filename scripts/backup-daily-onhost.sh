@@ -6,10 +6,10 @@
 #   2) Media archive
 #   3) Local backup health (DB + media)
 #
-# Offsite copy is intentionally NOT required here.
-# LIVE offsite is deferred to ADMIN.F by owner decision.
-# When OFFSITE_MODE is unset, backup-health-check exits 2 (contract ready, not live).
-# That exit is treated as SUCCESS for the on-host pipeline.
+# Offsite: if /etc/polezno/offsite.env (or env) sets OFFSITE_MODE, copy after local
+# archives. When OFFSITE_MODE is unset, backup-health-check exits 2 (NOT LIVE).
+# Exit 2 is treated as SUCCESS for the on-host layer so local backups never
+# depend on owner infra that is not yet provisioned.
 #
 # Install path on VPS (no app deploy required):
 #   /var/www/polezno-shared/ops/scripts/backup-daily-onhost.sh
@@ -40,6 +40,31 @@ echo "=== ONHOST BACKUP START $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
 bash "$DB_SCRIPT"
 bash "$MEDIA_SCRIPT"
 
+# Optional LIVE offsite (ADMIN.F). Secrets only via host env file — never git.
+OFFSITE_ENV_FILE="${OFFSITE_ENV_FILE:-/etc/polezno/offsite.env}"
+if [ -f "$OFFSITE_ENV_FILE" ]; then
+  # shellcheck disable=SC1090
+  set -a
+  # Presence-only source; do not echo values.
+  source "$OFFSITE_ENV_FILE"
+  set +a
+fi
+
+OFFSITE_SCRIPT="${SCRIPTS_DIR}/backup-offsite-copy.sh"
+if [ -n "${OFFSITE_MODE:-}" ]; then
+  LATEST_DB="$(ls -1t "$BACKUP_DIR"/polezno_*.dump 2>/dev/null | head -n1 || true)"
+  LATEST_MEDIA="$(ls -1t "$BACKUP_DIR"/polezno_media_*.tar.gz 2>/dev/null | head -n1 || true)"
+  if [ -z "$LATEST_DB" ] || [ ! -s "$LATEST_DB" ]; then
+    echo "ABORT: no local DB dump for offsite copy" >&2
+    exit 1
+  fi
+  echo "=== OFFSITE COPY START $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+  DUMP="$LATEST_DB" MEDIA_ARCHIVE="${LATEST_MEDIA:-}" bash "$OFFSITE_SCRIPT"
+  echo "=== OFFSITE COPY OK $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+else
+  echo "offsite: NOT LIVE (OFFSITE_MODE unset — owner infra required)"
+fi
+
 # Health: exit 0 = local+offsite OK; exit 2 = local OK / offsite deferred; exit 1 = fail
 set +e
 node "$HEALTH_SCRIPT"
@@ -51,7 +76,7 @@ case "$HEALTH_EC" in
     echo "backup-health: OK (local + offsite live)"
     ;;
   2)
-    echo "backup-health: OK on-host; OFFSITE LIVE deferred (exit 2 expected until ADMIN.F)"
+    echo "backup-health: OK on-host; OFFSITE NOT LIVE / owner infra pending (exit 2)"
     ;;
   *)
     echo "ABORT: backup-health failed exit=$HEALTH_EC" >&2

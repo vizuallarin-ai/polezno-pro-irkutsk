@@ -108,28 +108,31 @@ Expect non-zero dump/archive size and mtime within policy window (`BACKUP_POLICY
 - missing dump / empty dump / upload/verify failure → exit **non-zero**
 - S3 success path requires authenticated `head-object` size > 0
 
-On-host daily cron does **not** call offsite until ADMIN.F connects it. Cron must treat non-zero as failure when offsite is added.
+Daily pipeline (`backup-daily-onhost.sh`) sources `/etc/polezno/offsite.env` when present and runs offsite after local archives. Health must show `offsite.db` + `offsite.media` HEALTHY for exit 0.
+
+**ADMIN.F status:** LIVE offsite still **OWNER INFRA ACTION REQUIRED** until bucket+credentials exist.
 
 ## 9. RPO / RTO
 
-| | Target | Actual (ADMIN.E CLOSED) |
+| | Target | Actual (ADMIN.F) |
 |---|---|---|
-| CMS / DB RPO | ≤ 24h (daily) | On-host daily dump ~03:15 UTC; **offsite NOT LIVE** → disaster RPO limited to last same-host dump |
-| Media RPO | ≤ 24h | On-host daily media archive ~03:15 UTC; **offsite NOT LIVE** → media disaster recovery incomplete until ADMIN.F |
-| RTO | Hours (manual) | Restore itself: minutes on disposable host (proven); end-to-end depends on operator + server provisioning |
+| CMS / DB RPO | ≤ 24h (daily) | On-host daily DB+media ~03:15 UTC proven; **offsite NOT LIVE** → independent disaster RPO incomplete |
+| Media RPO | ≤ 24h | On-host media archive in daily pipeline; offsite pending owner infra |
+| RTO | Hours (manual) | Restore proven on disposable; fresh-VPS path needs GitHub + offsite when LIVE |
 
 ## 10. Schema migration before production rollout
 
-Still a future rollout gate (not ADMIN.E):
+See `docs/ops/PRODUCTION_ROLLOUT_RUNBOOK.md` and `scripts/migrations/admin-f-prod-to-target.sql`.
 
-1. Backup production DB.
-2. Apply `scripts/migrations/admin-e-add-developer-role.sql` + schema sync.
-3. Validate enum `admin|editor|developer`.
-4. Smoke owner login (`admin` value unchanged).
-5. Rollback = restore dump.
+1. Backup production DB (+ media).
+2. Apply ADMIN.F SQL on production only during PROD.ROLLOUT.
+3. Controlled Payload schema sync for version tables (rehearsed disposable first).
+4. Deploy `TARGET_RELEASE_SHA`.
+5. Rollback = code ± DB restore per `PRODUCTION_ROLLBACK_RUNBOOK.md`.
 
 ## See also
 
 - `docs/offsite-backup.md`
 - `docs/admin/ADMIN_F_HANDOFF.md`
-- `docs/admin/ADMIN_E_FINAL_CLOSEOUT_REPORT.md`
+- `docs/admin/ADMIN_F_IMPLEMENTATION_REPORT.md`
+- `docs/ops/PRODUCTION_ROLLOUT_RUNBOOK.md`

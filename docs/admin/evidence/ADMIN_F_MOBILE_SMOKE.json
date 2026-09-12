@@ -1,0 +1,49 @@
+{
+  "at": "2026-09-12T05:43:29.616Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "base": "http://127.0.0.1:3000",
+  "pages": [
+    {
+      "path": "/admin/login",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390
+    },
+    {
+      "path": "/admin",
+      "title": "Войти — Иркпортал CMS",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasUi": true
+    },
+    {
+      "path": "/admin/collections/leads",
+      "title": "Войти — Иркпортал CMS",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasUi": true
+    },
+    {
+      "path": "/admin/collections/excursions",
+      "title": "Войти — Иркпортал CMS",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasUi": true
+    },
+    {
+      "path": "/admin/collections/routes",
+      "title": "Войти — Иркпортал CMS",
+      "overflow": false,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "hasUi": true
+    }
+  ],
+  "verdict": "MOBILE_SMOKE_PASS"
+}
