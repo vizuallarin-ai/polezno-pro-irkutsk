@@ -34,4 +34,4 @@ Copy and tick during a real session on disposable/staging (not production mutati
 - [ ] Мне понятно, где контакты/настройки
 - [ ] Я понимаю, куда обращаться при технической аварии
 
-Guide: `docs/admin/OWNER_ADMIN_GUIDE.ru.md`
+Guide: `docs/admin/OWNER_ADMIN_GUIDE.ru.md` (ADMIN.F-aligned: Главная blocks, «Краткое описание», «Следующая связь», English Versions chrome).

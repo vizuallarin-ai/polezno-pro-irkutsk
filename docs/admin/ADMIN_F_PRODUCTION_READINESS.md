@@ -39,9 +39,9 @@ Then Payload schema sync for version tables.
 
 ## TARGET_RELEASE_SHA
 
-`d4b8e1be0e80d877685a131f078e59938b5b3bdb` on `phase15-ux-funnel-hardening` (ADMIN.F tip after readiness commit).
+**Frozen:** `fee5618ad139e6e5c9593bcad552cefeade25089` on `phase15-ux-funnel-hardening`.
 
-Update this value only with a new explicit ADMIN.F closeout commit if further fixes land before PROD.ROLLOUT.
+This is the ADMIN.F closeout tip (readiness code + SHA pins). Later docs-only follow-ups do **not** re-freeze TARGET unless an explicit ADMIN.F re-closeout says so.
 
 ## Safety during ADMIN.F
 
