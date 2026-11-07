@@ -2,7 +2,7 @@
 
 ## Current state
 
-The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, root key access, deploy key access, security baseline, PostgreSQL 16 staging and clean production databases, immutable releases, PM2, private Nginx, smoke, and local backups are verified. DNS, registrar, TLS, owner login, and production traffic remain unchanged.
+The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, root key access, deploy key access, security baseline, PostgreSQL 16 staging and clean production databases, immutable releases, PM2, private Nginx, security audit, smoke, and independent local backup are verified. DNS, registrar, TLS, owner login, and production traffic remain unchanged.
 
 ## Minimum target
 
@@ -29,10 +29,10 @@ The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, roo
 ## Current production preparation
 
 - Production database: `polezno_production`, empty except for controlled Payload schema.
-- Production application SHA: `22e71fd0f0bfb80118245220077df5d2f7e3c8fe`.
+- Production application SHA: `12f2f703fd38c845e21fd0c0aed1e17ce5c124f7`.
 - Production process and Nginx are intentionally private on `127.0.0.1:3001` and `127.0.0.1:8081`.
 - Current DNS A lookup is `95.163.244.138`; planned record remains `@ -> 79.174.91.110`.
-- Owner account creation is pending one verified owner login email.
+- Owner account creation is pending a local hidden-input password procedure for verified email `luola@inbox.ru`.
 
 ## SEO migration contract
 
@@ -61,7 +61,7 @@ Google Search Console:
 ## Current blockers
 
 - Production is intentionally a new empty database; later Beget material import remains optional.
-- Owner login email is not yet provided for the clean production database.
+- Owner account is not yet created; the owner must enter the temporary password locally without exposing it to the agent transcript.
 - Old-domain redirect control is unknown/unavailable.
 - Production secrets require rotation and private re-entry.
 - Mailbox/DNS verification for the new sender domain is not proven.
