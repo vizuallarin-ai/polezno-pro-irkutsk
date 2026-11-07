@@ -2,6 +2,9 @@
   "name": "polezno-pro-irkutsk",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "dompurify": "3.4.17"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
