@@ -59,7 +59,7 @@ const demoByMediaAlt: CommercialRecordInput = {
   status: "published",
   title: "Мини-гид «Иркутск за 3 дня»",
   slug: "mini-guide-3-days",
-  altTexts: ["Демо-сувенир Иркпортала"],
+  altTexts: ["Демо-сувенир «Полезно про Иркутск»"],
   mediaFilenames: ["seed-placeholder-souvenir.svg"],
   mediaUrls: ["/api/media/file/seed-placeholder-souvenir.svg"],
 };
@@ -171,7 +171,7 @@ test("Sitemap input from CMS doc sees seed media alt", () => {
     gallery: [
       {
         image: {
-          alt: "Демо-сувенир Иркпортала",
+          alt: "Демо-сувенир «Полезно про Иркутск»",
           filename: "seed-placeholder-souvenir.svg",
           url: "/api/media/file/seed-placeholder-souvenir.svg",
         },

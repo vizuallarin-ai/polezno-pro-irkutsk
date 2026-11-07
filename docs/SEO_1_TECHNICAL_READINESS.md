@@ -60,7 +60,7 @@ Owner CMS shelves at gate start: excursions/routes/reviews/photos/site_settings 
 
 ## 4. Metadata architecture
 
-- Root defaults: `app/(site)/layout.tsx` — `metadataBase`, title template `%s | Иркпортал`, OG/Twitter defaults, Google verification token.
+- Root defaults: `app/(site)/layout.tsx` — `metadataBase`, title template `%s | Полезно про Иркутск`, OG/Twitter defaults, Google verification token.
 - **No inherited `canonical: "/"`** (removed in SEO.1).
 - Page-specific: static `metadata` or `generateMetadata`.
 - CMS entities: `lib/seo-metadata.ts` → `buildPageMetadata` (title/description/OG/Twitter/canonical).
@@ -68,8 +68,8 @@ Owner CMS shelves at gate start: excursions/routes/reviews/photos/site_settings 
 
 ## 5. Canonical policy
 
-- Host: `https://irkportal.ru` (`lib/site-url.ts` / `DEFAULT_SITE_URL`).
-- Middleware 308: `www.irkportal.ru` → apex.
+- Host: `https://xn--e1aediabqeeaegncqpq.xn--p1ai` (`lib/site-url.ts` / `DEFAULT_SITE_URL`).
+- Middleware 308: `www.xn--e1aediabqeeaegncqpq.xn--p1ai` → apex.
 - Trailing slash: Next default `trailingSlash: false` (slash → non-slash).
 - Query/tracking: self-canonical on clean paths (`/map`, `/contact`, etc.).
 - `/excursions` permanent redirect → `/map` (no `?filter=` doorway).
@@ -80,14 +80,14 @@ Endpoint: `/robots.txt` (`app/robots.txt/route.ts`)
 
 - Allow `/`
 - Disallow `/admin`, `/admin/`, `/api/`, success/submit forms
-- `Host: irkportal.ru`
-- `Sitemap: https://irkportal.ru/sitemap.xml`
+- `Host: xn--e1aediabqeeaegncqpq.xn--p1ai`
+- `Sitemap: https://xn--e1aediabqeeaegncqpq.xn--p1ai/sitemap.xml`
 
 ## 7. Sitemap
 
 Endpoint: `/sitemap.xml` (`app/sitemap.ts`)
 
-- Absolute `https://irkportal.ru…` URLs only
+- Absolute `https://xn--e1aediabqeeaegncqpq.xn--p1ai…` URLs only
 - Core static always; empty CMS shelves **omitted**
 - Dynamic entities only when `isSitemapEligible` (published-ready)
 - Photos in sitemap only with non-empty description
@@ -154,7 +154,7 @@ Owner actions after public content launch:
 
 1. Confirm Google Search Console property (token already in root metadata)
 2. Add Yandex Webmaster verification token when issued
-3. Submit `https://irkportal.ru/sitemap.xml`
+3. Submit `https://xn--e1aediabqeeaegncqpq.xn--p1ai/sitemap.xml`
 4. Inspect canonical host (apex only)
 5. Monitor coverage / soft-404
 

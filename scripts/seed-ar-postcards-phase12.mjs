@@ -16,7 +16,7 @@ nextEnv.loadEnvConfig(root);
 
 const SITE_BASE =
   process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "") ||
-  "https://irkportal.ru";
+  "https://xn--e1aediabqeeaegncqpq.xn--p1ai";
 
 const SEED_POSTCARDS = [
   {
@@ -30,7 +30,7 @@ const SEED_POSTCARDS = [
     place: "Иркутск",
     street: "ул. Карла Маркса",
     year: 1910,
-    authorName: "Иркпортал",
+    authorName: "Полезно про Иркутск",
     rightsType: "own_photo",
     relatedPhotoSlug: "wooden-house-karl-marx",
     relatedProductSlug: "postcards-no-cliches",
@@ -71,7 +71,7 @@ const SEED_POSTCARDS = [
     shortDescription:
       "QR ведёт на маршрут по центру — видео-эффект появится позже.",
     place: "Центр Иркутска",
-    authorName: "Иркпортал",
+    authorName: "Полезно про Иркутск",
     rightsType: "own_photo",
     relatedProductSlug: "map-walk-center-irkutsk",
   },
@@ -104,7 +104,7 @@ async function ensurePlaceholderMedia(payload) {
   const buffer = fs.readFileSync(svgPath);
   const media = await payload.create({
     collection: "media",
-    data: { alt: "Демо AR-открытка Иркпортала" },
+    data: { alt: "Демо AR-открытка «Полезно про Иркутск»" },
     file: {
       data: buffer,
       mimetype: "image/svg+xml",

@@ -6,7 +6,7 @@ const CANONICAL_HOST = new URL(DEFAULT_SITE_URL).host;
 
 /**
  * - Block direct static access to pending user uploads (`/media/pending-*`).
- * - Canonical host: www → apex (https://irkportal.ru) to avoid duplicate indexation.
+ * - Canonical host: www → apex to avoid duplicate indexation.
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

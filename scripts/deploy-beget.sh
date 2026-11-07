@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Одноразовый (и повторный) bootstrap polezno-pro-irkutsk на Beget VPS (Ubuntu 24.04)
-# Домен: irkportal.ru | PostgreSQL локально на VPS (Neon/Supabase не используются)
+# Домен: полезнопроиркутск.рф | PostgreSQL локально на VPS (Neon/Supabase не используются)
 #
 # Запуск на сервере (от root или через sudo):
 #   export DEPLOY_DB_PASSWORD='ваш_надёжный_пароль_postgres'
@@ -20,9 +20,10 @@ readonly APP_NAME="polezno"
 readonly APP_DIR="/var/www/polezno"
 readonly REPO_URL="https://github.com/vizuallarin-ai/polezno-pro-irkutsk.git"
 readonly GIT_BRANCH="master"
-readonly DOMAIN="irkportal.ru"
-readonly WWW_DOMAIN="www.irkportal.ru"
-readonly VPS_IP_HINT="90.156.170.182"
+readonly DOMAIN="xn--e1aediabqeeaegncqpq.xn--p1ai"
+readonly WWW_DOMAIN="www.xn--e1aediabqeeaegncqpq.xn--p1ai"
+# No server is provisioned by this recovery task; supply the target IP manually.
+readonly VPS_IP_HINT="<new-vps-ip>"
 readonly DB_USER="polezno_irkutsk"
 readonly DB_NAME="polezno_irkutsk"
 readonly NODE_MAJOR="20"

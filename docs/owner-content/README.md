@@ -14,7 +14,7 @@
 - Секреты, `.env`, пароли, токены аналитики «как есть» без нужды
 - Бинарные оригиналы клиента (фото/PDF/Word) — они живут в `owner-content-private/` (вне git)
 - Production CMS / прямые записи в БД
-- Публикация на irkportal.ru
+- Публикация на полезнопроиркутск.рф (ASCII IDN: `xn--e1aediabqeeaegncqpq.xn--p1ai`)
 
 ## Как отмечать missing
 

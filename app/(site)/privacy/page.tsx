@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Политика обработки персональных данных",
   description:
-    "Политика обработки персональных данных проекта Иркпортал (irkportal.ru).",
+    "Политика обработки персональных данных проекта «Полезно про Иркутск».",
   alternates: { canonical: "/privacy" },
   robots: { index: true, follow: true },
 };
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
         <div className="prose prose-neutral max-w-none text-muted-foreground leading-relaxed space-y-6 text-sm">
           <p>
-            Настоящая политика описывает, как проект «Иркпортал» (irkportal.ru)
+            Настоящая политика описывает, как проект «Полезно про Иркутск»
             обрабатывает персональные данные, которые вы добровольно
             предоставляете через формы обратной связи, заявки и другие способы
             связи с сайтом.

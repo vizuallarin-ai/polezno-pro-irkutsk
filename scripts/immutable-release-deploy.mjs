@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Gate 1H — Immutable release deploy state machine for IrkPortal.
+ * Gate 1H — Immutable release deploy state machine for Полезно про Иркутск.
  *
  * DEFAULT: dry-run / preflight ONLY (prints plan, exit 0).
  * REAL RUN requires explicit:
@@ -87,7 +87,7 @@ async function main() {
       execute: false,
       projectRoot,
     });
-    console.log("IrkPortal immutable release deploy — DRY-RUN / PREFLIGHT\n");
+    console.log("Полезно про Иркутск immutable release deploy — DRY-RUN / PREFLIGHT\n");
     console.log(JSON.stringify(plan, null, 2));
     console.log(
       "\nNo mutations performed. Pass --execute --expected-sha <40hex> --backup-id <id> for a real run."

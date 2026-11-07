@@ -2,11 +2,11 @@
 /**
  * Быстрая проверка ключевых URL на production.
  * Использование: npm run check:prod
- * Переопределить хост: SITE_URL=https://irkportal.ru npm run check:prod
+ * Переопределить хост: SITE_URL=https://xn--e1aediabqeeaegncqpq.xn--p1ai npm run check:prod
  * Сверка SHA: EXPECTED_GIT_SHA=$(git rev-parse HEAD) npm run check:prod
  */
 
-const BASE = (process.env.SITE_URL || "https://irkportal.ru").replace(/\/$/, "");
+const BASE = (process.env.SITE_URL || "https://xn--e1aediabqeeaegncqpq.xn--p1ai").replace(/\/$/, "");
 const EXPECTED_SHA = process.env.EXPECTED_GIT_SHA?.trim() || "";
 
 const PATHS = [

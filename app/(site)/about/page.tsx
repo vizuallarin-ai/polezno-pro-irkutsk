@@ -16,7 +16,7 @@ import { ExploreMaterialCard } from "@/components/explore/explore-material-card"
 export const metadata: Metadata = {
   title: "О проекте — манифест",
   description:
-    "История и философия Иркпортала. Почему мы создаём авторский навигатор по Иркутску и Байкалу.",
+    "История и философия «Полезно про Иркутск». Почему мы создаём авторский навигатор по Иркутску и Байкалу.",
   alternates: { canonical: "/about" },
 };
 
@@ -88,7 +88,7 @@ export default async function AboutPage() {
                 <p className="type-eyebrow text-muted-foreground mb-6">
                   Манифест
                 </p>
-                <h1 className="sr-only">О проекте — манифест Иркпортала</h1>
+                <h1 className="sr-only">О проекте — манифест «Полезно про Иркутск»</h1>
                 <VisualQuoteBlock
                   quote="Иркутск — это город, который меняет тех, кто в нём остаётся"
                 />

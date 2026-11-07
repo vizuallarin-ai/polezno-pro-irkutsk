@@ -2,7 +2,7 @@
 /**
  * RELEASE.1 — Post-deploy / readiness smoke (HTTP only, no DB writes).
  *
- * Default target: https://irkportal.ru
+ * Default target: https://xn--e1aediabqeeaegncqpq.xn--p1ai
  * Does NOT submit leads. Lead path is documented separately (--lead-plan).
  *
  * Usage:
@@ -10,7 +10,7 @@
  *   EXPECTED_GIT_SHA=<40hex> npm run release:smoke
  *   SITE_URL=http://127.0.0.1:3000 npm run release:smoke
  */
-const BASE = (process.env.SITE_URL || "https://irkportal.ru").replace(/\/$/, "");
+const BASE = (process.env.SITE_URL || "https://xn--e1aediabqeeaegncqpq.xn--p1ai").replace(/\/$/, "");
 const EXPECTED_SHA = process.env.EXPECTED_GIT_SHA?.trim() || "";
 const LEAD_PLAN = process.argv.includes("--lead-plan");
 

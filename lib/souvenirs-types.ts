@@ -179,7 +179,7 @@ export function mapProductDoc(doc: Record<string, unknown>): SouvenirProduct {
 
 export const SOUVENIR_CATEGORY_FILTERS = [
   { value: "all", label: "Все" },
-  { value: "own", label: "Мерч Иркпортала" },
+  { value: "own", label: "Мерч «Полезно про Иркутск»" },
   { value: "makers", label: "Местные мастера" },
   { value: "postcards", label: "Открытки" },
   { value: "posters", label: "Постеры" },

@@ -101,7 +101,7 @@ export const Products: CollectionConfig = {
     {
       name: "isOwnMerch",
       type: "checkbox",
-      label: "Мерч Иркпортала",
+      label: "Мерч «Полезно про Иркутск»",
       defaultValue: true,
       admin: { position: "sidebar" },
     },

@@ -6,15 +6,15 @@
  * Usage:
  *   node scripts/seo-smoke.mjs
  *   SEO_SMOKE_BASE=http://127.0.0.1:3000 node scripts/seo-smoke.mjs
- *   SEO_SMOKE_BASE=https://irkportal.ru node scripts/seo-smoke.mjs
+ *   SEO_SMOKE_BASE=https://xn--e1aediabqeeaegncqpq.xn--p1ai node scripts/seo-smoke.mjs
  */
 import assert from "node:assert/strict";
 
-const BASE = (process.env.SEO_SMOKE_BASE || "https://irkportal.ru").replace(
+const BASE = (process.env.SEO_SMOKE_BASE || "https://xn--e1aediabqeeaegncqpq.xn--p1ai").replace(
   /\/$/,
   ""
 );
-const EXPECT_HOST = "https://irkportal.ru";
+const EXPECT_HOST = "https://xn--e1aediabqeeaegncqpq.xn--p1ai";
 const isLocal = /localhost|127\.0\.0\.1/.test(BASE);
 
 /** @type {{ path: string, expectStatus?: number, expectIndex?: boolean, requireCanonical?: string, requireTitle?: RegExp }} */
@@ -127,8 +127,8 @@ async function checkRobots() {
   assert.match(text, /Disallow:\s*\/api\//i);
   assert.match(text, /Disallow:\s*\/souvenirs\/success/i);
   if (!isLocal) {
-    assert.match(text, /Host:\s*irkportal\.ru/i);
-    assert.match(text, /Sitemap:\s*https:\/\/irkportal\.ru\/sitemap\.xml/i);
+    assert.match(text, /Host:\s*xn--e1aediabqeeaegncqpq\.xn--p1ai/i);
+    assert.match(text, /Sitemap:\s*https:\/\/xn--e1aediabqeeaegncqpq\.xn--p1ai\/sitemap\.xml/i);
   }
   return text;
 }

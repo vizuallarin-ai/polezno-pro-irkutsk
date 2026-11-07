@@ -7,7 +7,7 @@ const SITE_BASE =
   (typeof window !== "undefined"
     ? process.env.NEXT_PUBLIC_SERVER_URL
     : process.env.NEXT_PUBLIC_SERVER_URL)?.replace(/\/$/, "") ||
-  "https://irkportal.ru";
+  "https://xn--e1aediabqeeaegncqpq.xn--p1ai";
 
 export default function ArPostcardQrPreview() {
   const slug = useFormFields(([fields]) => fields.slug?.value as string | undefined);

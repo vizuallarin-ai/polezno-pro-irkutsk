@@ -7,7 +7,8 @@ export const BOOSTY_URL =
 
 /** Яндекс Вебмастер — счётчик ИКС в футере. */
 export const YANDEX_WEBMASTER_SITE =
-  process.env.NEXT_PUBLIC_YANDEX_WEBMASTER_SITE ?? "irkportal.ru";
+  process.env.NEXT_PUBLIC_YANDEX_WEBMASTER_SITE ??
+  "xn--e1aediabqeeaegncqpq.xn--p1ai";
 
 export const YANDEX_WEBMASTER_INFO_URL = `https://webmaster.yandex.ru/siteinfo/?site=${YANDEX_WEBMASTER_SITE}`;
 

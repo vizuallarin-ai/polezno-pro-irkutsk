@@ -7,7 +7,7 @@
  * Usage:
  *   npm run release:preflight
  *   node scripts/release-preflight.mjs --expected-sha <40hex>
- *   SITE_URL=https://irkportal.ru node scripts/release-preflight.mjs
+ *   SITE_URL=https://xn--e1aediabqeeaegncqpq.xn--p1ai node scripts/release-preflight.mjs
  */
 import { execSync, spawnSync } from "node:child_process";
 import { existsSync, statfsSync } from "node:fs";
@@ -68,7 +68,7 @@ async function main() {
     process.exit(0);
   }
 
-  console.log("IrkPortal RELEASE preflight (read-only)\n");
+  console.log("Полезно про Иркутск RELEASE preflight (read-only)\n");
 
   if (!existsSync(path.join(root, ".git"))) fail("not a git repository");
   if (!existsSync(path.join(root, "package.json"))) fail("package.json missing");

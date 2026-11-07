@@ -17,7 +17,7 @@ export function stripBrandSuffix(title: string): string {
 }
 
 /**
- * Page title for the root `title.template` (`%s | Иркпортал`).
+ * Page title for the root `title.template` (`%s | Полезно про Иркутск`).
  * Prefer CMS seoTitle; otherwise the real entity/section title — never invent marketing copy.
  */
 export function pageTitle(

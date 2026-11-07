@@ -37,7 +37,7 @@ Do **not** invent:
 
 ## Title rules
 
-- Detail: `{Real Title}` + layout suffix `| Иркпортал`
+- Detail: `{Real Title}` + layout suffix `| Полезно про Иркутск`
 - Do not pre-append brand in CMS titles (avoids double brand)
 - Home uses absolute title
 
@@ -49,7 +49,7 @@ Do **not** invent:
 
 ## When URL enters sitemap
 
-- Absolute `https://irkportal.ru…`
+- Absolute `https://xn--e1aediabqeeaegncqpq.xn--p1ai…`
 - Published-ready only
 - Photo detail only if description is non-empty
 - Empty collection → zero URLs for that collection (normal)

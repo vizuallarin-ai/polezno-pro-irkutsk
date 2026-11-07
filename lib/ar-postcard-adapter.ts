@@ -62,7 +62,7 @@ export function mapArPostcardDoc(doc: Record<string, unknown>): PublicArPostcard
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "") ||
-    "https://irkportal.ru";
+    "https://xn--e1aediabqeeaegncqpq.xn--p1ai";
 
   return {
     id: String(doc.id),

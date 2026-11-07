@@ -24,6 +24,7 @@ import { Partners } from "./payload/collections/Partners";
 import { ArPostcards } from "./payload/collections/ArPostcards";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 import { Navigation } from "./payload/globals/Navigation";
+import { DEFAULT_SITE_HOST } from "./lib/site-url";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -36,7 +37,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: "— Иркпортал CMS",
+      titleSuffix: "— Полезно про Иркутск CMS",
     },
     dateFormat: "dd.MM.yyyy",
     components: {
@@ -75,7 +76,7 @@ export default buildConfig({
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL?.toLowerCase() ?? "";
     const looksPublic =
       process.env.NODE_ENV === "production" ||
-      serverUrl.includes("irkportal.ru") ||
+      serverUrl.includes(DEFAULT_SITE_HOST) ||
       (!serverUrl.includes("localhost") &&
         !serverUrl.includes("127.0.0.1") &&
         serverUrl.startsWith("https://"));

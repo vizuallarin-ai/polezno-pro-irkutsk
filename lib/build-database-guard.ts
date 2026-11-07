@@ -2,6 +2,7 @@
 
 const PRODUCTION_HOST_MARKERS = [
   "90.156.170.182",
+  "xn--e1aediabqeeaegncqpq.xn--p1ai",
   "irkportal.ru",
   "polezno_irkutsk@",
 ] as const;

@@ -1,4 +1,4 @@
-# Production rollout runbook — IrkPortal
+# Production rollout runbook — Полезно про Иркутск
 
 **Gate:** PROD.ROLLOUT (after ADMIN.F GO)  
 **Do not execute from ADMIN.F.** This document is the checklist only.
@@ -12,7 +12,7 @@
 | **TARGET_RELEASE_SHA** | `fee5618ad139e6e5c9593bcad552cefeade25089` (frozen; do not chase later docs-only tips) |
 | **DEPLOYED_APPLICATION_SHA (ADMIN.G)** | `fee5618ad139e6e5c9593bcad552cefeade25089` |
 | Application rollback SHA | `b3a51ba8500bb03b5f1124feab567bee3a313824` (pre-ADMIN.B–F production) |
-| Production host | Beget VPS / `irkportal.ru` |
+| Production host | New VPS / `xn--e1aediabqeeaegncqpq.xn--p1ai` |
 | Offsite at ADMIN.G | DEFERRED BY OWNER (on-host risk accepted) |
 
 Never deploy “latest branch”. Deploy the frozen SHA only.
@@ -30,7 +30,7 @@ Never deploy “latest branch”. Deploy the frozen SHA only.
 
 ## PRE-DEPLOY
 
-1. `curl -sS https://irkportal.ru/api/health` → expect `status=ok`, `database=up`, record `commitSha`
+1. `curl -sS https://xn--e1aediabqeeaegncqpq.xn--p1ai/api/health` → expect `status=ok`, `database=up`, record `commitSha`
 2. Confirm TARGET_RELEASE_SHA is pushed to origin and matches local tag/note
 3. Disk free ≥ critical threshold (see ops disk policy)
 4. `MEDIA_DIR=/var/www/polezno-shared/media BACKUP_DIR=/var/backups/polezno REQUIRE_MEDIA_BACKUP=1 bash /var/www/polezno-shared/ops/scripts/backup-daily-onhost.sh`
@@ -64,7 +64,7 @@ Never deploy “latest branch”. Deploy the frozen SHA only.
 
 ## POST-DEPLOY
 
-1. `curl -sS https://irkportal.ru/api/health` → `commitSha=TARGET_RELEASE_SHA`, `database=up`
+1. `curl -sS https://xn--e1aediabqeeaegncqpq.xn--p1ai/api/health` → `commitSha=TARGET_RELEASE_SHA`, `database=up`
 2. Public smoke: `/`, `/map`, `/explore`, `/contact`, `/admin`
 3. Admin login (owner) → Главная loads
 4. Leads list loads (no mutation required)

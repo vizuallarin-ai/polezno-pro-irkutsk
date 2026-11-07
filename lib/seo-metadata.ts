@@ -123,7 +123,7 @@ export function buildPageMetadata(
       title,
       description,
       locale: "ru_RU",
-      siteName: site?.projectName?.trim() || "Иркпортал",
+      siteName: site?.projectName?.trim() || "Полезно про Иркутск",
       ...(image ? { images: [{ url: image }] } : {}),
       ...(canonicalPath
         ? { url: absoluteCanonical(canonicalPath) }

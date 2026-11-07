@@ -28,7 +28,7 @@ const SEED_PRODUCTS = [
     shortDescription:
       "Печатная карта с маршрутом по центру: улицы, ориентиры и короткие подписи без туристических штампов.",
     cityConnectionText:
-      "Собрана на основе маршрутов Иркпортала по историческому центру — для самостоятельной прогулки.",
+      "Собрана на основе маршрутов «Полезно про Иркутск» по историческому центру — для самостоятельной прогулки.",
     orderCtaLabel: "Запросить предзаказ",
   },
   {
@@ -90,7 +90,7 @@ async function ensurePlaceholderMedia(payload) {
   const buffer = fs.readFileSync(svgPath);
   const media = await payload.create({
     collection: "media",
-    data: { alt: "Демо-сувенир Иркпортала" },
+    data: { alt: "Демо-сувенир «Полезно про Иркутск»" },
     file: {
       data: buffer,
       mimetype: "image/svg+xml",

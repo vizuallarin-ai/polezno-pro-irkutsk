@@ -1,4 +1,4 @@
-/** Build/runtime release identity for irkportal.ru (no secrets, no paths). */
+/** Build/runtime release identity for the project (no secrets, no paths). */
 
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";

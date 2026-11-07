@@ -1,4 +1,4 @@
-# ADMIN recovery runbook (IrkPortal)
+# ADMIN recovery runbook (Полезно про Иркутск)
 
 No secrets in this file. Production mutations only with explicit owner approval.
 

@@ -91,7 +91,7 @@ export const PRODUCT_CATEGORY_OPTIONS = [
 ] as const satisfies readonly SelectOption[];
 
 export const PRODUCT_TYPE_OPTIONS = [
-  { label: "Мерч Иркпортала", value: "own_merch" },
+  { label: "Мерч «Полезно про Иркутск»", value: "own_merch" },
   { label: "Товар местного мастера", value: "local_maker_product" },
   { label: "Цифровой гид", value: "digital_guide" },
   { label: "Печатная карта", value: "printed_map" },

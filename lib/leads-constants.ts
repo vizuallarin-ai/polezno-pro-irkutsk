@@ -195,7 +195,7 @@ export const CTA_VARIANT_COPY = {
   explore: {
     title: "Задать вопрос о городе",
     description:
-      "Если хотите углубиться в тему или собрать маршрут по материалам Иркпортала — напишите.",
+      "Если хотите углубиться в тему или собрать маршрут по материалам «Полезно про Иркутск» — напишите.",
     primaryCtaLabel: "Подобрать мне прогулку",
     defaultRequestType: "content_question" as RequestType,
   },

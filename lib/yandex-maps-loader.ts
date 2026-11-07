@@ -27,9 +27,9 @@ export class YandexMapsLoadError extends Error {
 let loadPromise: Promise<Ymaps3Api> | null = null;
 
 const REFERER_HELP =
-  "В кабинете developer.tech.yandex.ru откройте ключ IrkPortal → Изменить → «Ограничение по HTTP Referer». " +
-  "Каждый домен — отдельная строка (формат «irkportal.ru, www.irkportal.ru, localhost» через запятую в одной строке не работает). " +
-  "Нужны три строки: irkportal.ru, www.irkportal.ru и localhost — без https:// и без путей. " +
+  "В кабинете developer.tech.yandex.ru откройте ключ «Полезно про Иркутск» → Изменить → «Ограничение по HTTP Referer». " +
+  "Каждый домен — отдельная строка; для production используйте ASCII IDN нового домена и отдельно localhost. " +
+  "Нужны домен нового сайта и localhost — без https:// и без путей. " +
   "Сохраните и подождите до 15 минут.";
 
 export function getYandexMapsApiKey(): string | undefined {

@@ -1,4 +1,4 @@
-# Иркпортал (ранее — Полезно про Иркутск)
+# Полезно про Иркутск
 
 Авторский навигатор по Иркутску и Байкалу. Next.js 16 + Payload CMS 3.
 
@@ -22,7 +22,7 @@ Roadmap: `docs/phase15-gate-c-runbook.md`, `docs/phase15-gate-d-runbook.md`.
 | Анимации | Lenis, GSAP + ScrollTrigger, Framer Motion |
 | Заявки | React Hook Form + Zod → Payload `leads` (+ optional Resend) |
 
-Production: [irkportal.ru](https://irkportal.ru). Деплой — `docs/DEPLOY-BEGET.md`.
+Production: [полезнопроиркутск.рф](https://xn--e1aediabqeeaegncqpq.xn--p1ai). Деплой — `docs/DEPLOY-BEGET.md`.
 
 ---
 
@@ -50,7 +50,7 @@ cp .env.example .env.local
 |------------|-----------|
 | `DATABASE_URL` | Строка подключения к PostgreSQL |
 | `PAYLOAD_SECRET` | Любая строка 32+ символов |
-| `NEXT_PUBLIC_SERVER_URL` | URL деплоя (например, `https://irkportal.ru`) |
+| `NEXT_PUBLIC_SERVER_URL` | URL деплоя (например, `https://xn--e1aediabqeeaegncqpq.xn--p1ai`) |
 
 ### 4. Создать базу данных
 
@@ -146,7 +146,7 @@ lib/
 NEXT_PUBLIC_YANDEX_MAPS_API_KEY=ваш-ключ
 ```
 
-Ключ: [developer.tech.yandex.ru](https://developer.tech.yandex.ru/) — ограничьте доменом `irkportal.ru`.
+Ключ: [developer.tech.yandex.ru](https://developer.tech.yandex.ru/) — ограничьте ASCII IDN нового production-домена.
 
 GeoJSON маршрутов создаётся в [Mapbox Studio](https://studio.mapbox.com) или любом GeoJSON-редакторе. Формат — `LineString`:
 

@@ -83,7 +83,7 @@ function main() {
   }
 
   const targetSha = process.env.TARGET_GIT_SHA?.trim() || sh("git rev-parse HEAD");
-  console.log("Irkportal deploy preflight (readiness artifacts only — no deploy)\n");
+  console.log("Полезно про Иркутск deploy preflight (readiness artifacts only — no deploy)\n");
   console.log(`Target SHA: ${targetSha}`);
   console.log(`Rollback SHA: ${ROLLBACK_SHA}`);
   console.log(`Rollback BUILD_ID: ${ROLLBACK_BUILD_ID}`);

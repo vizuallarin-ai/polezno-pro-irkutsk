@@ -20,13 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
   const hasContent = products.length > 0 || makers.length > 0;
   return {
-    title: "Сувениры Иркутска — коллекция Иркпортала",
+    title: "Сувениры Иркутска — коллекция «Полезно про Иркутск»",
     description:
-      "Коллекция сувениров и локальных изделий Иркпортала. Каталог открывается после публикации подтверждённых позиций.",
+      "Коллекция сувениров и локальных изделий проекта «Полезно про Иркутск». Каталог открывается после публикации подтверждённых позиций.",
     alternates: { canonical: "/souvenirs" },
     robots: robotsForContentPresence(hasContent),
     openGraph: {
-      title: "Сувениры Иркутска — коллекция Иркпортала",
+      title: "Сувениры Иркутска — коллекция «Полезно про Иркутск»",
       description:
         "Раздел сувениров сохраняется в архитектуре проекта и наполнится после публикации.",
       url: "/souvenirs",
@@ -53,7 +53,7 @@ export default async function SouvenirsPage() {
             Память об&nbsp;Иркутске — не&nbsp;из&nbsp;сувенирной лавки
           </h1>
           <p className="text-muted-foreground max-w-2xl leading-relaxed mb-8">
-            Раздел сувениров и локальных изделий — часть архитектуры Иркпортала.
+            Раздел сувениров и локальных изделий — часть архитектуры «Полезно про Иркутск».
             Когда появятся подтверждённые позиции, каталог откроется здесь
             автоматически. Сейчас можно написать о коллекции без обещания
             предзаказа несуществующих товаров.
@@ -85,7 +85,7 @@ export default async function SouvenirsPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="border border-border bg-background p-6 lg:p-8">
               <Package size={20} className="text-baikal mb-4" />
-              <h3 className="text-lg font-medium mb-3">Мерч и издания Иркпортала</h3>
+              <h3 className="text-lg font-medium mb-3">Мерч и издания «Полезно про Иркутск»</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 Карты маршрутов, открытки без штампов, постеры деревянного
                 Иркутска и мини-гиды — то, что мы делаем сами, в связке с

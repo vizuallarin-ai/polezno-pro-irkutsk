@@ -21,7 +21,7 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-const FROM = process.env.EMAIL_FROM || "noreply@irkportal.ru";
+const FROM = process.env.EMAIL_FROM || "noreply@polezno.irkutsk.ru";
 const SITE_URL = getSiteUrl();
 const BRAND_NAME = BRAND.projectName;
 

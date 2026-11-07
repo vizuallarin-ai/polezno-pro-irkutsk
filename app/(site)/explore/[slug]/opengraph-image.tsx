@@ -40,7 +40,7 @@ export default function Image() {
             margin: "0 0 16px 0",
           }}
         >
-          Исследовать Иркутск · Иркпортал
+          Исследовать Иркутск · Полезно про Иркутск
         </p>
         <p
           style={{
@@ -81,7 +81,7 @@ export default function Image() {
               textTransform: "uppercase",
             }}
           >
-            irkportal.ru
+            xn--e1aediabqeeaegncqpq.xn--p1ai
           </p>
         </div>
       </div>

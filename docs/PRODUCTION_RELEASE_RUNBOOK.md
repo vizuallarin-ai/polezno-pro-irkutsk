@@ -1,4 +1,4 @@
-# Production Release Runbook — IrkPortal
+# Production Release Runbook — Полезно про Иркутск
 
 For another engineer to deploy **after owner authorization**.
 This is not permission to deploy. Default is dry-run / abort.
@@ -198,7 +198,7 @@ COMMAND: curl -sf http://127.0.0.1:3000/api/health
 EXPECTED: commitSha=$SHA, database=up, app=up, HTTP 200
 IF FAIL → CODE ROLLBACK to PREVIOUS immediately (safe restart after symlink retarget)
 
-COMMAND: EXPECTED_GIT_SHA=$SHA SITE_URL=https://irkportal.ru npm run release:smoke
+COMMAND: EXPECTED_GIT_SHA=$SHA SITE_URL=https://xn--e1aediabqeeaegncqpq.xn--p1ai npm run release:smoke
 EXPECTED: all routes pass
 IF FAIL → ROLLBACK
 

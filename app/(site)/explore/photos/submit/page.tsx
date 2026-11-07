@@ -6,7 +6,7 @@ import { PhotoSubmitForm } from "@/components/photos/photo-submit-form";
 export const metadata: Metadata = {
   title: "Предложить фото — Фото Иркутска",
   description:
-    "Отправьте своё фото Иркутска в архив Иркпортала. Публикация только после модерации.",
+    "Отправьте своё фото Иркутска в архив «Полезно про Иркутск». Публикация только после модерации.",
   robots: { index: false, follow: true },
 };
 

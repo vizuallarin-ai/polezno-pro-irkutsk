@@ -26,7 +26,7 @@ import { validateRequiredSlug } from "../validators";
 
 const SITE_BASE =
   process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "") ||
-  "https://irkportal.ru";
+  "https://xn--e1aediabqeeaegncqpq.xn--p1ai";
 
 function hasVideo(data: Record<string, unknown>): boolean {
   return Boolean(

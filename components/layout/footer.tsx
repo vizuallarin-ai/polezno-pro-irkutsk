@@ -32,12 +32,12 @@ export function Footer({
   settings,
   contact: contactProp,
 }: FooterProps) {
-  const projectName = settings?.projectName || "Иркпортал";
+  const projectName = settings?.projectName || "Полезно про Иркутск";
   const tagline = settings?.footerTagline || "Авторский навигатор по Иркутску";
   const footerText =
     settings?.footerText ||
     "Маршруты, экскурсии и материалы о городе — без туристических штампов.";
-  const legacyName = settings?.legacyProjectName || "Полезно про Иркутск";
+  const legacyName = settings?.legacyProjectName || "Иркпортал";
   const contact = contactProp ?? contactsForDisplay(settings?.contact ?? {});
   const telegram = contact.telegram;
   const max = contact.max;

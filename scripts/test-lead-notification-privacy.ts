@@ -85,7 +85,7 @@ async function main() {
       {
         env: {},
         transport: null,
-        siteUrl: "https://irkportal.ru",
+        siteUrl: "https://xn--e1aediabqeeaegncqpq.xn--p1ai",
       }
     );
     assert.equal(result.status, "skipped");
@@ -105,11 +105,11 @@ async function main() {
       { leadId: lead.id, sourceType: "contact" },
       {
         env: {
-          EMAIL_FROM: "noreply@irkportal.ru",
-          EMAIL_TO: "ops@irkportal.ru",
+          EMAIL_FROM: "noreply@polezno.irkutsk.ru",
+          EMAIL_TO: "ops@polezno.irkutsk.ru",
           RESEND_API_KEY: "re_test_not_used",
         },
-        siteUrl: "https://irkportal.ru",
+        siteUrl: "https://xn--e1aediabqeeaegncqpq.xn--p1ai",
         transport: {
           async send() {
             throw new Error("transport down");
@@ -149,7 +149,7 @@ async function main() {
     assert.equal(JSON.stringify(log).includes("postgresql://"), false);
     assert.equal(JSON.stringify(log).includes("secret"), false);
     const demoHits = sitemapContainsDemoMarkers(
-      "<urlset><loc>https://irkportal.ru/souvenirs</loc></urlset>"
+      "<urlset><loc>https://xn--e1aediabqeeaegncqpq.xn--p1ai/souvenirs</loc></urlset>"
     );
     assert.equal(demoHits.length, 0);
   });
@@ -164,10 +164,10 @@ async function main() {
       },
       {
         env: {
-          EMAIL_FROM: "noreply@irkportal.ru",
-          EMAIL_TO: "ops@irkportal.ru",
+          EMAIL_FROM: "noreply@polezno.irkutsk.ru",
+          EMAIL_TO: "ops@polezno.irkutsk.ru",
         },
-        siteUrl: "https://irkportal.ru",
+        siteUrl: "https://xn--e1aediabqeeaegncqpq.xn--p1ai",
         transport: {
           async send(message) {
             captured.push(message);
@@ -176,15 +176,15 @@ async function main() {
       }
     );
     assert.equal(captured.length, 1);
-    assert.equal(captured[0].to, "ops@irkportal.ru");
-    assert.equal(captured[0].from.includes("noreply@irkportal.ru"), true);
+    assert.equal(captured[0].to, "ops@polezno.irkutsk.ru");
+    assert.equal(captured[0].from.includes("noreply@polezno.irkutsk.ru"), true);
     assert.equal(captured[0].to.includes(TEST_PII.email), false);
     assert.equal(captured[0].subject.includes(TEST_PII.name), false);
     assert.equal(
       captured[0].html.includes("https://evil.example/admin"),
       false
     );
-    assert.ok(captured[0].html.includes("https://irkportal.ru/admin/collections/leads/lead_42"));
+    assert.ok(captured[0].html.includes("https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/collections/leads/lead_42"));
   });
 
   console.log(`\nLead privacy tests: ${passed} passed, ${failed} failed.`);

@@ -56,7 +56,7 @@ export function BusinessPageContent({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
               <p className="type-caption uppercase tracking-[0.22em] text-muted-foreground mb-5">
-                B2B-направление Иркпортала
+                B2B-направление «Полезно про Иркутск»
               </p>
               <h1 className="type-display-xl text-foreground mb-6 max-w-[12ch]">
                 Для бизнеса
@@ -64,7 +64,7 @@ export function BusinessPageContent({
               <p className="type-body-lg text-muted-foreground max-w-lg mb-8">
                 Программы для компаний, отелей, ресторанов и турпроектов в
                 Иркутске — с авторским взглядом Алёны Ямщиковой и базой
-                маршрутов Иркпортала.
+                маршрутов «Полезно про Иркутск».
               </p>
               <ul className="flex flex-col gap-3 mb-10">
                 {[

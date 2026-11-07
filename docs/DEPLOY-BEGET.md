@@ -1,11 +1,11 @@
-﻿# Деплой на Beget VPS (Ubuntu 24.04) + irkportal.ru
+﻿# Деплой на VPS (Ubuntu 24.04) + полезнопроиркутск.рф
 
 Проект: **polezno-pro-irkutsk** (Next.js 16 + Payload CMS 3 + PostgreSQL).
 
 **Важно:** база данных только **на вашем VPS** (локальный PostgreSQL). **Neon и Supabase не используются.**
 
-Публичный URL production: **https://irkportal.ru**  
-Админка: **https://irkportal.ru/admin**
+Публичный URL production: **https://xn--e1aediabqeeaegncqpq.xn--p1ai**
+Админка: **https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin**
 
 ---
 
@@ -31,7 +31,7 @@ bash scripts/deploy-beget.sh
 - клонирует/обновляет `/var/www/polezno` с ветки `master`;
 - требует заполненный `.env.production` (если файла нет — копирует из `.env.production.example` и **останавливается** с инструкцией);
 - выполняет `npm ci`, `npm run build`, `pm2 start`/`restart`;
-- пишет конфиг Nginx для `irkportal.ru` / `www`.
+- пишет конфиг Nginx для нового ASCII IDN-домена / `www`.
 
 Подсказка локально (без VPS):
 
@@ -45,7 +45,7 @@ npm run deploy:beget-help
 
 | Что | Рекомендация |
 |-----|----------------|
-| Домен | **irkportal.ru** (регистратор / панель Beget) |
+| Домен | **полезнопроиркутск.рф** (регистратор / DNS-панель) |
 | VPS | Beget VPS, **Ubuntu 24.04**, минимум **2 GB RAM**, 2 vCPU, 20+ GB SSD |
 | Доступ | SSH по ключу (лучше) или пароль root |
 
@@ -164,7 +164,7 @@ nano .env.production
 |------------|-------------------|
 | `DATABASE_URL` | `postgresql://polezno_irkutsk:...@localhost:5432/polezno_irkutsk` |
 | `PAYLOAD_SECRET` | 32+ случайных символов |
-| `NEXT_PUBLIC_SERVER_URL` | `https://irkportal.ru` (без `/` в конце) |
+| `NEXT_PUBLIC_SERVER_URL` | `https://xn--e1aediabqeeaegncqpq.xn--p1ai` (без `/` в конце) |
 | `REVALIDATE_SECRET` | случайная строка |
 
 Скрипты `create-admin` и `seed` читают `.env.local`. Создайте симлинк:
@@ -206,13 +206,13 @@ curl -I http://127.0.0.1:3000
 ## Nginx: reverse proxy
 
 ```bash
-nano /etc/nginx/sites-available/irkportal
+nano /etc/nginx/sites-available/polezno
 ```
 
 ```nginx
 server {
     listen 80;
-    server_name irkportal.ru www.irkportal.ru;
+    server_name xn--e1aediabqeeaegncqpq.xn--p1ai www.xn--e1aediabqeeaegncqpq.xn--p1ai;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -230,7 +230,7 @@ server {
 ```
 
 ```bash
-ln -sf /etc/nginx/sites-available/irkportal /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/polezno /etc/nginx/sites-enabled/
 nginx -t
 systemctl reload nginx
 ```
@@ -242,7 +242,7 @@ systemctl reload nginx
 После того как DNS указывает на VPS (см. ниже):
 
 ```bash
-certbot --nginx -d irkportal.ru -d www.irkportal.ru
+certbot --nginx -d xn--e1aediabqeeaegncqpq.xn--p1ai -d www.xn--e1aediabqeeaegncqpq.xn--p1ai
 ```
 
 Проверка автообновления:
@@ -255,7 +255,7 @@ certbot renew --dry-run
 
 ## DNS в панели Beget
 
-В управлении доменом **irkportal.ru**:
+В управлении доменом **полезнопроиркутск.рф**:
 
 | Тип | Имя | Значение |
 |-----|-----|----------|
@@ -267,7 +267,7 @@ certbot renew --dry-run
 Проверка с ПК:
 
 ```bash
-dig +short irkportal.ru
+dig +short xn--e1aediabqeeaegncqpq.xn--p1ai
 ```
 
 ---
@@ -280,7 +280,7 @@ cd /var/www/polezno
 npm run create-admin
 ```
 
-- Сообщение `ADMIN_CREATED` — вход на https://irkportal.ru/admin  
+- Сообщение `ADMIN_CREATED` — вход на https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin
 - `ADMIN_EXISTS` — пользователь уже есть  
 
 Опционально демо-данные:
@@ -374,7 +374,7 @@ cd /var/www/polezno && NODE_OPTIONS='--max-old-space-size=1536' npm run build
 4. `git clone` → `/var/www/polezno`.
 5. Заполнить **`.env.production`**, симлинк **`.env.local`**.
 6. `npm ci` → `npm run build` → **pm2 start**.
-7. Настроить **Nginx** для `irkportal.ru` / `www`.
+7. Настроить **Nginx** для нового ASCII IDN-домена / `www`.
 8. В Beget: **A-запись** на IP VPS.
 9. **`certbot --nginx`** после DNS.
 10. **`npm run create-admin`**, при необходимости **`npm run seed`**.

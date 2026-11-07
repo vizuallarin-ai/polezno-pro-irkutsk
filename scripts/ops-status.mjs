@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Read-only IrkPortal ops status (local + optional SSH facts via env).
+ * Read-only project ops status (local + optional SSH facts via env).
  *
  * Usage:
  *   npm run ops:status
- *   SITE_URL=https://irkportal.ru npm run ops:status
+ *   SITE_URL=https://xn--e1aediabqeeaegncqpq.xn--p1ai npm run ops:status
  *   OPS_MODE=remote npm run ops:status   # expects Linux host tools when run on VPS
  *
  * Never prints secrets.
@@ -25,7 +25,7 @@ import {
   BACKUP_POLICY,
 } from "../lib/runtime-lifecycle.mjs";
 
-const SITE = (process.env.SITE_URL || "https://irkportal.ru").replace(/\/$/, "");
+const SITE = (process.env.SITE_URL || "https://xn--e1aediabqeeaegncqpq.xn--p1ai").replace(/\/$/, "");
 const LOCAL = (process.env.LOCAL_HEALTH_URL || `http://127.0.0.1:${PRODUCTION_PORT}/api/health`).replace(
   /\/$/,
   ""
@@ -233,7 +233,7 @@ async function main() {
   if (WANT_JSON) {
     console.log(JSON.stringify(report, null, 2));
   } else {
-    console.log("IRKPORTAL OPS\n");
+    console.log("ПОЛЕЗНО ПРО ИРКУТСК OPS\n");
     const line = (name, s) => {
       const sev = s.severity || "?";
       const extra =

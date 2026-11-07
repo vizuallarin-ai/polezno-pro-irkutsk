@@ -1,5 +1,6 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
+import { DEFAULT_SITE_HOST } from "./lib/site-url";
 
 const nextConfig: NextConfig = {
   env: {
@@ -50,8 +51,8 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
     serverActions: {
       allowedOrigins: [
-        "irkportal.ru",
-        "www.irkportal.ru",
+        DEFAULT_SITE_HOST,
+        `www.${DEFAULT_SITE_HOST}`,
         "localhost:3000",
         "127.0.0.1:3000",
       ],
@@ -60,8 +61,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "irkportal.ru" },
-      { protocol: "https", hostname: "www.irkportal.ru" },
+      { protocol: "https", hostname: DEFAULT_SITE_HOST },
+      { protocol: "https", hostname: `www.${DEFAULT_SITE_HOST}` },
       { protocol: "http", hostname: "localhost" },
       { protocol: "http", hostname: "127.0.0.1" },
       { protocol: "https", hostname: "api.qrserver.com" },

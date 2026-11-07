@@ -33,7 +33,7 @@ export const SiteSettings: GlobalConfig = {
               name: "projectName",
               type: "text",
               label: "Название проекта",
-              defaultValue: "Иркпортал",
+              defaultValue: "Полезно про Иркутск",
             },
             {
               name: "projectDescriptor",
@@ -45,7 +45,7 @@ export const SiteSettings: GlobalConfig = {
               name: "legacyProjectName",
               type: "text",
               label: "Прежнее название (подвал)",
-              defaultValue: "Полезно про Иркутск",
+              defaultValue: "Иркпортал",
             },
             {
               name: "description",
@@ -144,7 +144,7 @@ export const SiteSettings: GlobalConfig = {
               type: "textarea",
               label: "Hero — подзаголовок",
               defaultValue:
-                "Иркпортал — авторский навигатор Алёны Ямщиковой по Иркутску: самостоятельные маршруты, экскурсии с гидом и программы для бизнеса.",
+                "Полезно про Иркутск — авторский навигатор Алёны Ямщиковой по Иркутску: самостоятельные маршруты, экскурсии с гидом и программы для бизнеса.",
             },
             {
               name: "mainCta",

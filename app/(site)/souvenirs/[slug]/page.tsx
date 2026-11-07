@@ -149,7 +149,7 @@ export default async function SouvenirProductPage({ params }: PageProps) {
               </p>
               {product.isOwnMerch && (
                 <Badge variant="outline" className="text-xs">
-                  Иркпортал
+                  Полезно про Иркутск
                 </Badge>
               )}
             </div>

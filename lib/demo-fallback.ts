@@ -3,7 +3,7 @@
  * или при явном ALLOW_DEMO_FALLBACK=true.
  *
  * Production is fail-closed: missing DATABASE_URL does NOT enable demo.
- * Opt-in only via ALLOW_DEMO_FALLBACK=true (discouraged on irkportal.ru).
+ * Opt-in only via ALLOW_DEMO_FALLBACK=true (discouraged on the public site).
  */
 export function allowDemoFallback(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env

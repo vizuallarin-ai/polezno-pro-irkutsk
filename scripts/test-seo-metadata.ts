@@ -30,11 +30,11 @@ function section(name: string) {
 }
 
 section("title system — no double brand / no undefined");
-assert.equal(stripBrandSuffix("Маршруты | Иркпортал"), "Маршруты");
-assert.equal(stripBrandSuffix("Маршруты — Иркпортал"), "Маршруты");
+assert.equal(stripBrandSuffix("Маршруты | Полезно про Иркутск"), "Маршруты");
+assert.equal(stripBrandSuffix("Маршруты — Полезно про Иркутск"), "Маршруты");
 assert.equal(pageTitle(null, "История города"), "История города");
 assert.equal(pageTitle(" SEO Title ", "Fallback"), "SEO Title");
-assert.equal(absoluteTitle("Иркпортал — гид").absolute, "Иркпортал — гид");
+assert.equal(absoluteTitle("Полезно про Иркутск — гид").absolute, "Полезно про Иркутск — гид");
 assert.equal(getMetaTitle({ title: "Экскурсия" }, "Экскурсия"), "Экскурсия");
 assert.ok(!String(getMetaTitle({ title: "A" }, "A")).includes("undefined"));
 
@@ -63,10 +63,10 @@ assert.equal(normalizeCanonicalPath("/map/"), "/map");
 assert.equal(normalizeCanonicalPath("/"), "/");
 assert.equal(canonicalAlternate("/contact").canonical, "/contact");
 assert.equal(
-  absoluteCanonical("/explore/foo", "https://irkportal.ru"),
-  "https://irkportal.ru/explore/foo"
+  absoluteCanonical("/explore/foo", "https://xn--e1aediabqeeaegncqpq.xn--p1ai"),
+  "https://xn--e1aediabqeeaegncqpq.xn--p1ai/explore/foo"
 );
-assert.equal(DEFAULT_SITE_URL, "https://irkportal.ru");
+assert.equal(DEFAULT_SITE_URL, "https://xn--e1aediabqeeaegncqpq.xn--p1ai");
 
 section("robots policy");
 assert.deepEqual(robotsForContentPresence(true), { index: true, follow: true });
@@ -92,7 +92,7 @@ const missingPath = buildPageMetadata({ title: "X", excerpt: "Y" }, "X");
 assert.equal(missingPath.alternates, undefined);
 
 section("structured data — fact-safe shapes");
-const org = organizationSchema({ name: "Иркпортал" });
+const org = organizationSchema({ name: "Полезно про Иркутск" });
 assert.equal(org["@type"], "Organization");
 assert.equal("address" in org, false);
 assert.equal("contactPoint" in org, false);
@@ -104,7 +104,7 @@ assert.equal("potentialAction" in web, false);
 const article = articleSchema({
   title: "История",
   description: "Текст",
-  url: "https://irkportal.ru/explore/history-demo",
+  url: "https://xn--e1aediabqeeaegncqpq.xn--p1ai/explore/history-demo",
   publishedAt: "2026-01-01",
   authorName: "Алёна Ямщикова",
 });
@@ -114,14 +114,14 @@ assert.equal((article.author as { name: string }).name, "Алёна Ямщико
 const noAuthor = articleSchema({
   title: "X",
   description: "Y",
-  url: "https://irkportal.ru/explore/x",
+  url: "https://xn--e1aediabqeeaegncqpq.xn--p1ai/explore/x",
 });
 assert.equal("author" in noAuthor, false);
 
 const event = eventSchema({
   title: "Фестиваль",
   description: "Описание",
-  url: "https://irkportal.ru/events/fest",
+  url: "https://xn--e1aediabqeeaegncqpq.xn--p1ai/events/fest",
   startDate: "2026-06-01",
   location: "Иркутск",
   offers: { price: "по запросу" },
@@ -131,7 +131,7 @@ assert.equal("offers" in event, false);
 const priced = eventSchema({
   title: "Фестиваль",
   description: "Описание",
-  url: "https://irkportal.ru/events/fest",
+  url: "https://xn--e1aediabqeeaegncqpq.xn--p1ai/events/fest",
   startDate: "2026-06-01",
   location: "Иркутск",
   offers: { price: "500" },
@@ -141,7 +141,7 @@ assert.ok(priced.offers);
 const product = productSchema({
   title: "Значок",
   description: "Описание",
-  url: "https://irkportal.ru/souvenirs/pin",
+  url: "https://xn--e1aediabqeeaegncqpq.xn--p1ai/souvenirs/pin",
   price: 0,
 });
 assert.equal("offers" in product, false);
@@ -149,7 +149,7 @@ assert.equal("offers" in product, false);
 const trip = touristTripSchema({
   title: "Прогулка",
   description: "Описание",
-  url: "https://irkportal.ru/map/walk",
+  url: "https://xn--e1aediabqeeaegncqpq.xn--p1ai/map/walk",
   price: 0,
 });
 assert.equal("offers" in trip, false);
@@ -172,10 +172,10 @@ assert.equal(
   isValidSitemapXml('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'),
   true
 );
-const required = getRequiredSitemapStaticUrls("https://irkportal.ru");
-assert.ok(required.includes("https://irkportal.ru"));
-assert.ok(required.includes("https://irkportal.ru/map"));
-assert.ok(required.includes("https://irkportal.ru/explore"));
-assert.ok(!required.includes("https://irkportal.ru/events"));
+const required = getRequiredSitemapStaticUrls("https://xn--e1aediabqeeaegncqpq.xn--p1ai");
+assert.ok(required.includes("https://xn--e1aediabqeeaegncqpq.xn--p1ai"));
+assert.ok(required.includes("https://xn--e1aediabqeeaegncqpq.xn--p1ai/map"));
+assert.ok(required.includes("https://xn--e1aediabqeeaegncqpq.xn--p1ai/explore"));
+assert.ok(!required.includes("https://xn--e1aediabqeeaegncqpq.xn--p1ai/events"));
 
 console.log("\nAll SEO.1 contract tests passed.\n");

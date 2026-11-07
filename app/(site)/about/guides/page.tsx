@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Гиды",
     description:
-      "Авторы маршрутов и экскурсий Иркпортала. Профили публикуются после редакционной подготовки.",
+      "Авторы маршрутов и экскурсий «Полезно про Иркутск». Профили публикуются после редакционной подготовки.",
     alternates: { canonical: "/about/guides" },
     robots: robotsForContentPresence(guides.length > 0),
   };

@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Страница не найдена | Иркпортал",
+    absolute: "Страница не найдена | Полезно про Иркутск",
   },
   description: "Запрашиваемая страница не существует.",
   robots: { index: false, follow: true },

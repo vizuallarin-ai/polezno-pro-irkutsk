@@ -1,7 +1,7 @@
-# Руководство по админке Иркпортал
+# Руководство по админке «Полезно про Иркутск»
 
-**Сайт:** https://irkportal.ru  
-**Админка:** https://irkportal.ru/admin  
+**Сайт:** https://xn--e1aediabqeeaegncqpq.xn--p1ai
+**Админка:** https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin
 **CMS:** Payload 3  
 **Дата:** июнь 2026
 
@@ -24,7 +24,7 @@
 
 ### Шаг 1.1. Откройте админку
 
-1. В браузере перейдите по адресу: **https://irkportal.ru/admin**
+1. В браузере перейдите по адресу: **https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin**
 2. Дождитесь загрузки страницы входа.
 
 ### Шаг 1.2. Войдите под своим аккаунтом
@@ -210,7 +210,7 @@
 
 #### Проверка
 
-1. Откройте в новой вкладке: https://irkportal.ru/contact
+1. Откройте в новой вкладке: https://xn--e1aediabqeeaegncqpq.xn--p1ai/contact
 2. Убедитесь, что отображаются ваши Telegram / email / телефон.
 3. Телефон-заглушка `000-00-00` на сайте **не показывается** — это нормально, если поле пустое или заглушка.
 
@@ -222,7 +222,7 @@
 
 #### Шаги
 
-1. **Название проекта** — например: `Иркпортал`.
+1. **Название проекта** — например: `Полезно про Иркутск`.
 2. **Дескриптор бренда** — короткая формулировка под логотипом.
 3. **Описание проекта** — 2–4 предложения о проекте.
 4. **Город** — `Иркутск`.
@@ -268,7 +268,7 @@
 
 #### Проверка
 
-Откройте https://irkportal.ru/ — обновите страницу (Ctrl+F5). Проверьте заголовок, фото автора и кнопки.
+Откройте https://xn--e1aediabqeeaegncqpq.xn--p1ai/ — обновите страницу (Ctrl+F5). Проверьте заголовок, фото автора и кнопки.
 
 ---
 
@@ -286,7 +286,7 @@
 
 #### Проверка
 
-Отправьте ссылку https://irkportal.ru/ себе в Telegram — должна появиться превью с картинкой и текстом.
+Отправьте ссылку https://xn--e1aediabqeeaegncqpq.xn--p1ai/ себе в Telegram — должна появиться превью с картинкой и текстом.
 
 ---
 
@@ -318,7 +318,7 @@
 
 #### Тест заявки
 
-1. Откройте https://irkportal.ru/business
+1. Откройте https://xn--e1aediabqeeaegncqpq.xn--p1ai/business
 2. Заполните форму тестовыми данными.
 3. Отправьте.
 4. Проверьте:
@@ -334,21 +334,21 @@
 #### Ваши шаги
 
 1. Откройте [Google Search Console](https://search.google.com/search-console).
-2. Нажмите **Добавить ресурс** → укажите `https://irkportal.ru`.
+2. Нажмите **Добавить ресурс** → укажите `https://xn--e1aediabqeeaegncqpq.xn--p1ai`.
 3. Выберите способ подтверждения: **HTML-тег**.
 4. Google покажет тег — **он уже на сайте**, просто нажмите **Подтвердить**.
-5. После подтверждения: **Файлы Sitemap** → добавьте `https://irkportal.ru/sitemap.xml`.
+5. После подтверждения: **Файлы Sitemap** → добавьте `https://xn--e1aediabqeeaegncqpq.xn--p1ai/sitemap.xml`.
 
 ---
 
 ### Блок 0.8. Яндекс.Вебмастер
 
 1. Откройте [webmaster.yandex.ru](https://webmaster.yandex.ru).
-2. Добавьте сайт `https://irkportal.ru`.
+2. Добавьте сайт `https://xn--e1aediabqeeaegncqpq.xn--p1ai`.
 3. Подтвердите права (мета-тег, DNS или файл — как предложит Яндекс).
 4. В разделе **Индексирование** → **Файлы Sitemap** добавьте:  
-   `https://irkportal.ru/sitemap.xml`
-5. Проверьте **robots.txt**: `https://irkportal.ru/robots.txt` — должен содержать `Host: irkportal.ru`.
+   `https://xn--e1aediabqeeaegncqpq.xn--p1ai/sitemap.xml`
+5. Проверьте **robots.txt**: `https://xn--e1aediabqeeaegncqpq.xn--p1ai/robots.txt` — должен содержать `Host: xn--e1aediabqeeaegncqpq.xn--p1ai`.
 
 ---
 
@@ -360,7 +360,7 @@
 
 1. Войдите в [metrika.yandex.ru](https://metrika.yandex.ru).
 2. Откройте счётчик сайта.
-3. Убедитесь, что в отчёте **«Сейчас на сайте»** появляются визиты после вашего захода на irkportal.ru.
+3. Убедитесь, что в отчёте **«Сейчас на сайте»** появляются визиты после вашего захода на новый сайт.
 
 ---
 
@@ -415,15 +415,15 @@ CMS блокирует публикацию без:
 
 | Действие | URL |
 |----------|-----|
-| Вход | https://irkportal.ru/admin |
-| Настройки сайта | https://irkportal.ru/admin/globals/site-settings |
-| Заявки | https://irkportal.ru/admin/collections/leads |
-| Медиа | https://irkportal.ru/admin/collections/media |
-| Маршруты | https://irkportal.ru/admin/collections/routes |
-| Материалы | https://irkportal.ru/admin/collections/articles |
-| Фото | https://irkportal.ru/admin/collections/photos |
-| Сайт (главная) | https://irkportal.ru/ |
+| Вход | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin |
+| Настройки сайта | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/globals/site-settings |
+| Заявки | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/collections/leads |
+| Медиа | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/collections/media |
+| Маршруты | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/collections/routes |
+| Материалы | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/collections/articles |
+| Фото | https://xn--e1aediabqeeaegncqpq.xn--p1ai/admin/collections/photos |
+| Сайт (главная) | https://xn--e1aediabqeeaegncqpq.xn--p1ai/ |
 
 ---
 
-*Документ подготовлен для проекта Иркпортал (irkportal.ru). При изменении структуры CMS обновите этот файл.*
+*Документ подготовлен для проекта «Полезно про Иркутск». При изменении структуры CMS обновите этот файл.*

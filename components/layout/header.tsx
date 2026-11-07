@@ -379,7 +379,7 @@ export function Header({
   ctaLabel = DEFAULT_CTA.label,
   ctaHref = DEFAULT_CTA.href,
   contactCtaLabel = "Связаться",
-  projectName = "Иркпортал",
+  projectName = "Полезно про Иркутск",
   projectDescriptor = "Авторский навигатор по Иркутску от Алёны Ямщиковой",
   contact,
 }: HeaderProps) {

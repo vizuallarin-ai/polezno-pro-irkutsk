@@ -4,15 +4,15 @@
  *
  * Usage:
  *   SEO_SMOKE_BASE=http://127.0.0.1:3000 node scripts/perf-smoke.mjs
- *   node scripts/perf-smoke.mjs   # defaults to LIVE https://irkportal.ru
+ *   node scripts/perf-smoke.mjs   # defaults to LIVE https://xn--e1aediabqeeaegncqpq.xn--p1ai
  */
 import assert from "node:assert/strict";
 
-const BASE = (process.env.PERF_SMOKE_BASE || process.env.SEO_SMOKE_BASE || "https://irkportal.ru").replace(
+const BASE = (process.env.PERF_SMOKE_BASE || process.env.SEO_SMOKE_BASE || "https://xn--e1aediabqeeaegncqpq.xn--p1ai").replace(
   /\/$/,
   ""
 );
-const isLive = /irkportal\.ru$/.test(new URL(BASE).host);
+const isLive = /xn--e1aediabqeeaegncqpq\.xn--p1ai$/.test(new URL(BASE).host);
 
 const ROUTES = ["/", "/explore", "/map", "/business", "/about", "/contact"];
 

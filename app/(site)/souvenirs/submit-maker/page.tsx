@@ -6,7 +6,7 @@ import { MakerPlacementForm } from "@/components/souvenirs/maker-placement-form"
 export const metadata: Metadata = {
   title: "Размещение в каталоге мастеров — Сувениры",
   description:
-    "Заявка на размещение мастера или мастерской из Иркутска в каталоге сувениров Иркпортала.",
+    "Заявка на размещение мастера или мастерской из Иркутска в каталоге сувениров «Полезно про Иркутск».",
   robots: { index: false, follow: true },
 };
 

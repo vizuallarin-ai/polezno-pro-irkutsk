@@ -74,7 +74,7 @@ const DEFAULTS: SiteSettingsData = {
   secondaryCta: { label: "Подобрать мне прогулку", href: "/contact" },
   contact: {
     phone: "+7 (3952) 000-00-00",
-    email: "info@irkportal.ru",
+    email: "info@polezno.irkutsk.ru",
     telegram: TELEGRAM_URL,
     instagram: "https://instagram.com/polezno.irkutsk",
     boosty: BOOSTY_URL,
@@ -85,7 +85,7 @@ const DEFAULTS: SiteSettingsData = {
     privacyPolicyUrl: DEFAULT_PRIVACY_POLICY_URL,
     primaryMessenger: "telegram",
     leadNotificationEnabled: true,
-    leadNotificationEmail: "info@irkportal.ru",
+    leadNotificationEmail: "info@polezno.irkutsk.ru",
     contactCtaLabel: "Связаться",
   },
   footerText:
