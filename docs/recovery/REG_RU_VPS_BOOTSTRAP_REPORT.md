@@ -2,9 +2,11 @@
 
 ## Final status
 
-**STAGING READY — production data and DNS cutover remain pending.**
+**PRODUCTION PREPARED — DNS/TLS and owner access remain pending.**
 
-REG.RU VPS bootstrap completed without DNS, production traffic, Beget, production data, or `master` changes. The server is private staging only.
+REG.RU VPS bootstrap completed without DNS, production traffic, Beget, production data, or `master` changes. Staging remains isolated, and the clean production candidate is also private-only.
+
+The clean production path is now prepared separately from staging. It is not publicly live because DNS still points to the previous address and no TLS/owner-login proof exists yet.
 
 ## Local preflight
 
@@ -47,11 +49,23 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 - Nginx listens only on `127.0.0.1:8080`; Next listens only on `127.0.0.1:3000`.
 - Private smoke: `/`, `/map`, `/explore`, `/about`, `/business`, `/contact`, `/admin`, `/api/health`, `/robots.txt`, `/sitemap.xml` all returned HTTP 200.
 
+## Production preparation
+
+- Separate `polezno_production` PostgreSQL database and role created; staging was not reused.
+- Production environment is separate at `/var/www/polezno-shared/env/production.env`, mode `600`, with newly generated secrets and canonical URL; values are not recorded here.
+- Production release `/var/www/polezno-releases/22e71fd0f0bfb80118245220077df5d2f7e3c8fe-production` was checked out at exact application SHA `22e71fd0f0bfb80118245220077df5d2f7e3c8fe`, schema-pushed, and built successfully.
+- Production PM2 process `polezno-production` runs as `deploy` on localhost `127.0.0.1:3001`; private Nginx proxy is `127.0.0.1:8081`.
+- Production health reports `identitySource=artifact`, exact SHA, `database=up`, and `app=up`.
+- Production users/leads/reviews/excursions/articles/routes/products counts are all zero; no seed or local recovery data was imported.
+- Production private smoke returned HTTP 200 for all ten required routes.
+- Owner account was not created because no verified owner login email was provided.
+
 ## Backups
 
 - Daily `polezno-backup.timer` is enabled and active.
 - Local PostgreSQL custom dump, media archive, and SHA256 manifest were created under `/var/backups/polezno`; integrity check passed.
 - Retention is 14 days. No independent/offsite copy is configured.
+- Separate `polezno-production-backup.timer` is enabled and active; its dump passed SHA256 verification and restore into a temporary disposable database, then the temporary database was removed.
 
 ## Application/rebrand fixes prepared locally
 
@@ -66,9 +80,11 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 - No DNS change, TLS issuance, public launch, production seed, or external mailbox configuration.
 - No production database/media restore; available local data remains classified as `LOCAL_DEV_DATA` / `TEST_FIXTURE`.
 - Nginx is intentionally private-only until DNS ownership, TLS, and data source are approved.
+- Current DNS A lookup for the ASCII host returns `95.163.244.138`, not `79.174.91.110`; DNS was not changed.
 
 ## Remaining blockers
 
-- Obtain verified production DB/media provenance or owner approval for a clean production start.
+- Production content remains intentionally empty; later Beget material import is optional and does not block the clean launch path.
 - Configure an independent backup destination before production traffic.
 - Complete DNS/TLS cutover only after explicit owner approval.
+- Provide the single verified owner login email required by the existing `create-admin.mjs` mechanism.

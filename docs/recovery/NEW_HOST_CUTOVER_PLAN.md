@@ -2,7 +2,7 @@
 
 ## Current state
 
-The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, root key access, deploy key access, security baseline, PostgreSQL 16 staging, immutable release, PM2, private Nginx, smoke, and local backup are verified. DNS, registrar, production database, and production traffic remain unchanged.
+The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, root key access, deploy key access, security baseline, PostgreSQL 16 staging and clean production databases, immutable releases, PM2, private Nginx, smoke, and local backups are verified. DNS, registrar, TLS, owner login, and production traffic remain unchanged.
 
 ## Minimum target
 
@@ -25,6 +25,14 @@ The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, roo
 8. Start the immutable release with PM2; verify `/api/health`, `/`, `/map`, `/explore`, `/business`, `/admin`, `/robots.txt`, and `/sitemap.xml`.
 9. Enable daily local DB+media backups and prove an independent offsite copy before accepting production traffic.
 10. Only after owner approval, switch DNS and run the post-cutover read-only smoke suite.
+
+## Current production preparation
+
+- Production database: `polezno_production`, empty except for controlled Payload schema.
+- Production application SHA: `22e71fd0f0bfb80118245220077df5d2f7e3c8fe`.
+- Production process and Nginx are intentionally private on `127.0.0.1:3001` and `127.0.0.1:8081`.
+- Current DNS A lookup is `95.163.244.138`; planned record remains `@ -> 79.174.91.110`.
+- Owner account creation is pending one verified owner login email.
 
 ## SEO migration contract
 
@@ -52,8 +60,8 @@ Google Search Console:
 
 ## Current blockers
 
-- Production DB/media provenance is not proven; staging uses a new empty database only.
-- Production DB/media provenance is not proven.
+- Production is intentionally a new empty database; later Beget material import remains optional.
+- Owner login email is not yet provided for the clean production database.
 - Old-domain redirect control is unknown/unavailable.
 - Production secrets require rotation and private re-entry.
 - Mailbox/DNS verification for the new sender domain is not proven.
