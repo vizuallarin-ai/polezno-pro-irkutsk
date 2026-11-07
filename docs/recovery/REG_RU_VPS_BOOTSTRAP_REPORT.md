@@ -2,7 +2,7 @@
 
 ## Final status
 
-**OWNER ACCESS PREPARED — DNS/TLS and public launch remain pending.**
+**OWNER ACCESS PREPARED — public HTTP vhost ready; DNS/TLS and public launch remain pending.**
 
 REG.RU VPS bootstrap completed without DNS, production traffic, Beget, production data, or `master` changes. Staging remains isolated, and the clean production candidate is also private-only.
 
@@ -62,6 +62,7 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 - Production environment is separate at `/var/www/polezno-shared/env/production.env`, mode `600`, with newly generated secrets and canonical URL; values are not recorded here.
 - Production release `/var/www/polezno-releases/9639fd2` is built successfully, privately smoke-tested, and active through PM2 with exact application SHA `9639fd2ddd10752a66110f09669f8025198201a6`.
 - Production PM2 process `polezno-production` runs as `deploy` on localhost `127.0.0.1:3001`; private Nginx proxy is `127.0.0.1:8081`.
+- Public Nginx vhost is prepared on `:80` for `xn--e1aediabqeeaegncqpq.xn--p1ai`, proxying to the private production proxy; `nginx -t` and Host-routed `curl --resolve` smoke passed before DNS cutover.
 - Production health reports `identitySource=artifact`, exact SHA, `database=up`, and `app=up`.
 - Production contains exactly one controlled user: `luola@inbox.ru` with role `admin`; leads/reviews/excursions/articles/routes/products remain empty. No seed or local recovery data was imported.
 - Production private smoke returned HTTP 200 for all ten required routes.

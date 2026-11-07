@@ -30,7 +30,7 @@ The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, roo
 
 - Production database: `polezno_production`, empty except for controlled Payload schema.
 - Production application SHA: `9639fd2ddd10752a66110f09669f8025198201a6`.
-- Production process and Nginx are intentionally private on `127.0.0.1:3001` and `127.0.0.1:8081`.
+- Production process remains on `127.0.0.1:3001`; private proxy remains on `127.0.0.1:8081`; public HTTP vhost is prepared on `:80` but DNS is still unchanged.
 - Current DNS A lookup is `95.163.244.138`; planned record remains `@ -> 79.174.91.110`.
 - Owner account is prepared for verified email `luola@inbox.ru`; the password was entered only through the local hidden-input procedure and is not recorded.
 
