@@ -2,13 +2,13 @@
 
 ## Current state
 
-The REG.RU target is now specified as `79.174.91.11`, but server identity and access are not verified. A strict SSH probe stopped because the host key is not present in local `known_hosts`, and the task did not provide a trusted fingerprint or password. No DNS, registrar, production database, or production application was changed.
+The REG.RU target is `79.174.91.110` (`cv8301755.novalocal`). Host identity, root key access, deploy key access, security baseline, PostgreSQL 16 staging, immutable release, PM2, private Nginx, smoke, and local backup are verified. DNS, registrar, production database, and production traffic remain unchanged.
 
 ## Minimum target
 
-- Ubuntu 24.04 VPS or equivalent Linux host.
+- Ubuntu 26.04 LTS VPS (actual host; application/runtime verified on this OS).
 - 2 vCPU, at least 2 GB RAM plus swap, and at least 20 GB SSD; size upward for the actual PostgreSQL/media volume.
-- Node.js 20, PostgreSQL 16, Nginx, Certbot, PM2, Git, and a firewall.
+- Node.js 22, PostgreSQL 16, Nginx, Certbot pending DNS, PM2, Git, and a firewall.
 - Persistent PostgreSQL storage and a shared media directory outside immutable release directories.
 - Health endpoint, immutable release mechanism, PM2 process, and existing backup scripts retained.
 - Private offsite backup destination for both database and media before production cutover.
@@ -52,7 +52,7 @@ Google Search Console:
 
 ## Current blockers
 
-- REG.RU VPS identity/access is unverified; obtain the trusted host fingerprint and a non-secret authentication path before bootstrap.
+- Production DB/media provenance is not proven; staging uses a new empty database only.
 - Production DB/media provenance is not proven.
 - Old-domain redirect control is unknown/unavailable.
 - Production secrets require rotation and private re-entry.
