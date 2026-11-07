@@ -52,9 +52,7 @@ type ApiResponse = {
 
 export function RouteGeometryPanel() {
   const { id } = useDocumentInfo();
-  const routePoints = useFormFields(([fields]) => fields.routePoints?.value) as
-    | RoutePoint[]
-    | undefined;
+  const routePointsValue = useFormFields(([fields]) => fields.routePoints?.value);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -64,8 +62,11 @@ export function RouteGeometryPanel() {
   const [geoJsonText, setGeoJsonText] = useState("");
 
   const publishedPoints = useMemo(
-    () =>
-      (routePoints ?? [])
+    () => {
+      const routePoints = Array.isArray(routePointsValue)
+        ? (routePointsValue as RoutePoint[])
+        : [];
+      return routePoints
         .filter((p) => p.published !== false)
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         .map((p) => ({
@@ -73,8 +74,9 @@ export function RouteGeometryPanel() {
           lng: p.lng ?? 0,
           title: p.title,
           order: p.order,
-        })),
-    [routePoints]
+        }));
+    },
+    [routePointsValue]
   );
 
   const loadState = useCallback(async () => {
