@@ -41,6 +41,11 @@ const CORE_VARS = [
 /** @type {{ name: string; required: boolean; hint: string }[]} */
 const OPTIONAL_VARS = [
   {
+    name: "PUBLIC_CONTACT_EMAIL",
+    required: false,
+    hint: "Подтверждённый публичный email; пока не задан, email скрыт из публичного интерфейса.",
+  },
+  {
     name: "NEXT_PUBLIC_BOOSTY_URL",
     required: false,
     hint: "https://boosty.to/polezno_irkutsk",
@@ -78,7 +83,7 @@ const OPTIONAL_VARS = [
   {
     name: "EMAIL_TO",
     required: false,
-    hint: "info@polezno.irkutsk.ru",
+    hint: "Подтверждённый адрес получателя уведомлений; не указывайте неподтверждённый mailbox.",
   },
 ];
 

@@ -30,6 +30,13 @@
 - Local `npm start` smoke: `/`, `/admin`, `/api/health`, `/robots.txt`, `/sitemap.xml` returned HTTP 200. Homepage title and Payload admin title contained the new brand.
 - No production HTTP, DNS, registrar, database, seed, deploy, or content write was performed.
 
+## RECOVERY.2 residual cleanup
+
+- Removed the public footer line `Ранее — Иркпортал`; the legacy name remains only as internal/CMS migration data.
+- Removed unconfirmed email fallbacks from public settings, seed data, and review email sender defaults.
+- Public email is now opt-in through `PUBLIC_CONTACT_EMAIL`; lead notifications require `EMAIL_TO` and an enabled CMS setting.
+- No mailbox was invented and no CMS/production data was mutated.
+
 ## Intentionally retained
 
 - Repository name, package name, PostgreSQL database/user names, Payload collection slugs, release project ID `irkportal`, analytics event names, disposable database prefixes, and historical evidence.

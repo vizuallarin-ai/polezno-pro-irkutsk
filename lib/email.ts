@@ -21,7 +21,7 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-const FROM = process.env.EMAIL_FROM || "noreply@polezno.irkutsk.ru";
+const FROM = process.env.EMAIL_FROM?.trim();
 const SITE_URL = getSiteUrl();
 const BRAND_NAME = BRAND.projectName;
 
@@ -37,6 +37,10 @@ export async function sendReviewRequest({
   const client = getResend();
   if (!client) {
     console.warn("Resend not configured — RESEND_API_KEY missing");
+    return;
+  }
+  if (!FROM) {
+    console.warn("Resend not configured — EMAIL_FROM missing");
     return;
   }
 

@@ -2,7 +2,7 @@
 
 ## Current state
 
-The new domain is registered at REG.RU, but no new VPS/hosting target, SSH identity, DNS target, or production data source has been provided or verified. No DNS, registrar, production database, or production application was changed by this recovery task.
+The REG.RU target is now specified as `79.174.91.11`, but server identity and access are not verified. A strict SSH probe stopped because the host key is not present in local `known_hosts`, and the task did not provide a trusted fingerprint or password. No DNS, registrar, production database, or production application was changed.
 
 ## Minimum target
 
@@ -52,7 +52,7 @@ Google Search Console:
 
 ## Current blockers
 
-- New VPS/hosting target and IP are unknown.
+- REG.RU VPS identity/access is unverified; obtain the trusted host fingerprint and a non-secret authentication path before bootstrap.
 - Production DB/media provenance is not proven.
 - Old-domain redirect control is unknown/unavailable.
 - Production secrets require rotation and private re-entry.

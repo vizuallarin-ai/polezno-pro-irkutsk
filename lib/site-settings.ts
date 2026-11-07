@@ -74,7 +74,6 @@ const DEFAULTS: SiteSettingsData = {
   secondaryCta: { label: "Подобрать мне прогулку", href: "/contact" },
   contact: {
     phone: "+7 (3952) 000-00-00",
-    email: "info@polezno.irkutsk.ru",
     telegram: TELEGRAM_URL,
     instagram: "https://instagram.com/polezno.irkutsk",
     boosty: BOOSTY_URL,
@@ -84,8 +83,7 @@ const DEFAULTS: SiteSettingsData = {
     consentVersion: DEFAULT_CONSENT_VERSION,
     privacyPolicyUrl: DEFAULT_PRIVACY_POLICY_URL,
     primaryMessenger: "telegram",
-    leadNotificationEnabled: true,
-    leadNotificationEmail: "info@polezno.irkutsk.ru",
+    leadNotificationEnabled: false,
     contactCtaLabel: "Связаться",
   },
   footerText:
@@ -124,6 +122,8 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsData> => {
       string,
       string | undefined
     >;
+    const publicContactEmail = process.env.PUBLIC_CONTACT_EMAIL?.trim() || undefined;
+    const notificationEmail = process.env.EMAIL_TO?.trim() || undefined;
 
     const authorName = String(
       raw.authorName || raw.founderName || DEFAULTS.authorName
@@ -157,7 +157,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsData> => {
         : DEFAULTS.secondaryCta,
       contact: {
         phone: contactRaw.phone || DEFAULTS.contact.phone,
-        email: contactRaw.email || DEFAULTS.contact.email,
+        email: publicContactEmail,
         telegram:
           contactRaw.telegram || socialRaw.telegram || DEFAULTS.contact.telegram,
         max: contactRaw.max || contactRaw.maxUrl,
@@ -182,13 +182,8 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsData> => {
           (leadRaw.primaryMessenger as LeadSettings["primaryMessenger"]) ||
           DEFAULTS.leadSettings.primaryMessenger,
         leadNotificationEnabled:
-          leadRaw.leadNotificationEnabled !== undefined
-            ? Boolean(leadRaw.leadNotificationEnabled)
-            : DEFAULTS.leadSettings.leadNotificationEnabled,
-        leadNotificationEmail:
-          (leadRaw.leadNotificationEmail as string | undefined) ||
-          contactRaw.email ||
-          DEFAULTS.leadSettings.leadNotificationEmail,
+          Boolean(leadRaw.leadNotificationEnabled) && Boolean(notificationEmail),
+        leadNotificationEmail: notificationEmail,
         contactCtaLabel: String(
           leadRaw.contactCtaLabel || DEFAULTS.leadSettings.contactCtaLabel
         ),

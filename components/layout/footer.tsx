@@ -37,7 +37,6 @@ export function Footer({
   const footerText =
     settings?.footerText ||
     "Маршруты, экскурсии и материалы о городе — без туристических штампов.";
-  const legacyName = settings?.legacyProjectName || "Иркпортал";
   const contact = contactProp ?? contactsForDisplay(settings?.contact ?? {});
   const telegram = contact.telegram;
   const max = contact.max;
@@ -65,10 +64,6 @@ export function Footer({
               <p className="text-sm text-primary-foreground/60 leading-relaxed max-w-sm">
                 {footerText}
               </p>
-              <p className="text-xs text-primary-foreground/35 mt-3">
-                Ранее — {legacyName}
-              </p>
-
               <div className="flex items-center gap-4 mt-6 flex-wrap">
                 {telegram && (
                   <a
