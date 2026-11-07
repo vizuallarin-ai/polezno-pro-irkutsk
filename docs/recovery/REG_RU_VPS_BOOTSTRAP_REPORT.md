@@ -2,7 +2,7 @@
 
 ## Final status
 
-**PRODUCTION CANDIDATE READY — owner credential procedure and DNS/TLS remain pending.**
+**OWNER ACCESS PREPARED — DNS/TLS and public launch remain pending.**
 
 REG.RU VPS bootstrap completed without DNS, production traffic, Beget, production data, or `master` changes. Staging remains isolated, and the clean production candidate is also private-only.
 
@@ -13,7 +13,7 @@ The clean production path is now prepared separately from staging. It is not pub
 | Check | Result |
 |---|---|
 | Branch | `recovery/polezno-rebrand-20261107` |
-| Application SHA | `12f2f703fd38c845e21fd0c0aed1e17ce5c124f7` |
+| Application SHA | `9639fd2ddd10752a66110f09669f8025198201a6` |
 | Remote sync | `git fetch origin` completed; branch was synchronized before local edits |
 | Untracked artifacts | Preserved; no `git clean` or reset used |
 | Existing recovery docs/scripts | Read before action |
@@ -51,7 +51,7 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 
 ## Production security release
 
-- Application release `12f2f703fd38c845e21fd0c0aed1e17ce5c124f7` is active in production PM2.
+- Application release `9639fd2ddd10752a66110f09669f8025198201a6` is active in production PM2; previous `12f2f70-production` remains available for rollback.
 - Next.js `16.4.5`; Payload packages `3.91.0`; `dompurify@3.4.17` is enforced through an npm override.
 - Production-only `npm audit --omit=dev --audit-level=critical` exits `0`; no critical findings remain. Remaining findings are high/moderate/low and require breaking or force remediation paths.
 - Typecheck, lint, lead security tests, admin access tests, and production build passed for the security release.
@@ -60,18 +60,18 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 
 - Separate `polezno_production` PostgreSQL database and role created; staging was not reused.
 - Production environment is separate at `/var/www/polezno-shared/env/production.env`, mode `600`, with newly generated secrets and canonical URL; values are not recorded here.
-- Production release `/var/www/polezno-releases/12f2f70-production` is checked out at exact application SHA `12f2f703fd38c845e21fd0c0aed1e17ce5c124f7`, built successfully, privately smoke-tested, and active through PM2.
+- Production release `/var/www/polezno-releases/9639fd2` is built successfully, privately smoke-tested, and active through PM2 with exact application SHA `9639fd2ddd10752a66110f09669f8025198201a6`.
 - Production PM2 process `polezno-production` runs as `deploy` on localhost `127.0.0.1:3001`; private Nginx proxy is `127.0.0.1:8081`.
 - Production health reports `identitySource=artifact`, exact SHA, `database=up`, and `app=up`.
-- Production users/leads/reviews/excursions/articles/routes/products counts are all zero; no seed or local recovery data was imported.
+- Production contains exactly one controlled user: `luola@inbox.ru` with role `admin`; leads/reviews/excursions/articles/routes/products remain empty. No seed or local recovery data was imported.
 - Production private smoke returned HTTP 200 for all ten required routes.
-- Owner account is not yet created. Verified login email is `luola@inbox.ru`; password will be entered by the owner through a local hidden-input procedure and will not enter agent transcript/logs.
+- Owner account is created for verified email `luola@inbox.ru`; the password was entered only through the local hidden-input procedure and is not recorded.
 
 ## Backups
 
 - Daily `polezno-backup.timer` is enabled and active.
 - Local PostgreSQL custom dump, media archive, and SHA256 manifest were created under `/var/backups/polezno`; integrity check passed.
-- Retention is 14 days. Independent local copy `D:\AI_WORKSPACE\Backups\PoleznoProIrkutsk` was transferred and SHA256-verified (`20261107T103404Z`); it predates the Owner record because that account is not yet created.
+- Retention is 14 days. Independent local copy `D:\AI_WORKSPACE\Backups\PoleznoProIrkutsk` was transferred and SHA256-verified after Owner creation (`20261107T115742Z`). The PostgreSQL custom dump passed `pg_restore --list` with 886 TOC entries.
 - Separate `polezno-production-backup.timer` is enabled and active; its dump passed SHA256 verification and restore into a temporary disposable database, then the temporary database was removed.
 
 ## Application/rebrand fixes prepared locally
@@ -92,6 +92,4 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 ## Remaining blockers
 
 - Production content remains intentionally empty; later Beget material import is optional and does not block the clean launch path.
-- Refresh the independent local backup after Owner creation and verify the new user is included.
 - Complete DNS/TLS cutover only after explicit owner approval.
-- Run the owner-set password procedure for `luola@inbox.ru` through the existing `create-admin.mjs` mechanism.
