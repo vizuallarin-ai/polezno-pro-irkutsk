@@ -107,6 +107,7 @@ async function main() {
       name: "Administrator",
     },
     overrideAccess: true,
+    context: { bypassDeleteGuards: true },
   });
 
   console.log("ADMIN_CREATED");
