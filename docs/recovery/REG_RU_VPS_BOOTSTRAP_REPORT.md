@@ -93,4 +93,15 @@ The host key was obtained with `ssh-keyscan` and matched the owner-provided refe
 ## Remaining blockers
 
 - Production content remains intentionally empty; later Beget material import is optional and does not block the clean launch path.
-- Complete DNS/TLS cutover only after explicit owner approval.
+- Owner must still perform and confirm a real browser login/logout acceptance; the password was not requested or handled by the agent.
+
+## Final editor-fix production release (2026-11-09)
+
+- Exact release `ccdc7c306b63243cbfa74d97f82cf249ec6cca40` was built from the recovery branch and activated at `/var/www/polezno-releases/ccdc7c306b63243cbfa74d97f82cf249ec6cca40`.
+- Previous immutable release `9639fd2` remains available for application rollback; its artifact identity is `9639fd2ddd10752a66110f09669f8025198201a6`.
+- Production `polezno-production` is online on `127.0.0.1:3001`; `/api/health` reports the exact target SHA, `database=up`, `app=up`, and `worktreeDirty=false`.
+- Before release, the production DB dump, media archive, per-file SHA256 checksums, combined manifest, and disposable restore probe passed. Backup files remain under `/var/backups/polezno`.
+- Only the additive article enum values `hidden` and `archived` were applied to `polezno_production`; no other schema or records were changed.
+- Public HTTPS smoke passed for the required routes; apex and `www` TLS certificate coverage and HTTP/HTTPS redirects remain valid. `/admin` is reachable; Owner credentials were not changed.
+- Production has no route records, so no production content was created. Published-route publication and draft/nonexistent access behavior remain proven by the disposable local browser E2E and runtime guards; a nonexistent production route returns `404`.
+- The release was pushed normally to `recovery/polezno-rebrand-20261107`; `master`, Beget, staging data, and production content were not changed.
