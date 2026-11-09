@@ -9,6 +9,7 @@ import nextEnv from "@next/env";
 import { buildConfig, getPayload } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import pg from "pg";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -33,6 +34,37 @@ function loadEnvFile(relativePath) {
       val = val.slice(1, -1);
     }
     if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+function isLocalDisposableDatabase(databaseUrl) {
+  const parsed = new URL(databaseUrl);
+  const dbName = parsed.pathname.replace(/^\//, "");
+  const localHost = ["localhost", "127.0.0.1", "::1"].includes(parsed.hostname);
+  const disposableName =
+    dbName.startsWith("adminf_") || dbName.startsWith("polezno_editor_");
+  return localHost && disposableName;
+}
+
+async function applyLocalAdminMigration(databaseUrl) {
+  if (!isLocalDisposableDatabase(databaseUrl)) {
+    throw new Error(
+      "Refusing ADMIN.F local schema bridge: DATABASE_URL must target localhost and an adminf_ or polezno_editor_ database."
+    );
+  }
+
+  const migrationPath = path.join(
+    root,
+    "scripts",
+    "migrations",
+    "admin-f-prod-to-target.sql"
+  );
+  const client = new pg.Client({ connectionString: databaseUrl });
+  await client.connect();
+  try {
+    await client.query(fs.readFileSync(migrationPath, "utf8"));
+  } finally {
+    await client.end();
   }
 }
 
@@ -99,6 +131,8 @@ async function main() {
   console.log("Pushing Payload schema to PostgreSQL...");
   await getPayload({ config });
   console.log("DB_SCHEMA_PUSH_OK");
+  await applyLocalAdminMigration(process.env.DATABASE_URL);
+  console.log("LOCAL_ADMIN_SCHEMA_BRIDGE_OK");
   process.exit(0);
 }
 

@@ -15,8 +15,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-/** Unknown slugs 404 at the routing layer (avoids streamed soft-404 200). */
-export const dynamicParams = false;
+/** Published routes are editor-managed runtime data and must not require a rebuild. */
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const slugs = await getPublishedRouteSlugs();
